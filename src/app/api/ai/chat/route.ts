@@ -6,20 +6,26 @@ export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
   try {
+    // Get OpenAI key with fallback
+    const openaiKey = process.env.OPENAI_API_KEY || process.env['OPENAI_API_KEY']
+    
     // Debug logging
-    console.log('OpenAI API Key present:', !!process.env.OPENAI_API_KEY)
-    console.log('OpenAI API Key length:', process.env.OPENAI_API_KEY?.length || 0)
+    console.log('OpenAI API Key present:', !!openaiKey)
+    console.log('OpenAI API Key length:', openaiKey?.length || 0)
+    console.log('All env keys:', Object.keys(process.env).filter(k => k.includes('OPENAI')))
     
     const { messages } = await req.json()
     console.log('Messages received:', messages)
 
     // Check if OpenAI key is missing
-    if (!process.env.OPENAI_API_KEY) {
+    if (!openaiKey) {
       return new Response('OpenAI API key not configured', { status: 500 })
     }
 
     const result = await streamText({
-      model: openai('gpt-4-turbo-preview'),
+      model: openai('gpt-4-turbo-preview', {
+        apiKey: openaiKey,
+      }),
       system: `You are a Design4 Framework AI Assistant for DesignFlow Pro. You help business leaders implement the Design4 framework that connects strategy to execution.
 
 Core Design4 Principles:
