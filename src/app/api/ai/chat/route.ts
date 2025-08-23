@@ -2,7 +2,7 @@ import { openai } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 
 export const runtime = 'nodejs'
-// Switched from edge to nodejs runtime for better env var support
+// Using nodejs runtime for proper environment variable access
 
 export async function POST(req: Request) {
   try {
