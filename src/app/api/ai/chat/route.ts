@@ -23,9 +23,9 @@ export async function POST(req: Request) {
     }
 
     const result = await streamText({
-      model: openai('gpt-4-turbo-preview', {
+      model: openai({
         apiKey: openaiKey,
-      }),
+      })('gpt-4-turbo-preview'),
       system: `You are a Design4 Framework AI Assistant for DesignFlow Pro. You help business leaders implement the Design4 framework that connects strategy to execution.
 
 Core Design4 Principles:
