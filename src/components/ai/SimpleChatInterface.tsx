@@ -40,43 +40,75 @@ export default function SimpleChatInterface() {
         })
       })
 
-      if (response.ok && response.body) {
-        const reader = response.body.getReader()
-        const decoder = new TextDecoder()
-        let assistantContent = ''
+      if (response.ok) {
+        // For successful response, read the stream
+        if (response.body) {
+          const reader = response.body.getReader()
+          const decoder = new TextDecoder()
+          let assistantContent = ''
 
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: ''
-        }
+          const assistantMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: ''
+          }
 
-        setMessages(prev => [...prev, assistantMessage])
+          setMessages(prev => [...prev, assistantMessage])
 
-        while (true) {
-          const { value, done } = await reader.read()
-          if (done) break
+          try {
+            while (true) {
+              const { value, done } = await reader.read()
+              if (done) break
 
-          const chunk = decoder.decode(value)
-          const lines = chunk.split('\n')
-          
-          for (const line of lines) {
-            if (line.startsWith('0:')) {
-              try {
-                const data = JSON.parse(line.slice(2))
-                if (data.content) {
-                  assistantContent += data.content
-                  setMessages(prev => prev.map(msg => 
-                    msg.id === assistantMessage.id 
-                      ? { ...msg, content: assistantContent }
-                      : msg
-                  ))
+              const chunk = decoder.decode(value, { stream: true })
+              
+              // Handle different possible streaming formats
+              const lines = chunk.split('\n')
+              
+              for (const line of lines) {
+                if (line.trim()) {
+                  // Try to parse as direct text
+                  if (!line.startsWith('{') && !line.includes(':')) {
+                    assistantContent += line + '\n'
+                    setMessages(prev => prev.map(msg => 
+                      msg.id === assistantMessage.id 
+                        ? { ...msg, content: assistantContent.trim() }
+                        : msg
+                    ))
+                  }
+                  // Try to parse as JSON stream data
+                  else if (line.startsWith('0:') || line.startsWith('1:')) {
+                    try {
+                      const jsonStr = line.includes(':') ? line.split(':', 2)[1] : line
+                      const data = JSON.parse(jsonStr)
+                      if (data.type === 'text-delta' && data.textDelta) {
+                        assistantContent += data.textDelta
+                        setMessages(prev => prev.map(msg => 
+                          msg.id === assistantMessage.id 
+                            ? { ...msg, content: assistantContent }
+                            : msg
+                        ))
+                      }
+                    } catch (e) {
+                      // Skip invalid JSON, but log for debugging
+                      console.log('Stream parse error:', e, 'Line:', line)
+                    }
+                  }
                 }
-              } catch (e) {
-                // Skip invalid JSON
               }
             }
+          } catch (streamError) {
+            console.error('Stream reading error:', streamError)
           }
+        } else {
+          // No streaming body, try to get text response
+          const text = await response.text()
+          const assistantMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: text || 'I received your message but had trouble generating a response. Please try again.'
+          }
+          setMessages(prev => [...prev, assistantMessage])
         }
       }
     } catch (error) {
