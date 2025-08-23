@@ -33,7 +33,7 @@ Provide practical, actionable advice that helps users bridge the gap between str
       messages,
     })
 
-    return result.toDataStreamResponse()
+    return result.toTextStreamResponse()
   } catch (error) {
     console.error('Error in AI chat:', error)
     return new Response('Error processing request', { status: 500 })
