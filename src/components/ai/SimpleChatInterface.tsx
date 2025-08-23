@@ -29,6 +29,7 @@ export default function SimpleChatInterface() {
     setIsLoading(true)
 
     try {
+      console.log('Sending chat request...', [...messages, userMessage])
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -40,6 +41,8 @@ export default function SimpleChatInterface() {
         })
       })
 
+      console.log('Response status:', response.status, 'Content-Type:', response.headers.get('content-type'))
+      
       if (response.ok) {
         // For successful response, read the stream
         if (response.body) {
@@ -61,41 +64,15 @@ export default function SimpleChatInterface() {
               if (done) break
 
               const chunk = decoder.decode(value, { stream: true })
+              console.log('Raw chunk:', chunk)
               
-              // Handle different possible streaming formats
-              const lines = chunk.split('\n')
-              
-              for (const line of lines) {
-                if (line.trim()) {
-                  // Try to parse as direct text
-                  if (!line.startsWith('{') && !line.includes(':')) {
-                    assistantContent += line + '\n'
-                    setMessages(prev => prev.map(msg => 
-                      msg.id === assistantMessage.id 
-                        ? { ...msg, content: assistantContent.trim() }
-                        : msg
-                    ))
-                  }
-                  // Try to parse as JSON stream data
-                  else if (line.startsWith('0:') || line.startsWith('1:')) {
-                    try {
-                      const jsonStr = line.includes(':') ? line.split(':', 2)[1] : line
-                      const data = JSON.parse(jsonStr)
-                      if (data.type === 'text-delta' && data.textDelta) {
-                        assistantContent += data.textDelta
-                        setMessages(prev => prev.map(msg => 
-                          msg.id === assistantMessage.id 
-                            ? { ...msg, content: assistantContent }
-                            : msg
-                        ))
-                      }
-                    } catch (e) {
-                      // Skip invalid JSON, but log for debugging
-                      console.log('Stream parse error:', e, 'Line:', line)
-                    }
-                  }
-                }
-              }
+              // Direct text streaming - just append the chunk
+              assistantContent += chunk
+              setMessages(prev => prev.map(msg => 
+                msg.id === assistantMessage.id 
+                  ? { ...msg, content: assistantContent }
+                  : msg
+              ))
             }
           } catch (streamError) {
             console.error('Stream reading error:', streamError)
