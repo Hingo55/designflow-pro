@@ -48,16 +48,22 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
-                href="/dashboard" 
-                className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition-colors font-medium"
+                href="/ai-strategy" 
+                className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition-colors font-medium flex items-center justify-center"
               >
-                Explore Dashboard
+                🤖 AI Strategy Advisor
+              </Link>
+              <Link 
+                href="/dashboard" 
+                className="border border-gray-300 text-gray-700 px-8 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium"
+              >
+                View Dashboard
               </Link>
               <Link 
                 href="/resources" 
                 className="border border-gray-300 text-gray-700 px-8 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium"
               >
-                View Resources
+                Resources & Tools
               </Link>
             </div>
           </div>
