@@ -5,7 +5,17 @@ export const runtime = 'edge'
 
 export async function POST(req: Request) {
   try {
+    // Debug logging
+    console.log('OpenAI API Key present:', !!process.env.OPENAI_API_KEY)
+    console.log('OpenAI API Key length:', process.env.OPENAI_API_KEY?.length || 0)
+    
     const { messages } = await req.json()
+    console.log('Messages received:', messages)
+
+    // Check if OpenAI key is missing
+    if (!process.env.OPENAI_API_KEY) {
+      return new Response('OpenAI API key not configured', { status: 500 })
+    }
 
     const result = await streamText({
       model: openai('gpt-4-turbo-preview'),
@@ -33,9 +43,17 @@ Provide practical, actionable advice that helps users bridge the gap between str
       messages,
     })
 
+    console.log('StreamText result created successfully')
     return result.toTextStreamResponse()
   } catch (error) {
     console.error('Error in AI chat:', error)
-    return new Response('Error processing request', { status: 500 })
+    return new Response(JSON.stringify({ 
+      error: 'Error processing request', 
+      details: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    }), { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    })
   }
 }
