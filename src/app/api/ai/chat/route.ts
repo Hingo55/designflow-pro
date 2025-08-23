@@ -2,6 +2,7 @@ import { openai } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 
 export const runtime = 'edge'
+// Force redeploy to pick up environment variables
 
 export async function POST(req: Request) {
   try {
