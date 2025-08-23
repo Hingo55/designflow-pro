@@ -1,4 +1,4 @@
-import { openai } from '@ai-sdk/openai'
+import { createOpenAI } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 
 export const runtime = 'nodejs'
@@ -22,10 +22,13 @@ export async function POST(req: Request) {
       return new Response('OpenAI API key not configured', { status: 500 })
     }
 
+    // Create OpenAI client with explicit API key
+    const openai = createOpenAI({
+      apiKey: openaiKey,
+    })
+
     const result = await streamText({
-      model: openai({
-        apiKey: openaiKey,
-      })('gpt-4-turbo-preview'),
+      model: openai('gpt-4-turbo-preview'),
       system: `You are a Design4 Framework AI Assistant for DesignFlow Pro. You help business leaders implement the Design4 framework that connects strategy to execution.
 
 Core Design4 Principles:
