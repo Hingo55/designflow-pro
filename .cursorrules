@@ -1,0 +1,50 @@
+# 5 Day Sprint Framework - Cursor Rules
+# Framework created by Omar Choudhry | 5daysprint.com
+
+## Project: DesignFlow Pro
+A comprehensive platform showcasing the Design4 framework - connecting strategy to execution for business leaders and strategists.
+
+## Tech Stack
+- Next.js 15 + TypeScript
+- Tailwind CSS + shadcn/ui
+- Supabase (Database & Auth)
+- Vercel (Deployment)
+
+## Development Workflow
+- MANDATORY: Use shadcn/ui components first before building custom
+- Environment variables stored securely in .env.local (never commit)
+- All API keys managed through environment variables
+- Build locally before deployment: npm run build && npm run start
+
+## Code Standards
+- TypeScript strict mode enabled
+- Use src/ directory structure  
+- Import aliases: @/components, @/lib, @/app
+- Tailwind CSS for styling
+- ESLint for code quality
+
+## Security Requirements
+- Never store API keys in public files
+- Use process.env.VARIABLE_NAME for all secrets
+- Verify .env.local is in .gitignore
+- All Supabase operations use client from @/lib/supabase
+
+## File Structure
+```
+src/
+├── app/           # Next.js app router
+├── components/    # React components
+│   └── ui/       # shadcn/ui components  
+└── lib/          # Utilities & configs
+```
+
+## Environment Variables Available
+- SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
+- USER_FIRST_NAME, PROJECT_NAME, PROJECT_OVERVIEW
+- VERCEL_URL, GITHUB_REPO_URL, FIRECRAWL_API_KEY
+
+## Sprint Framework Integration
+- Task-driven development with clear priorities
+- Security-first approach for all integrations
+- Systematic implementation covering all aspects
+- Quality control with proper testing and validation
