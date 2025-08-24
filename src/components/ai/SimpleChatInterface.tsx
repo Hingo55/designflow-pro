@@ -44,39 +44,26 @@ export default function SimpleChatInterface() {
       console.log('Response status:', response.status, 'Content-Type:', response.headers.get('content-type'))
       
       if (response.ok) {
-        // For successful response, read the stream
-        if (response.body) {
-          const reader = response.body.getReader()
-          const decoder = new TextDecoder()
-          let assistantContent = ''
-
+        // Read the complete response as text (simpler approach)
+        try {
+          const text = await response.text()
+          console.log('Complete response:', text)
+          
           const assistantMessage: Message = {
             id: (Date.now() + 1).toString(),
             role: 'assistant',
-            content: ''
+            content: text || 'I received your message but had trouble generating a response. Please try again.'
           }
-
           setMessages(prev => [...prev, assistantMessage])
-
-          try {
-            while (true) {
-              const { value, done } = await reader.read()
-              if (done) break
-
-              const chunk = decoder.decode(value, { stream: true })
-              console.log('Raw chunk:', chunk)
-              
-              // Direct text streaming - just append the chunk
-              assistantContent += chunk
-              setMessages(prev => prev.map(msg => 
-                msg.id === assistantMessage.id 
-                  ? { ...msg, content: assistantContent }
-                  : msg
-              ))
-            }
-          } catch (streamError) {
-            console.error('Stream reading error:', streamError)
+        } catch (textError) {
+          console.error('Text reading error:', textError)
+          const errorMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: 'Sorry, I encountered an error reading the response. Please try again.'
           }
+          setMessages(prev => [...prev, errorMessage])
+        }
         } else {
           // No streaming body, try to get text response
           const text = await response.text()
