@@ -6,20 +6,30 @@ export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
   try {
-    // Get OpenAI key with fallback
-    const openaiKey = process.env.OPENAI_API_KEY || process.env['OPENAI_API_KEY']
+    // Debug all environment variables
+    console.log('All environment variables:', Object.keys(process.env))
+    console.log('NODE_ENV:', process.env.NODE_ENV)
+    console.log('VERCEL:', process.env.VERCEL)
     
-    // Debug logging
+    // Get OpenAI key with multiple fallbacks
+    const openaiKey = process.env.OPENAI_API_KEY || 
+                      process.env['OPENAI_API_KEY'] ||
+                      process.env.openai_api_key ||
+                      process.env['openai_api_key']
+    
     console.log('OpenAI API Key present:', !!openaiKey)
     console.log('OpenAI API Key length:', openaiKey?.length || 0)
-    console.log('All env keys:', Object.keys(process.env).filter(k => k.includes('OPENAI')))
     
     const { messages } = await req.json()
     console.log('Messages received:', messages)
 
-    // Check if OpenAI key is missing
+    // Return detailed error if key is missing
     if (!openaiKey) {
-      return new Response('OpenAI API key not configured', { status: 500 })
+      return Response.json({ 
+        error: 'OpenAI API key not configured',
+        availableEnvKeys: Object.keys(process.env).filter(k => k.toLowerCase().includes('openai')),
+        timestamp: new Date().toISOString()
+      }, { status: 500 })
     }
 
     // Create OpenAI client with explicit API key
