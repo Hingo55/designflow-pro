@@ -2,6 +2,7 @@ import { openai } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 
 export const runtime = 'nodejs'
+// Force deployment of simplified version
 
 export async function POST(req: Request) {
   try {
