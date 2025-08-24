@@ -11,11 +11,11 @@ export async function POST(req: Request) {
     console.log('NODE_ENV:', process.env.NODE_ENV)
     console.log('VERCEL:', process.env.VERCEL)
     
-    // Get OpenAI key with multiple fallbacks
-    const openaiKey = process.env.OPENAI_API_KEY || 
-                      process.env['OPENAI_API_KEY'] ||
-                      process.env.openai_api_key ||
-                      process.env['openai_api_key']
+    // Get OpenAI key with multiple fallbacks including the actual Vercel variable name
+    const openaiKey = process.env.OPEN_API_KEY || 
+                      process.env.OPENAI_API_KEY || 
+                      process.env['OPEN_API_KEY'] ||
+                      process.env['OPENAI_API_KEY']
     
     console.log('OpenAI API Key present:', !!openaiKey)
     console.log('OpenAI API Key length:', openaiKey?.length || 0)
