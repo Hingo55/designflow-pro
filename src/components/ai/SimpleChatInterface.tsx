@@ -64,16 +64,14 @@ export default function SimpleChatInterface() {
           }
           setMessages(prev => [...prev, errorMessage])
         }
-        } else {
-          // No streaming body, try to get text response
-          const text = await response.text()
-          const assistantMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            content: text || 'I received your message but had trouble generating a response. Please try again.'
-          }
-          setMessages(prev => [...prev, assistantMessage])
+      } else {
+        // Handle non-200 responses
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: 'Sorry, I encountered an error. Please try again.'
         }
+        setMessages(prev => [...prev, errorMessage])
       }
     } catch (error) {
       console.error('Chat error:', error)
