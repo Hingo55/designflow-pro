@@ -43,26 +43,50 @@ export default function SimpleChatInterface() {
 
       console.log('Response status:', response.status, 'Content-Type:', response.headers.get('content-type'))
       
-      if (response.ok) {
-        // Read the complete response as text (simpler approach)
+      if (response.ok && response.body) {
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let assistantContent = ''
+
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: ''
+        }
+
+        setMessages(prev => [...prev, assistantMessage])
+
         try {
-          const text = await response.text()
-          console.log('Complete response:', text)
+          while (true) {
+            const { value, done } = await reader.read()
+            if (done) break
+
+            const chunk = decoder.decode(value, { stream: true })
+            console.log('Chunk received:', chunk)
+            
+            // Append chunk directly - AI SDK sends plain text
+            assistantContent += chunk
+            setMessages(prev => prev.map(msg => 
+              msg.id === assistantMessage.id 
+                ? { ...msg, content: assistantContent }
+                : msg
+            ))
+          }
           
-          const assistantMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            content: text || 'I received your message but had trouble generating a response. Please try again.'
+          if (!assistantContent.trim()) {
+            setMessages(prev => prev.map(msg => 
+              msg.id === assistantMessage.id 
+                ? { ...msg, content: 'I received your message but had trouble generating a response. Please try again.' }
+                : msg
+            ))
           }
-          setMessages(prev => [...prev, assistantMessage])
-        } catch (textError) {
-          console.error('Text reading error:', textError)
-          const errorMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            content: 'Sorry, I encountered an error reading the response. Please try again.'
-          }
-          setMessages(prev => [...prev, errorMessage])
+        } catch (streamError) {
+          console.error('Stream reading error:', streamError)
+          setMessages(prev => prev.map(msg => 
+            msg.id === assistantMessage.id 
+              ? { ...msg, content: 'Sorry, I encountered an error reading the response. Please try again.' }
+              : msg
+          ))
         }
       } else {
         // Handle non-200 responses
