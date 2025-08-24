@@ -7,21 +7,43 @@ export async function POST(req: Request) {
   try {
     // Get API key explicitly
     const apiKey = process.env.OPENAI_API_KEY
+    
+    // Comprehensive environment debugging for production
+    console.log('All environment variables:', Object.keys(process.env))
+    console.log('NODE_ENV:', process.env.NODE_ENV)
+    console.log('VERCEL:', process.env.VERCEL)
+    console.log('OpenAI API Key present:', !!apiKey)
+    console.log('OpenAI API Key length:', apiKey?.length || 0)
+    
+    // Check for alternative environment variable names
+    const altApiKey = process.env.OPENAI_KEY || process.env.OPEN_AI_KEY || process.env.OPENAI_SECRET_KEY
+    if (altApiKey) {
+      console.log('Alternative API key found:', altApiKey.substring(0, 10))
+    }
+    
     console.log('Environment check:', {
       hasOpenAI: !!apiKey,
       keyLength: apiKey?.length || 0,
       nodeEnv: process.env.NODE_ENV
     })
     
-    if (!apiKey) {
-      return Response.json({ error: 'OpenAI API key not found' }, { status: 500 })
+    const finalApiKey = apiKey || altApiKey
+    if (!finalApiKey) {
+      return Response.json({ 
+        error: 'OpenAI API key not found', 
+        debug: {
+          hasOpenAI: !!apiKey,
+          hasAltKey: !!altApiKey,
+          envKeys: Object.keys(process.env).filter(k => k.includes('OPENAI'))
+        }
+      }, { status: 500 })
     }
     
     const { messages } = await req.json()
 
     // Create OpenAI client with explicit API key
     const openai = createOpenAI({
-      apiKey: apiKey
+      apiKey: finalApiKey
     })
 
     const result = await streamText({
