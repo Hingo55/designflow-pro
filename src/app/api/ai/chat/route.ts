@@ -6,6 +6,13 @@ export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
   try {
+    // Debug environment variables
+    console.log('Environment check:', {
+      hasOpenAI: !!process.env.OPENAI_API_KEY,
+      keyLength: process.env.OPENAI_API_KEY?.length || 0,
+      nodeEnv: process.env.NODE_ENV
+    })
+    
     const { messages } = await req.json()
 
     const result = await streamText({
