@@ -1,41 +1,11 @@
-import { createOpenAI } from '@ai-sdk/openai'
+import { openai } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 
 export const runtime = 'nodejs'
-// Using nodejs runtime for proper environment variable access - working locally!
 
 export async function POST(req: Request) {
   try {
-    // Debug all environment variables
-    console.log('All environment variables:', Object.keys(process.env))
-    console.log('NODE_ENV:', process.env.NODE_ENV)
-    console.log('VERCEL:', process.env.VERCEL)
-    
-    // Get OpenAI key with multiple fallbacks including the actual Vercel variable name
-    const openaiKey = process.env.OPEN_API_KEY || 
-                      process.env.OPENAI_API_KEY || 
-                      process.env['OPEN_API_KEY'] ||
-                      process.env['OPENAI_API_KEY']
-    
-    console.log('OpenAI API Key present:', !!openaiKey)
-    console.log('OpenAI API Key length:', openaiKey?.length || 0)
-    
     const { messages } = await req.json()
-    console.log('Messages received:', messages)
-
-    // Return detailed error if key is missing
-    if (!openaiKey) {
-      return Response.json({ 
-        error: 'OpenAI API key not configured',
-        availableEnvKeys: Object.keys(process.env).filter(k => k.toLowerCase().includes('openai')),
-        timestamp: new Date().toISOString()
-      }, { status: 500 })
-    }
-
-    // Create OpenAI client with explicit API key
-    const openai = createOpenAI({
-      apiKey: openaiKey,
-    })
 
     const result = await streamText({
       model: openai('gpt-4-turbo-preview'),
