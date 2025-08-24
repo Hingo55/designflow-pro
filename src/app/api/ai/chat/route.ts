@@ -5,7 +5,7 @@ export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
   try {
-    // Get API key explicitly
+    // Get API key explicitly - force env refresh
     const apiKey = process.env.OPENAI_API_KEY
     
     // Comprehensive environment debugging for production
