@@ -1,19 +1,28 @@
-import { openai } from '@ai-sdk/openai'
+import { createOpenAI } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 
 export const runtime = 'nodejs'
-// Force deployment of simplified version
 
 export async function POST(req: Request) {
   try {
-    // Debug environment variables
+    // Get API key explicitly
+    const apiKey = process.env.OPENAI_API_KEY
     console.log('Environment check:', {
-      hasOpenAI: !!process.env.OPENAI_API_KEY,
-      keyLength: process.env.OPENAI_API_KEY?.length || 0,
+      hasOpenAI: !!apiKey,
+      keyLength: apiKey?.length || 0,
       nodeEnv: process.env.NODE_ENV
     })
     
+    if (!apiKey) {
+      return Response.json({ error: 'OpenAI API key not found' }, { status: 500 })
+    }
+    
     const { messages } = await req.json()
+
+    // Create OpenAI client with explicit API key
+    const openai = createOpenAI({
+      apiKey: apiKey
+    })
 
     const result = await streamText({
       model: openai('gpt-4-turbo-preview'),
