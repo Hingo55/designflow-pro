@@ -2,7 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 
 export const runtime = 'nodejs'
-// Using nodejs runtime for proper environment variable access - env var re-added
+// Using nodejs runtime for proper environment variable access - working locally!
 
 export async function POST(req: Request) {
   try {
