@@ -17,8 +17,14 @@ export async function POST(req: Request) {
     
     // Check for alternative environment variable names
     const altApiKey = process.env.OPENAI_KEY || process.env.OPEN_AI_KEY || process.env.OPENAI_SECRET_KEY
+    console.log('Checking alternative keys:')
+    console.log('OPENAI_KEY present:', !!process.env.OPENAI_KEY)
+    console.log('OPEN_AI_KEY present:', !!process.env.OPEN_AI_KEY) 
+    console.log('OPENAI_SECRET_KEY present:', !!process.env.OPENAI_SECRET_KEY)
     if (altApiKey) {
       console.log('Alternative API key found:', altApiKey.substring(0, 10))
+    } else {
+      console.log('No alternative API keys found')
     }
     
     console.log('Environment check:', {
