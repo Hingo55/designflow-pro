@@ -1,34 +1,65 @@
+'use client'
+
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
+import PersonaSelector from '@/components/PersonaSelector'
+import { useState } from 'react'
 
 export default function Home() {
+  const [isPersonaSelectorOpen, setIsPersonaSelectorOpen] = useState(false)
   return (
     <>
       <Navigation />
       <main className="min-h-screen bg-design4-bg font-design4">
+      {/* Persona Selector Trigger - Top Banner */}
+      <section className="bg-design4-bg border-b border-design4-neutral-100">
+        <div className="mx-auto max-w-design4-container px-6 py-4">
+          <div className="text-center">
+            <button
+              onClick={() => setIsPersonaSelectorOpen(true)}
+              className="inline-block bg-design4-gold text-design4-ink px-6 py-2 rounded-lg font-medium text-sm hover:bg-design4-gold/90 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-design4-primary focus:ring-offset-2"
+            >
+              Discover what you can do with the Design4 Framework to accelerate your thinking
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="bg-design4-bg">
         <div className="mx-auto max-w-design4-container px-6 py-24">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl lg:text-6xl font-bold text-design4-ink leading-tight mb-6">
-              Design faster. Deliver better.
-            </h1>
-            <p className="text-lg lg:text-xl text-design4-neutral-500 max-w-3xl mx-auto mb-8">
-              Make change deliberate with the Design4 framework—tools, workshops, and advisors that turn strategy into momentum.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/resources" 
-                className="inline-block bg-design4-primary text-white px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2"
-              >
-                Get the Framework
-              </Link>
-              <Link 
-                href="/ai-prompt" 
-                className="inline-flex items-center text-design4-primary font-medium text-lg hover:text-design4-plum transition-colors"
-              >
-                Explore the Library →
-              </Link>
+          <div className="grid lg:grid-cols-2 gap-1 items-center">
+            {/* Design4 Grid Graphic */}
+            <div className="flex justify-center lg:justify-start order-2 lg:order-1">
+              <img 
+                src="/design4grid.svg" 
+                alt="Design4 Framework Grid - Discover, Define, Develop, Deliver" 
+                className="w-full max-w-xs lg:max-w-sm h-auto"
+              />
+            </div>
+
+            {/* Content */}
+            <div className="text-center lg:text-left order-1 lg:order-2">
+              <h1 className="text-5xl lg:text-6xl font-bold text-design4-ink leading-tight mb-6">
+                Design faster. Deliver better.
+              </h1>
+              <p className="text-lg lg:text-xl text-design4-neutral-500 mb-8">
+                Make change deliberate with the Design4 framework—tools, workshops, and advisors that turn strategy into momentum.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link 
+                  href="/resources" 
+                  className="inline-block bg-design4-primary text-white px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2"
+                >
+                  Get the Framework
+                </Link>
+                <Link 
+                  href="/ai-prompt" 
+                  className="inline-flex items-center text-design4-primary font-medium text-lg hover:text-design4-plum transition-colors"
+                >
+                  Explore the Library →
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -266,6 +297,12 @@ export default function Home() {
         </div>
       </footer>
       </main>
+
+      {/* Persona Selector Popup */}
+      <PersonaSelector 
+        isOpen={isPersonaSelectorOpen}
+        onClose={() => setIsPersonaSelectorOpen(false)}
+      />
     </>
   )
 }

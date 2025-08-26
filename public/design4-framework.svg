@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" viewBox="91 94 490 488" width="490" height="488">
+  <defs>
+    <filter id="Shadow" filterUnits="userSpaceOnUse" x="42" y="45.2">
+      <feGaussianBlur in="SourceAlpha" result="blur" stdDeviation="-5"/>
+      <feOffset in="blur" result="offset" dx="0" dy="2"/>
+      <feFlood flood-color="black" flood-opacity=".75" result="flood"/>
+      <feComposite in="flood" in2="offset" operator="in" result="color"/>
+      <feMerge>
+        <feMergeNode in="color"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g id="Canvas_1" stroke-opacity="1" fill="none" fill-opacity="1" stroke-dasharray="none" stroke="none">
+    <title>Canvas 1</title>
+    <g id="Canvas_1_Layer_1">
+      <title>Layer 1</title>
+      <g id="Graphic_10">
+        <circle cx="335.02344" cy="335.70703" r="162.250259259583" stroke="#3b7cd0" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+      </g>
+      <g id="Graphic_9" filter="url(#Shadow)">
+        <circle cx="335.02344" cy="174.20703" r="63.2501010672949" fill="white"/>
+        <circle cx="335.02344" cy="174.20703" r="63.2501010672949" stroke="#3b7cd0" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+        <text transform="translate(284.42344 144.20703)" fill="#407dd6">
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="11.953998" y="16" xml:space="preserve">DISCOVER </tspan>
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="32.177" y="36" xml:space="preserve">your </tspan>
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="19.108998" y="56" xml:space="preserve">Purpose</tspan>
+        </text>
+      </g>
+      <g id="Graphic_8">
+        <text transform="translate(251.05356 208.09014) rotate(-120)" fill="#407dd6">
+          <tspan font-family="Helvetica Neue" font-weight="bold" font-size="30" fill="#407dd6" x="7283063e-19" y="29" xml:space="preserve">V</tspan>
+        </text>
+      </g>
+      <g id="Graphic_7" filter="url(#Shadow)">
+        <circle cx="499.02344" cy="335.70703" r="63.250101067295" fill="white"/>
+        <circle cx="499.02344" cy="335.70703" r="63.250101067295" stroke="#3b7cd0" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+        <text transform="translate(448.42344 305.70703)" fill="#407dd6">
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="23.455998" y="16" xml:space="preserve">DEFINE </tspan>
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="32.177" y="36" xml:space="preserve">your </tspan>
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="16.057998" y="56" xml:space="preserve">Strategy</tspan>
+        </text>
+      </g>
+      <g id="Graphic_6">
+        <text transform="translate(462.9658 249.59226) rotate(-27)" fill="#407dd6">
+          <tspan font-family="Helvetica Neue" font-weight="bold" font-size="30" fill="#407dd6" x="7283063e-19" y="29" xml:space="preserve">V</tspan>
+        </text>
+      </g>
+      <g id="Graphic_5" filter="url(#Shadow)">
+        <circle cx="335.02344" cy="498.70703" r="63.250101067295" fill="white"/>
+        <circle cx="335.02344" cy="498.70703" r="63.250101067295" stroke="#3b7cd0" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+        <text transform="translate(284.42344 468.70703)" fill="#407dd6">
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="16.120998" y="16" xml:space="preserve">DEVELOP </tspan>
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="32.177" y="36" xml:space="preserve">your </tspan>
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="9.640998" y="56" xml:space="preserve">Capability</tspan>
+        </text>
+      </g>
+      <g id="Graphic_4">
+        <text transform="translate(416.68046 465.8359) rotate(60)" fill="#407dd6">
+          <tspan font-family="Helvetica Neue" font-weight="bold" font-size="30" fill="#407dd6" x="7283063e-19" y="29" xml:space="preserve">V</tspan>
+        </text>
+      </g>
+      <g id="Graphic_3" filter="url(#Shadow)">
+        <circle cx="172.52344" cy="335.70703" r="63.250101067295" fill="white"/>
+        <circle cx="172.52344" cy="335.70703" r="63.250101067295" stroke="#3b7cd0" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+        <text transform="translate(121.92344 315.70703)" fill="#407dd6">
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="18.118998" y="16" xml:space="preserve">DELIVER </tspan>
+          <tspan font-family="Marker Felt" font-weight="bold" font-size="18" fill="#407dd6" x="8.659998" y="36" xml:space="preserve">your Value</tspan>
+        </text>
+      </g>
+      <g id="Graphic_2">
+        <text transform="translate(206.77294 421.5835) rotate(155)" fill="#407dd6">
+          <tspan font-family="Helvetica Neue" font-weight="bold" font-size="30" fill="#407dd6" x="7283063e-19" y="29" xml:space="preserve">V</tspan>
+        </text>
+      </g>
+      <g id="Graphic_11">
+        <text transform="translate(268.2572 302.92384)" fill="black">
+          <tspan font-family="Helvetica Neue" font-weight="bold" font-size="24" fill="black" x="18.65825" y="29" xml:space="preserve">Design</tspan>
+          <tspan font-family="Helvetica Neue" font-weight="bold" font-size="30" fill="black" y="29" xml:space="preserve">4</tspan>
+          <tspan font-family="Helvetica Neue" font-weight="bold" font-size="24" fill="black" y="29" xml:space="preserve"> </tspan>
+          <tspan font-family="Helvetica Neue" font-weight="bold" font-size="24" fill="black" x="1.6782506" y="59.87021" xml:space="preserve">Framework</tspan>
+        </text>
+      </g>
+      <g id="Graphic_12">
+        <text transform="translate(467.41406 188.773)" fill="#003776">
+          <tspan font-family="Helvetica Neue" font-style="italic" font-weight="bold" font-size="12" fill="#003776" x="2.3300005" y="12" xml:space="preserve">Are we doing the </tspan>
+          <tspan font-family="Helvetica Neue" font-style="italic" font-weight="bold" font-size="12" fill="#003776" x="14.45" y="27.348083" xml:space="preserve">right things?</tspan>
+        </text>
+      </g>
+      <g id="Graphic_13">
+        <text transform="translate(463.73306 440.45703)" fill="#003776">
+          <tspan font-family="Helvetica Neue" font-style="italic" font-weight="bold" font-size="12" fill="#003776" x="17.009" y="12" xml:space="preserve">Are we doing </tspan>
+          <tspan font-family="Helvetica Neue" font-style="italic" font-weight="bold" font-size="12" fill="#003776" x="10.577" y="27.348083" xml:space="preserve">things the right </tspan>
+          <tspan font-family="Helvetica Neue" font-style="italic" font-weight="bold" font-size="12" fill="#003776" x="39.677" y="42.696167" xml:space="preserve">way?</tspan>
+        </text>
+      </g>
+      <g id="Graphic_14">
+        <text transform="translate(103.53348 448.13107)" fill="#003776">
+          <tspan font-family="Helvetica Neue" font-style="italic" font-weight="bold" font-size="12" fill="#003776" x="12.683" y="12" xml:space="preserve">Are we getting </tspan>
+          <tspan font-family="Helvetica Neue" font-style="italic" font-weight="bold" font-size="12" fill="#003776" x="4.127" y="27.348083" xml:space="preserve">things done well?</tspan>
+        </text>
+      </g>
+      <g id="Graphic_15">
+        <text transform="translate(103.53348 188.773)" fill="#003776">
+          <tspan font-family="Helvetica Neue" font-style="italic" font-weight="bold" font-size="12" fill="#003776" x="6.449" y="12" xml:space="preserve">Are we providing </tspan>
+          <tspan font-family="Helvetica Neue" font-style="italic" font-weight="bold" font-size="12" fill="#003776" x="35.903" y="27.348083" xml:space="preserve">value?</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>
