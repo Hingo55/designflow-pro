@@ -67,9 +67,6 @@ module.exports = {
       maxWidth: {
         'design4-container': '80rem', // 1280px per Design4 style guide
       },
-      fontFamily: {
-        'design4': ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -84,10 +81,40 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        "spin-slow": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+        "gradient-shift": {
+          "0%": { "background-position": "0% 50%" },
+          "50%": { "background-position": "100% 50%" },
+          "100%": { "background-position": "0% 50%" }
+        },
+        "border-spin": {
+          "0%": { "transform": "rotate(0deg)" },
+          "100%": { "transform": "rotate(360deg)" }
+        },
+        "pulse-glow": {
+          "0%, 100%": { 
+            "box-shadow": "0 0 5px rgba(239, 127, 36, 0.5), 0 0 10px rgba(95, 39, 98, 0.3), 0 0 15px rgba(229, 200, 35, 0.2)" 
+          },
+          "50%": { 
+            "box-shadow": "0 0 10px rgba(239, 127, 36, 0.8), 0 0 20px rgba(95, 39, 98, 0.6), 0 0 30px rgba(229, 200, 35, 0.4)" 
+          }
+        },
+        "border-chase": {
+          "0%": { "background-position": "400% 50%" },
+          "100%": { "background-position": "0% 50%" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "spin-slow": "spin-slow 3s linear infinite",
+        "gradient-shift": "gradient-shift 3s ease-in-out infinite",
+        "border-spin": "border-spin 3s linear infinite",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "border-chase": "border-chase 16s linear infinite",
       },
     },
   },

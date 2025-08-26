@@ -6,38 +6,39 @@ import { X } from 'lucide-react'
 interface PersonaSelectorProps {
   isOpen: boolean
   onClose: () => void
+  onPersonaSelect: (personaId: string) => void
 }
 
-export default function PersonaSelector({ isOpen, onClose }: PersonaSelectorProps) {
+export default function PersonaSelector({ isOpen, onClose, onPersonaSelect }: PersonaSelectorProps) {
   const personas = [
     {
-      id: 'designer',
-      title: 'Designer',
-      description: 'Visual thinker',
-      emoji: '🎨'
+      id: 'founder-innovator',
+      title: 'Founder / Innovator',
+      description: 'Scale without losing focus',
+      emoji: '💡'
     },
     {
-      id: 'developer',
-      title: 'Developer',
-      description: 'Code craftsperson',
-      emoji: '💻'
+      id: 'transformation-leader',
+      title: 'Transformation Leader',
+      description: 'xxx',
+      emoji: '🔄'
     },
     {
-      id: 'pm-stakeholder',
-      title: 'PM/Stakeholder',
-      description: 'Strategic leader',
-      emoji: '📊'
+      id: 'consultant-architect',
+      title: 'Consultant / Business Architect',
+      description: 'xxx',
+      emoji: '🏗️'
     },
     {
-      id: 'marketer',
-      title: 'Marketer',
-      description: 'Growth focused',
-      emoji: '📈'
+      id: 'project-operations',
+      title: 'Project / Operations',
+      description: 'xxx',
+      emoji: '⚙️'
     },
     {
       id: 'other',
       title: 'Other',
-      description: 'Curious explorer',
+      description: 'xxx',
       emoji: '🤔'
     }
   ]
@@ -45,47 +46,46 @@ export default function PersonaSelector({ isOpen, onClose }: PersonaSelectorProp
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
+    <div className="fixed inset-0 bg-design4-ink/60 flex items-center justify-center z-50 p-4">
+      <div className="bg-design4-bg rounded-2xl p-8 max-w-5xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl border border-design4-neutral-100">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 text-design4-neutral-400 hover:text-design4-ink transition-colors"
+          className="absolute top-6 right-6 text-design4-neutral-500 hover:text-design4-ink transition-colors"
         >
           <X className="w-6 h-6" />
         </button>
 
         {/* Header */}
-        <div className="text-center mb-8">
-          <p className="text-design4-neutral-500 text-lg mb-4">
+        <div className="text-center mb-10">
+          <p className="text-design4-neutral-500 text-lg mb-6">
             Tell us a little about yourself so we can create a better experience for you.
           </p>
-          <h2 className="text-2xl lg:text-3xl font-bold text-design4-ink">
+          <h2 className="text-3xl lg:text-4xl font-bold text-design4-ink">
             What is your current professional role?
           </h2>
         </div>
 
         {/* Persona cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           {personas.map((persona) => (
             <button
               key={persona.id}
-              className="flex flex-col items-center p-6 bg-design4-bg border border-design4-neutral-200 rounded-xl hover:border-design4-primary hover:shadow-md transition-all duration-200 text-center"
+              className="flex flex-col items-center p-6 bg-white border-2 border-design4-neutral-100 rounded-2xl hover:border-design4-primary hover:shadow-lg hover:transform hover:-translate-y-1 transition-all duration-200 text-center group"
               onClick={() => {
-                // TODO: Handle persona selection
-                console.log('Selected persona:', persona.id)
+                onPersonaSelect(persona.id)
                 onClose()
               }}
             >
-              {/* Avatar placeholder with emoji */}
-              <div className="w-16 h-16 bg-design4-neutral-100 rounded-full flex items-center justify-center mb-4 text-2xl">
+              {/* Avatar with emoji */}
+              <div className="w-20 h-20 bg-design4-neutral-100 rounded-full flex items-center justify-center mb-4 text-3xl group-hover:bg-design4-primary/10 transition-colors">
                 {persona.emoji}
               </div>
               
-              <h3 className="font-semibold text-design4-ink mb-1">
+              <h3 className="font-bold text-design4-ink mb-2 text-lg leading-tight">
                 {persona.title}
               </h3>
-              <p className="text-sm text-design4-neutral-500">
+              <p className="text-design4-neutral-500 font-medium">
                 {persona.description}
               </p>
             </button>
@@ -93,7 +93,7 @@ export default function PersonaSelector({ isOpen, onClose }: PersonaSelectorProp
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8 text-sm text-design4-neutral-400">
+        <div className="text-center text-design4-neutral-500 font-medium">
           Your selection helps us personalize your Design4 Framework experience
         </div>
       </div>

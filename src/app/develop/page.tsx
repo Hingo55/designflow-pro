@@ -5,7 +5,7 @@ export default function DevelopPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-design4-green font-design4">
+      <main className="min-h-screen bg-design4-green">
       {/* Hero Section */}
       <section className="bg-design4-green">
         <div className="mx-auto max-w-design4-container px-6 py-24">

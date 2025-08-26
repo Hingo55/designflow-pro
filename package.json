@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.19",
+    "@next/font": "^14.2.15",
     "@supabase/supabase-js": "^2.56.0",
     "@types/node": "^20",
     "@types/react": "^18",

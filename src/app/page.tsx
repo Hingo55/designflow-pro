@@ -4,23 +4,58 @@ import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import PersonaSelector from '@/components/PersonaSelector'
 import { useState } from 'react'
+import { Compass } from 'lucide-react'
 
 export default function Home() {
   const [isPersonaSelectorOpen, setIsPersonaSelectorOpen] = useState(false)
+  const [selectedPersona, setSelectedPersona] = useState<string | null>(null)
+
+  const getHeroText = () => {
+    if (selectedPersona === 'founder-innovator') {
+      return "Most startups lose their way as they scale—vision gets diluted, strategy gets scattered, and systems break under growth pressure. The Design4 Framework helps you build a business that scales without losing what made you successful in the first place."
+    }
+    return "Most businesses struggle to stay aligned as they grow and change. The Design4 Framework keeps your outcomes, strategy, capabilities, and operations working together—no matter what comes next."
+  }
+
+  const getButtonConfig = () => {
+    if (selectedPersona === 'founder-innovator') {
+      return {
+        text: "Scale without losing focus",
+        href: "/founder"
+      }
+    }
+    return {
+      text: "Get the Framework",
+      href: "/resources"
+    }
+  }
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-design4-bg font-design4">
+      <main className="min-h-screen bg-design4-bg">
       {/* Persona Selector Trigger - Top Banner */}
       <section className="bg-design4-bg border-b border-design4-neutral-100">
         <div className="mx-auto max-w-design4-container px-6 py-4">
           <div className="text-center">
-            <button
-              onClick={() => setIsPersonaSelectorOpen(true)}
-              className="inline-block bg-design4-gold text-design4-ink px-6 py-2 rounded-lg font-medium text-sm hover:bg-design4-gold/90 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-design4-primary focus:ring-offset-2"
-            >
-              Discover what you can do with the Design4 Framework to accelerate your thinking
-            </button>
+            <div className="relative inline-block p-1 rounded-xl overflow-hidden animate-border-chase" style={{
+              background: `linear-gradient(90deg, 
+                transparent 0%, 
+                transparent 20%, 
+                #5F2762 25%, 
+                #E5C823 30%, 
+                #5F2762 35%, 
+                transparent 40%, 
+                transparent 100%)`,
+              backgroundSize: '400% 100%'
+            }}>
+              <button
+                onClick={() => setIsPersonaSelectorOpen(true)}
+                className="relative inline-flex items-center gap-2 bg-design4-gold text-design4-ink px-6 py-2 rounded-lg font-medium text-sm hover:bg-design4-gold/90 hover:scale-105 transition-all duration-200 focus:outline-none"
+              >
+                <Compass className="w-4 h-4" />
+                Discover how to use the Design4 Framework to accelerate your business success
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -28,30 +63,21 @@ export default function Home() {
       {/* Hero Section */}
       <section className="bg-design4-bg">
         <div className="mx-auto max-w-design4-container px-6 py-24">
-          <div className="grid lg:grid-cols-2 gap-1 items-center">
-            {/* Design4 Grid Graphic */}
-            <div className="flex justify-center lg:justify-start order-2 lg:order-1">
-              <img 
-                src="/design4grid.svg" 
-                alt="Design4 Framework Grid - Discover, Define, Develop, Deliver" 
-                className="w-full max-w-xs lg:max-w-sm h-auto"
-              />
-            </div>
-
+          <div className="flex flex-col lg:flex-row items-center gap-8 max-w-6xl mx-auto">
             {/* Content */}
-            <div className="text-center lg:text-left order-1 lg:order-2">
+            <div className="flex-1 text-center lg:text-left order-2 lg:order-1">
               <h1 className="text-5xl lg:text-6xl font-bold text-design4-ink leading-tight mb-6">
                 Design business that works. And keeps working.
               </h1>
               <p className="text-lg lg:text-xl text-design4-neutral-500 mb-8">
-                Most businesses struggle to stay aligned as they grow and change. The Design4 Framework keeps your outcomes, strategy, capabilities, and operations working together—no matter what comes next.
+                {getHeroText()}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link 
-                  href="/resources" 
+                  href={getButtonConfig().href}
                   className="inline-block bg-design4-primary text-white px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2"
                 >
-                  Get the Framework
+                  {getButtonConfig().text}
                 </Link>
                 <Link 
                   href="/ai-prompt" 
@@ -60,6 +86,15 @@ export default function Home() {
                   Explore the Library →
                 </Link>
               </div>
+            </div>
+
+            {/* Design4 Gears Graphic */}
+            <div className="flex-shrink-0 order-1 lg:order-2">
+              <img 
+                src="/design4gears.png" 
+                alt="Design4 Framework Gears - Discover, Define, Develop, Deliver" 
+                className="w-80 h-auto"
+              />
             </div>
           </div>
         </div>
@@ -302,6 +337,7 @@ export default function Home() {
       <PersonaSelector 
         isOpen={isPersonaSelectorOpen}
         onClose={() => setIsPersonaSelectorOpen(false)}
+        onPersonaSelect={setSelectedPersona}
       />
     </>
   )

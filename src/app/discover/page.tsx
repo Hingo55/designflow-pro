@@ -5,7 +5,7 @@ export default function DiscoverPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-design4-gold font-design4">
+      <main className="min-h-screen bg-design4-gold">
       {/* Hero Section */}
       <section className="bg-design4-gold">
         <div className="mx-auto max-w-design4-container px-6 py-24">

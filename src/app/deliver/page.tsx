@@ -5,7 +5,7 @@ export default function DeliverPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-design4-orange font-design4">
+      <main className="min-h-screen bg-design4-orange">
       {/* Hero Section */}
       <section className="bg-design4-orange">
         <div className="mx-auto max-w-design4-container px-6 py-24">

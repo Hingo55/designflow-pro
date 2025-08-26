@@ -5,7 +5,7 @@ export default function DefinePage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-design4-plum font-design4">
+      <main className="min-h-screen bg-design4-plum">
       {/* Hero Section */}
       <section className="bg-design4-plum">
         <div className="mx-auto max-w-design4-container px-6 py-24">
