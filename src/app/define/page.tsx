@@ -14,10 +14,10 @@ export default function DefinePage() {
               Define Phase
             </div>
             <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-              Define Your Strategy
+              Strategy is choice. Choose where you'll win.
             </h1>
             <p className="text-lg lg:text-xl text-white/80 max-w-3xl mx-auto mb-8">
-              Are we doing the right things? Build strategic clarity by defining direction, priorities, and systematic approaches that connect purpose to action.
+              Most organizations try to be everything to everyone. Real strategy means deciding where to play, how to win, and what you won't do—then aligning your capabilities to deliver on those choices.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 

@@ -14,10 +14,10 @@ export default function DiscoverPage() {
               Discover Phase
             </div>
             <h1 className="text-5xl lg:text-6xl font-bold text-design4-ink leading-tight mb-6">
-              Discover Your Purpose
+              When purpose leads, performance follows.
             </h1>
             <p className="text-lg lg:text-xl text-design4-ink/80 max-w-3xl mx-auto mb-8">
-              Are we getting the benefits? Start your Design4 journey by discovering what drives your organization and measuring the outcomes that matter most.
+              Great leaders know their WHY. But the best leaders build organizations where everyone knows it too—and acts on it every single day.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 

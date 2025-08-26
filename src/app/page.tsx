@@ -41,10 +41,10 @@ export default function Home() {
             {/* Content */}
             <div className="text-center lg:text-left order-1 lg:order-2">
               <h1 className="text-5xl lg:text-6xl font-bold text-design4-ink leading-tight mb-6">
-                Design faster. Deliver better.
+                Design business that works. And keeps working.
               </h1>
               <p className="text-lg lg:text-xl text-design4-neutral-500 mb-8">
-                Make change deliberate with the Design4 framework—tools, workshops, and advisors that turn strategy into momentum.
+                Most businesses struggle to stay aligned as they grow and change. The Design4 Framework keeps your outcomes, strategy, capabilities, and operations working together—no matter what comes next.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link 

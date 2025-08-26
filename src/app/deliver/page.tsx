@@ -14,10 +14,10 @@ export default function DeliverPage() {
               Deliver Phase
             </div>
             <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-              Deliver Real Value
+              Plans are only good intentions unless they become work.
             </h1>
             <p className="text-lg lg:text-xl text-white/90 max-w-3xl mx-auto mb-8">
-              Are we getting them done well? Execute with excellence and deliver measurable value by aligning daily operations with strategic intent through continuous improvement.
+              The best strategies mean nothing without disciplined execution. Effective delivery means clear objectives, focused effort, continuous measurement, and the courage to abandon what doesn't work—so you can concentrate resources on what does.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 

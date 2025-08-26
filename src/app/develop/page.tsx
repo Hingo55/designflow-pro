@@ -14,10 +14,10 @@ export default function DevelopPage() {
               Develop Phase
             </div>
             <h1 className="text-5xl lg:text-6xl font-bold text-design4-ink leading-tight mb-6">
-              Develop Your Capabilities
+              Connect the dots between strategy and execution.
             </h1>
             <p className="text-lg lg:text-xl text-design4-ink/80 max-w-3xl mx-auto mb-8">
-              Are we doing things the right way? Build systematic approaches and develop core capabilities that enable consistent, effective execution of your strategy.
+              Strategic choices mean nothing if your capabilities, processes, and systems don't align. Smart development means designing how your people, technology, and workflows work together—so strategy becomes reality.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link 
