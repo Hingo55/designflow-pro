@@ -11,22 +11,47 @@ export default function Home() {
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null)
 
   const getHeroText = () => {
-    if (selectedPersona === 'founder-innovator') {
-      return "Most startups lose their way as they scale—vision gets diluted, strategy gets scattered, and systems break under growth pressure. The Design4 Framework helps you build a business that scales without losing what made you successful in the first place."
+    switch (selectedPersona) {
+      case 'founder-innovator':
+        return "Most startups lose their way as they scale—vision gets diluted, strategy gets scattered, and systems break under growth pressure. The Design4 Framework helps you build a business that scales without losing what made you successful in the first place."
+      case 'transformation-leader':
+        return "Most organizations struggle to execute strategy effectively—purpose gets lost in quarterly pressures, priorities multiply without focus, and departments work in silos. The Design4 Framework aligns your leadership team around what matters most, creating sustainable performance at every level."
+      case 'consultant-architect':
+        return "Most organizations know they need to change but struggle with where to start and how to sustain progress. The Design4 Framework gives you a proven methodology to guide clients from purpose to performance—creating lasting transformation they'll credit you for."
+      case 'project-operations':
+        return "Most organizations have great strategies that fail in execution—processes don't connect, capabilities aren't aligned, and performance metrics miss the mark. The Design4 Framework bridges strategy and operations, ensuring what gets planned actually gets done."
+      default:
+        return "Most businesses struggle to stay aligned as they grow and change. The Design4 Framework keeps your outcomes, strategy, capabilities, and operations working together—no matter what comes next."
     }
-    return "Most businesses struggle to stay aligned as they grow and change. The Design4 Framework keeps your outcomes, strategy, capabilities, and operations working together—no matter what comes next."
   }
 
   const getButtonConfig = () => {
-    if (selectedPersona === 'founder-innovator') {
-      return {
-        text: "Scale without losing focus",
-        href: "/founder"
-      }
-    }
-    return {
-      text: "Get the Framework",
-      href: "/resources"
+    switch (selectedPersona) {
+      case 'founder-innovator':
+        return {
+          text: "Scale without losing focus",
+          href: "/founder"
+        }
+      case 'transformation-leader':
+        return {
+          text: "Align your leadership team",
+          href: "/transformation-leader"
+        }
+      case 'consultant-architect':
+        return {
+          text: "Master the methodology",
+          href: "/consultant"
+        }
+      case 'project-operations':
+        return {
+          text: "Bridge strategy and execution",
+          href: "/project-operations"
+        }
+      default:
+        return {
+          text: "Get the Framework",
+          href: "/resources"
+        }
     }
   }
   return (
@@ -37,7 +62,7 @@ export default function Home() {
       <section className="bg-design4-bg border-b border-design4-neutral-100">
         <div className="mx-auto max-w-design4-container px-6 py-4">
           <div className="text-center">
-            <div className="relative inline-block p-1 rounded-xl overflow-hidden animate-border-chase" style={{
+            <div className={`relative inline-block ${selectedPersona ? 'p-0.5' : 'p-1 overflow-hidden animate-border-chase'} rounded-xl`} style={selectedPersona ? {} : {
               background: `linear-gradient(90deg, 
                 transparent 0%, 
                 transparent 20%, 
@@ -50,7 +75,7 @@ export default function Home() {
             }}>
               <button
                 onClick={() => setIsPersonaSelectorOpen(true)}
-                className="relative inline-flex items-center gap-2 bg-design4-gold text-design4-ink px-6 py-2 rounded-lg font-medium text-sm hover:bg-design4-gold/90 hover:scale-105 transition-all duration-200 focus:outline-none"
+                className={`relative inline-flex items-center gap-2 bg-design4-gold text-design4-ink px-6 py-2 rounded-lg font-medium text-sm hover:bg-design4-gold/90 hover:scale-105 transition-all duration-200 focus:outline-none ${selectedPersona ? 'border-2 border-design4-primary/30' : ''}`}
               >
                 <Compass className="w-4 h-4" />
                 Discover how to use the Design4 Framework to accelerate your business success
@@ -73,12 +98,24 @@ export default function Home() {
                 {getHeroText()}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link 
-                  href={getButtonConfig().href}
-                  className="inline-block bg-design4-primary text-white px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2"
-                >
-                  {getButtonConfig().text}
-                </Link>
+                <div className={`${selectedPersona ? 'relative inline-block p-1 rounded-xl overflow-hidden animate-border-chase' : 'inline-block'}`} style={selectedPersona ? {
+                  background: `linear-gradient(90deg, 
+                    transparent 0%, 
+                    transparent 20%, 
+                    #5F2762 25%, 
+                    #E5C823 30%, 
+                    #5F2762 35%, 
+                    transparent 40%, 
+                    transparent 100%)`,
+                  backgroundSize: '400% 100%'
+                } : {}}>
+                  <Link 
+                    href={getButtonConfig().href}
+                    className="inline-block bg-design4-primary text-white px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2"
+                  >
+                    {getButtonConfig().text}
+                  </Link>
+                </div>
                 <Link 
                   href="/ai-prompt" 
                   className="inline-flex items-center text-design4-primary font-medium text-lg hover:text-design4-plum transition-colors"

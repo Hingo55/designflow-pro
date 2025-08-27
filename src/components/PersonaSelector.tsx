@@ -20,19 +20,19 @@ export default function PersonaSelector({ isOpen, onClose, onPersonaSelect }: Pe
     {
       id: 'transformation-leader',
       title: 'Transformation Leader',
-      description: 'xxx',
+      description: 'Align your leadership team',
       emoji: '🔄'
     },
     {
       id: 'consultant-architect',
       title: 'Consultant / Business Architect',
-      description: 'xxx',
+      description: 'Master the methodology',
       emoji: '🏗️'
     },
     {
       id: 'project-operations',
       title: 'Project / Operations',
-      description: 'xxx',
+      description: 'Bridge strategy and execution',
       emoji: '⚙️'
     },
     {
