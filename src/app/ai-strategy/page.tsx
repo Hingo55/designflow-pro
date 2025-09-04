@@ -1,8 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { usePersona } from '@/hooks/usePersona'
 
-export default function AIStrategy() {
+function AIStrategyContent() {
+  const searchParams = useSearchParams()
+  const { selectedPersona, getPersonaName } = usePersona()
   const [formData, setFormData] = useState({
     businessContext: '',
     currentChallenges: '',
@@ -10,6 +14,126 @@ export default function AIStrategy() {
   })
   const [analysis, setAnalysis] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  // Use localStorage persona first, URL parameter as fallback
+  const currentPersona = selectedPersona || searchParams.get('persona')
+  const personaName = getPersonaName(currentPersona)
+
+  // Get persona-specific prompts
+  const getPersonaPrompts = (personaId: string | null) => {
+    switch (personaId) {
+      case 'founder-innovator':
+        return {
+          context: {
+            label: 'Your Context',
+            placeholder: 'Briefly describe your venture: industry, size, and the product/service you\'re building.'
+          },
+          challenges: {
+            label: 'Your Challenges', 
+            placeholder: 'What\'s your biggest barrier to scaling (customers, funding, product fit, focus)?'
+          },
+          goals: {
+            label: 'Your Goals',
+            placeholder: 'What outcomes or milestones do you want to reach in the next 12–24 months?'
+          }
+        }
+      case 'transformation-leader':
+        return {
+          context: {
+            label: 'Your Context',
+            placeholder: 'Tell us about your organization: industry, size, and where transformation is most needed.'
+          },
+          challenges: {
+            label: 'Your Challenges',
+            placeholder: 'What leadership, cultural, or alignment challenges are slowing progress?'
+          },
+          goals: {
+            label: 'Your Goals', 
+            placeholder: 'What impact do you want to achieve with transformation in the next 1–2 years?'
+          }
+        }
+      case 'consultant-architect':
+        return {
+          context: {
+            label: 'Your Context',
+            placeholder: 'Describe your client or organization: sector, key services, and design challenges.'
+          },
+          challenges: {
+            label: 'Your Challenges',
+            placeholder: 'What\'s the toughest gap you see between strategy, capabilities, and execution?'
+          },
+          goals: {
+            label: 'Your Goals',
+            placeholder: 'What results do you want to deliver (e.g., roadmap, capability maturity, client adoption)?'
+          }
+        }
+      case 'project-operations':
+        return {
+          context: {
+            label: 'Your Context',
+            placeholder: 'Briefly describe your role and team: size, scope, and focus of operations.'
+          },
+          challenges: {
+            label: 'Your Challenges',
+            placeholder: 'What are the main blockers to executing strategy effectively?'
+          },
+          goals: {
+            label: 'Your Goals',
+            placeholder: 'What performance or delivery outcomes are you aiming for this year?'
+          }
+        }
+      case 'other':
+        return {
+          context: {
+            label: 'Your Context',
+            placeholder: 'Describe your role and organization in your own words.'
+          },
+          challenges: {
+            label: 'Your Challenges',
+            placeholder: 'What\'s your biggest professional or organizational challenge right now?'
+          },
+          goals: {
+            label: 'Your Goals',
+            placeholder: 'What results would make the biggest difference for you in the next 12–24 months?'
+          }
+        }
+      default:
+        return {
+          context: {
+            label: 'Your Context',
+            placeholder: 'Describe your industry, company size, market position, and key business model...'
+          },
+          challenges: {
+            label: 'Your Challenges',
+            placeholder: 'What strategic challenges are you facing? What gaps exist between your strategy and execution?'
+          },
+          goals: {
+            label: 'Your Goals',
+            placeholder: 'What are your key strategic objectives? What outcomes do you want to achieve?'
+          }
+        }
+    }
+  }
+
+  const prompts = getPersonaPrompts(currentPersona)
+
+  // Get persona-specific section title
+  const getSectionTitle = (personaId: string | null) => {
+    switch (personaId) {
+      case 'founder-innovator':
+        return 'Tell us about your venture'
+      case 'transformation-leader':
+        return 'Tell us about your organization'
+      case 'consultant-architect':
+        return 'Tell us about your client/project'
+      case 'project-operations':
+        return 'Tell us about your role and team'
+      case 'other':
+        return 'Tell us about your situation'
+      default:
+        return 'Tell us about your business'
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,24 +167,26 @@ export default function AIStrategy() {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">AI Strategy Advisor</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {personaName ? `Design4 Assistant for ${personaName}` : 'Design4 Assistant'}
+          </h1>
           <p className="text-gray-600 mt-2">Get AI-powered strategic recommendations aligned with the Design4 framework</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Form */}
           <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Tell us about your business</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{getSectionTitle(currentPersona)}</h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Business Context
+                  {prompts.context.label}
                 </label>
                 <textarea
                   value={formData.businessContext}
                   onChange={(e) => handleInputChange('businessContext', e.target.value)}
-                  placeholder="Describe your industry, company size, market position, and key business model..."
+                  placeholder={prompts.context.placeholder}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={4}
                   required
@@ -69,12 +195,12 @@ export default function AIStrategy() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Current Challenges
+                  {prompts.challenges.label}
                 </label>
                 <textarea
                   value={formData.currentChallenges}
                   onChange={(e) => handleInputChange('currentChallenges', e.target.value)}
-                  placeholder="What strategic challenges are you facing? What gaps exist between your strategy and execution?"
+                  placeholder={prompts.challenges.placeholder}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={4}
                   required
@@ -83,12 +209,12 @@ export default function AIStrategy() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Strategic Goals
+                  {prompts.goals.label}
                 </label>
                 <textarea
                   value={formData.goals}
                   onChange={(e) => handleInputChange('goals', e.target.value)}
-                  placeholder="What are your key strategic objectives? What outcomes do you want to achieve?"
+                  placeholder={prompts.goals.placeholder}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={4}
                   required
@@ -198,5 +324,17 @@ export default function AIStrategy() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AIStrategy() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    }>
+      <AIStrategyContent />
+    </Suspense>
   )
 }

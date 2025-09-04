@@ -2,9 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { usePersona } from '@/hooks/usePersona'
 
 export default function Navigation() {
   const pathname = usePathname()
+  const { selectedPersona } = usePersona()
 
   const navItems = [
     { href: '/discover', label: 'Discover' },
@@ -36,6 +38,8 @@ export default function Navigation() {
       case '/discover':
         return {
           logo: 'text-design4-ink',
+          logoText: 'text-design4-ink',
+          logoBackground: 'text-design4-gold',
           logoIcon: 'text-design4-gold bg-design4-ink',
           nav: 'text-design4-ink/80',
           navActive: 'text-design4-ink',
@@ -45,6 +49,8 @@ export default function Navigation() {
       case '/develop':
         return {
           logo: 'text-design4-ink',
+          logoText: 'text-design4-ink',
+          logoBackground: 'text-design4-green',
           logoIcon: 'text-design4-green bg-design4-ink',
           nav: 'text-design4-ink/80',
           navActive: 'text-design4-ink',
@@ -52,10 +58,32 @@ export default function Navigation() {
           mobile: 'text-design4-ink'
         }
       case '/define':
+        return {
+          logo: 'text-white',
+          logoText: 'text-white',
+          logoBackground: 'text-design4-plum',
+          logoIcon: 'text-design4-primary bg-white',
+          nav: 'text-white/80',
+          navActive: 'text-white',
+          button: 'bg-white text-design4-primary',
+          mobile: 'text-white'
+        }
       case '/deliver':
+        return {
+          logo: 'text-white',
+          logoText: 'text-white',
+          logoBackground: 'text-design4-orange',
+          logoIcon: 'text-design4-primary bg-white',
+          nav: 'text-white/80',
+          navActive: 'text-white',
+          button: 'bg-white text-design4-primary',
+          mobile: 'text-white'
+        }
       default:
         return {
           logo: 'text-white',
+          logoText: 'text-white',
+          logoBackground: 'text-design4-plum',
           logoIcon: 'text-design4-primary bg-white',
           nav: 'text-white/80',
           navActive: 'text-white',
@@ -76,10 +104,11 @@ export default function Navigation() {
             href="/" 
             className={`flex items-center space-x-2 ${colors.logo} font-bold text-xl hover:opacity-90 transition-opacity`}
           >
-            <div className={`w-8 h-8 ${colors.logoIcon} rounded-lg flex items-center justify-center`}>
-              <span className="font-bold text-sm">D4</span>
-            </div>
-            <span>Design4</span>
+            <img 
+              src={pathname === '/discover' || pathname === '/develop' ? '/design4_logo_black_v2.svg' : '/design4_logo_white_v2.svg'}
+              alt="Design4 Logo" 
+              className="h-36 w-auto"
+            />
           </Link>
 
           {/* Navigation Links */}
@@ -101,10 +130,10 @@ export default function Navigation() {
 
           {/* CTA Button */}
           <Link
-            href="/ai-strategy"
+            href={`/ai-strategy${selectedPersona ? `?persona=${selectedPersona}` : ''}`}
             className={`${colors.button} px-6 py-2 rounded-full font-medium text-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2`}
           >
-            AI Assistant
+            Design4 Assistant
           </Link>
 
           {/* Mobile Menu Button */}

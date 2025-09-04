@@ -66,8 +66,8 @@ export default function FounderPage() {
             <div className="max-w-5xl mx-auto mb-12">
               <div className="relative">
                 <img 
-                  src="/design4gears.png" 
-                  alt="Design4 Framework Gears - Growth Stage Annotations" 
+                  src="/design4_logo_color.svg" 
+                  alt="Design4 Framework Logo - Growth Stage Annotations" 
                   className="w-full h-auto"
                 />
                 {/* Growth stage annotations */}

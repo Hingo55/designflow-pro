@@ -92,7 +92,7 @@ export default function TransformationLeaderPage() {
             <div className="max-w-5xl mx-auto mb-12">
               <div className="relative">
                 <img 
-                  src="/design4gears.png" 
+                  src="/design4_logo_color.svg" 
                   alt="Design4 Framework for Leadership Teams" 
                   className="w-full h-auto"
                 />

@@ -5,10 +5,11 @@ import Navigation from '@/components/Navigation'
 import PersonaSelector from '@/components/PersonaSelector'
 import { useState } from 'react'
 import { Compass } from 'lucide-react'
+import { usePersona } from '@/hooks/usePersona'
 
 export default function Home() {
   const [isPersonaSelectorOpen, setIsPersonaSelectorOpen] = useState(false)
-  const [selectedPersona, setSelectedPersona] = useState<string | null>(null)
+  const { selectedPersona, handlePersonaSelect } = usePersona()
 
   const getHeroText = () => {
     switch (selectedPersona) {
@@ -117,18 +118,18 @@ export default function Home() {
                   </Link>
                 </div>
                 <Link 
-                  href="/ai-prompt" 
+                  href={`/ai-strategy${selectedPersona ? `?persona=${selectedPersona}` : ''}`} 
                   className="inline-flex items-center text-design4-primary font-medium text-lg hover:text-design4-plum transition-colors"
                 >
-                  Explore the Library →
+                  Try the AI Assistant →
                 </Link>
               </div>
             </div>
 
-            {/* Design4 Gears Graphic */}
+            {/* Design4 Logo Graphic */}
             <div className="flex-shrink-0 order-1 lg:order-2">
               <img 
-                src="/design4gears.png" 
+                src="/design4gears.svg" 
                 alt="Design4 Framework Gears - Discover, Define, Develop, Deliver" 
                 className="w-80 h-auto"
               />
@@ -250,7 +251,7 @@ export default function Home() {
                 Get personalized guidance on implementing Design4 principles in your organization.
               </p>
               <Link 
-                href="/ai-strategy" 
+                href={`/ai-strategy${selectedPersona ? `?persona=${selectedPersona}` : ''}`}
                 className="inline-flex items-center font-medium text-design4-primary hover:text-design4-plum transition-colors"
               >
                 Try the AI Advisor →
@@ -360,7 +361,7 @@ export default function Home() {
         <div className="mx-auto max-w-design4-container px-6 py-12">
           <div className="text-center">
             <p className="text-design4-neutral-500">
-              Built with the 5 Day Sprint Framework by Omar Choudhry
+              Design.biz
             </p>
             <p className="text-sm text-design4-neutral-500 mt-2">
               Empowering business leaders to design for sustainable growth
@@ -374,7 +375,7 @@ export default function Home() {
       <PersonaSelector 
         isOpen={isPersonaSelectorOpen}
         onClose={() => setIsPersonaSelectorOpen(false)}
-        onPersonaSelect={setSelectedPersona}
+        onPersonaSelect={handlePersonaSelect}
       />
     </>
   )
