@@ -216,19 +216,22 @@ export default function Home() {
                     {getPersonaGraphic().isLottie ? (
                       <div className="w-12 h-12 flex items-center justify-center">
                         <LottieGraphic
-                          src={getPersonaGraphic().src}
-                          alt={getPersonaGraphic().alt}
+                          src={getPersonaGraphic().src || ''}
+                          alt={getPersonaGraphic().alt || ''}
                           className="w-12 h-12"
                         />
                       </div>
                     ) : getPersonaGraphic().type === 'inline-svg' ? (
                       <div className="w-12 h-12 flex items-center justify-center">
-                        {React.cloneElement(getPersonaGraphic().svgContent, { className: 'w-12 h-12' })}
+                        {(() => {
+                          const graphic = getPersonaGraphic();
+                          return graphic.svgContent ? React.cloneElement(graphic.svgContent, { className: 'w-12 h-12' }) : null;
+                        })()}
                       </div>
                     ) : (
                       <img 
-                        src={getPersonaGraphic().src}
-                        alt={getPersonaGraphic().alt}
+                        src={getPersonaGraphic().src || ''}
+                        alt={getPersonaGraphic().alt || ''}
                         className="w-12 h-12 object-contain"
                       />
                     )}
@@ -248,16 +251,16 @@ export default function Home() {
             <div className="flex-shrink-0 order-1 lg:order-2">
               {getPersonaGraphic().isLottie ? (
                 <LottieGraphic
-                  src={getPersonaGraphic().src}
-                  alt={getPersonaGraphic().alt}
+                  src={getPersonaGraphic().src || ''}
+                  alt={getPersonaGraphic().alt || ''}
                   className={getPersonaGraphic().className}
                 />
               ) : getPersonaGraphic().type === 'inline-svg' ? (
-                getPersonaGraphic().svgContent
+                getPersonaGraphic().svgContent || null
               ) : (
                 <img 
-                  src={getPersonaGraphic().src}
-                  alt={getPersonaGraphic().alt}
+                  src={getPersonaGraphic().src || ''}
+                  alt={getPersonaGraphic().alt || ''}
                   className={getPersonaGraphic().className}
                 />
               )}

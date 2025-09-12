@@ -5,7 +5,7 @@ import { X } from 'lucide-react'
 import Lottie from 'lottie-react'
 
 function LottieGraphic({ src, alt, className }: { src: string, alt: string, className: string }) {
-  const [animationData, setAnimationData] = useState(null)
+  const [animationData, setAnimationData] = useState<any>(null)
 
   useEffect(() => {
     fetch(src)

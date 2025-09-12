@@ -6,8 +6,14 @@ import Footer from '@/components/Footer'
 import { useState, useEffect } from 'react'
 import Lottie from 'lottie-react'
 
-function LottieGraphic({ src, alt, className }) {
-  const [animationData, setAnimationData] = useState(null)
+interface LottieGraphicProps {
+  src: string
+  alt: string
+  className?: string
+}
+
+function LottieGraphic({ src, alt, className }: LottieGraphicProps) {
+  const [animationData, setAnimationData] = useState<any>(null)
 
   useEffect(() => {
     fetch(src)
