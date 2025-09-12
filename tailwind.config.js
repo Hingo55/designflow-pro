@@ -25,6 +25,8 @@ module.exports = {
         'design4-gold': '#E5C823',     // Gold
         'design4-orange': '#EE7F24',   // Orange
         'design4-plum': '#5F2762',     // Plum (alias)
+        'design4-purple': '#A02B93',   // Purple
+        'design4-teal': '#024661',     // Teal
         'design4-neutral-700': '#334155',
         'design4-neutral-500': '#64748B',
         'design4-neutral-100': '#F1F5F9',
@@ -103,8 +105,8 @@ module.exports = {
           }
         },
         "border-chase": {
-          "0%": { "background-position": "400% 50%" },
-          "100%": { "background-position": "0% 50%" }
+          "0%": { "background-position": "100% 50%" },
+          "100%": { "background-position": "-100% 50%" }
         },
       },
       animation: {
@@ -114,7 +116,7 @@ module.exports = {
         "gradient-shift": "gradient-shift 3s ease-in-out infinite",
         "border-spin": "border-spin 3s linear infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
-        "border-chase": "border-chase 16s linear infinite",
+        "border-chase": "border-chase 4s linear infinite",
       },
     },
   },

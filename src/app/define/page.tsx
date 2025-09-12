@@ -1,37 +1,68 @@
+'use client'
+
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
+import { useState, useEffect } from 'react'
+import Lottie from 'lottie-react'
+
+function LottieGraphic({ src, alt, className }: { src: string, alt: string, className: string }) {
+  const [animationData, setAnimationData] = useState(null)
+
+  useEffect(() => {
+    fetch(src)
+      .then(response => response.json())
+      .then(data => setAnimationData(data))
+      .catch(error => console.error('Error loading Lottie animation:', error))
+  }, [src])
+
+  if (!animationData) {
+    return <div className={className}>Loading...</div>
+  }
+
+  return <Lottie animationData={animationData} className={className} />
+}
 
 export default function DefinePage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-design4-plum">
+      <main className="min-h-screen bg-design4-bg">
       {/* Hero Section */}
-      <section className="bg-design4-plum">
+      <section className="bg-design4-purple">
         <div className="mx-auto max-w-design4-container px-6 py-24">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-block bg-white text-design4-plum rounded-full px-4 py-2 text-sm font-medium mb-6">
-              Define Phase
+          <div className="grid lg:grid-cols-[auto_1fr] gap-2 lg:gap-4 items-center">
+            {/* Strategy Graphic */}
+            <div className="flex justify-center lg:justify-start order-2 lg:order-1">
+              <LottieGraphic
+                src="/strategy.json"
+                alt="Strategy Definition Animation"
+                className="w-80 h-80"
+              />
             </div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-              Strategy is choice. Choose where you'll win.
-            </h1>
-            <p className="text-lg lg:text-xl text-white/80 max-w-3xl mx-auto mb-8">
-              Most organizations try to be everything to everyone. Real strategy means deciding where to play, how to win, and what you won't do—then aligning your capabilities to deliver on those choices.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/resources" 
-                className="inline-block bg-white text-design4-plum px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-plum"
-              >
-                Get Strategy Tools
-              </Link>
-              <Link 
-                href="/discover" 
-                className="inline-flex items-center text-white font-medium text-lg hover:text-white/80 transition-colors"
-              >
-                ← Previous: Discover
-              </Link>
+            
+            {/* Content */}
+            <div className="text-center lg:text-left order-1 lg:order-2 lg:max-w-3xl">
+              <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                Strategy is choice. Choose where you'll win.
+              </h1>
+              <p className="text-lg lg:text-xl text-white/80 mb-8">
+                Most organizations try to be everything to everyone. Real strategy means deciding where to play, how to win, and what you won't do.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link 
+                  href="/resources" 
+                  className="inline-block bg-white text-design4-purple px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-purple"
+                >
+                  Get Strategy Tools
+                </Link>
+                <Link 
+                  href="/discover" 
+                  className="inline-flex items-center text-white font-medium text-lg hover:text-white/80 transition-colors"
+                >
+                  ← Previous: Discover
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -52,7 +83,7 @@ export default function DefinePage() {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Step 1 */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm">
-              <div className="w-12 h-12 bg-design4-plum rounded-xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-design4-purple rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-lg">1</span>
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3 text-center">
@@ -65,7 +96,7 @@ export default function DefinePage() {
 
             {/* Step 2 */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm">
-              <div className="w-12 h-12 bg-design4-plum rounded-xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-design4-purple rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-lg">2</span>
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3 text-center">
@@ -78,7 +109,7 @@ export default function DefinePage() {
 
             {/* Step 3 */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm">
-              <div className="w-12 h-12 bg-design4-plum rounded-xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-design4-purple rounded-xl flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-lg">3</span>
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3 text-center">
@@ -107,7 +138,7 @@ export default function DefinePage() {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Strategy Canvas */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-              <div className="inline-block bg-design4-plum text-white rounded-full px-3 py-1 text-sm font-medium mb-4">
+              <div className="inline-block bg-design4-purple text-white rounded-full px-3 py-1 text-sm font-medium mb-4">
                 Canvas
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3">
@@ -118,7 +149,7 @@ export default function DefinePage() {
               </p>
               <Link 
                 href="/resources" 
-                className="inline-flex items-center font-medium text-design4-primary hover:text-design4-plum transition-colors"
+                className="inline-flex items-center font-medium text-design4-primary hover:text-design4-purple transition-colors"
               >
                 Download Canvas →
               </Link>
@@ -126,7 +157,7 @@ export default function DefinePage() {
 
             {/* Value Proposition Workshop */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-              <div className="inline-block bg-design4-plum text-white rounded-full px-3 py-1 text-sm font-medium mb-4">
+              <div className="inline-block bg-design4-purple text-white rounded-full px-3 py-1 text-sm font-medium mb-4">
                 Workshop
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3">
@@ -137,7 +168,7 @@ export default function DefinePage() {
               </p>
               <Link 
                 href="/resources" 
-                className="inline-flex items-center font-medium text-design4-primary hover:text-design4-plum transition-colors"
+                className="inline-flex items-center font-medium text-design4-primary hover:text-design4-purple transition-colors"
               >
                 Run the Workshop →
               </Link>
@@ -145,7 +176,7 @@ export default function DefinePage() {
 
             {/* Strategic Planning */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-              <div className="inline-block bg-design4-plum text-white rounded-full px-3 py-1 text-sm font-medium mb-4">
+              <div className="inline-block bg-design4-purple text-white rounded-full px-3 py-1 text-sm font-medium mb-4">
                 Framework
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3">
@@ -156,7 +187,7 @@ export default function DefinePage() {
               </p>
               <Link 
                 href="/resources" 
-                className="inline-flex items-center font-medium text-design4-primary hover:text-design4-plum transition-colors"
+                className="inline-flex items-center font-medium text-design4-primary hover:text-design4-purple transition-colors"
               >
                 Build Your Roadmap →
               </Link>
@@ -164,7 +195,7 @@ export default function DefinePage() {
 
             {/* AI Strategy Assistant */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-              <div className="inline-block bg-design4-plum text-white rounded-full px-3 py-1 text-sm font-medium mb-4">
+              <div className="inline-block bg-design4-purple text-white rounded-full px-3 py-1 text-sm font-medium mb-4">
                 AI Assistant
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3">
@@ -175,7 +206,7 @@ export default function DefinePage() {
               </p>
               <Link 
                 href="/ai-strategy" 
-                className="inline-flex items-center font-medium text-design4-primary hover:text-design4-plum transition-colors"
+                className="inline-flex items-center font-medium text-design4-primary hover:text-design4-purple transition-colors"
               >
                 Ask the AI →
               </Link>
@@ -185,7 +216,7 @@ export default function DefinePage() {
       </section>
 
       {/* Key Strategic Questions */}
-      <section className="bg-design4-plum">
+      <section className="bg-design4-purple">
         <div className="mx-auto max-w-design4-container px-6 py-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
@@ -221,7 +252,7 @@ export default function DefinePage() {
           <div className="text-center mt-12">
             <Link 
               href="/develop" 
-              className="inline-block bg-white text-design4-plum px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-plum"
+              className="inline-block bg-white text-design4-purple px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-purple"
             >
               Next: Develop Capabilities →
             </Link>
@@ -229,6 +260,7 @@ export default function DefinePage() {
         </div>
       </section>
       </main>
+      <Footer />
     </>
   )
 }

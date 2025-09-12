@@ -1,5 +1,27 @@
+'use client'
+
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
+import { useState, useEffect } from 'react'
+import Lottie from 'lottie-react'
+
+function LottieGraphic({ src, alt, className }: { src: string, alt: string, className: string }) {
+  const [animationData, setAnimationData] = useState(null)
+
+  useEffect(() => {
+    fetch(src)
+      .then(response => response.json())
+      .then(data => setAnimationData(data))
+      .catch(error => console.error('Error loading Lottie animation:', error))
+  }, [src])
+
+  if (!animationData) {
+    return <div className={className}>Loading...</div>
+  }
+
+  return <Lottie animationData={animationData} className={className} />
+}
 
 export default function DeliverPage() {
   return (
@@ -9,29 +31,38 @@ export default function DeliverPage() {
       {/* Hero Section */}
       <section className="bg-design4-orange">
         <div className="mx-auto max-w-design4-container px-6 py-24">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-block bg-white text-design4-orange rounded-full px-4 py-2 text-sm font-medium mb-6">
-              Deliver Phase
+          <div className="grid lg:grid-cols-[auto_1fr] gap-2 lg:gap-4 items-center">
+            {/* Success Graphic */}
+            <div className="flex justify-center lg:justify-start order-2 lg:order-1">
+              <LottieGraphic
+                src="/success.json"
+                alt="Success Delivery Animation"
+                className="w-80 h-80"
+              />
             </div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-              Plans are only good intentions unless they become work.
-            </h1>
-            <p className="text-lg lg:text-xl text-white/90 max-w-3xl mx-auto mb-8">
-              The best strategies mean nothing without disciplined execution. Effective delivery means clear objectives, focused effort, continuous measurement, and the courage to abandon what doesn't work—so you can concentrate resources on what does.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/resources" 
-                className="inline-block bg-white text-design4-orange px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-orange"
-              >
-                Get Delivery Tools
-              </Link>
-              <Link 
-                href="/develop" 
-                className="inline-flex items-center text-white font-medium text-lg hover:text-white/80 transition-colors"
-              >
-                ← Previous: Develop
-              </Link>
+            
+            {/* Content */}
+            <div className="text-center lg:text-left order-1 lg:order-2 lg:max-w-2xl">
+              <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                Plans are only good intentions unless they become work.
+              </h1>
+              <p className="text-lg lg:text-xl text-white/90 mb-8">
+                The best strategies mean nothing without disciplined execution. Effective delivery means clear objectives, focused effort, and the courage to abandon what doesn't work.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link 
+                  href="/resources" 
+                  className="inline-block bg-white text-design4-orange px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-orange"
+                >
+                  Get Delivery Tools
+                </Link>
+                <Link 
+                  href="/develop" 
+                  className="inline-flex items-center text-white font-medium text-lg hover:text-white/80 transition-colors"
+                >
+                  ← Previous: Develop
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -229,6 +260,7 @@ export default function DeliverPage() {
         </div>
       </section>
       </main>
+      <Footer />
     </>
   )
 }

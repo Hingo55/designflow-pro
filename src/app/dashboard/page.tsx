@@ -1,3 +1,5 @@
+import Footer from '@/components/Footer'
+
 export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
@@ -100,6 +102,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

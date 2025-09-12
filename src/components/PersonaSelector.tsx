@@ -1,7 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
+import Lottie from 'lottie-react'
+
+function LottieGraphic({ src, alt, className }: { src: string, alt: string, className: string }) {
+  const [animationData, setAnimationData] = useState(null)
+
+  useEffect(() => {
+    fetch(src)
+      .then(response => response.json())
+      .then(data => setAnimationData(data))
+      .catch(error => console.error('Error loading Lottie animation:', error))
+  }, [src])
+
+  if (!animationData) {
+    return <div className={className}>Loading...</div>
+  }
+
+  return <Lottie animationData={animationData} className={className} />
+}
 
 interface PersonaSelectorProps {
   isOpen: boolean
@@ -26,7 +44,7 @@ export default function PersonaSelector({ isOpen, onClose, onPersonaSelect }: Pe
     {
       id: 'consultant-architect',
       title: 'Consultant / Business Architect',
-      description: 'Master the methodology',
+      description: 'Master the framework',
       emoji: '🏗️'
     },
     {
@@ -77,9 +95,41 @@ export default function PersonaSelector({ isOpen, onClose, onPersonaSelect }: Pe
                 onClose()
               }}
             >
-              {/* Avatar with emoji */}
-              <div className="w-20 h-20 bg-design4-neutral-100 rounded-full flex items-center justify-center mb-4 text-3xl group-hover:bg-design4-primary/10 transition-colors">
-                {persona.emoji}
+              {/* Avatar with emoji or image */}
+              <div className="w-24 h-24 bg-design4-neutral-100 rounded-full flex items-center justify-center mb-4 text-4xl group-hover:bg-design4-primary/10 transition-colors">
+                {persona.id === 'founder-innovator' ? (
+                  <img 
+                    src="/innovator.svg" 
+                    alt="Founder / Innovator" 
+                    className="w-16 h-16 object-contain"
+                  />
+                ) : persona.id === 'transformation-leader' ? (
+                  <img 
+                    src="/transformation.svg" 
+                    alt="Transformation Leader" 
+                    className="w-16 h-16 object-contain"
+                  />
+                ) : persona.id === 'consultant-architect' ? (
+                  <LottieGraphic
+                    src="/businessman.json"
+                    alt="Consultant / Business Architect"
+                    className="w-16 h-16"
+                  />
+                ) : persona.id === 'project-operations' ? (
+                  <img 
+                    src="/management.svg" 
+                    alt="Project / Operations" 
+                    className="w-16 h-16 object-contain"
+                  />
+                ) : persona.id === 'other' ? (
+                  <img 
+                    src="/design4gears.svg" 
+                    alt="Design4 Framework" 
+                    className="w-16 h-16 object-contain"
+                  />
+                ) : (
+                  persona.emoji
+                )}
               </div>
               
               <h3 className="font-bold text-design4-ink mb-2 text-lg leading-tight">

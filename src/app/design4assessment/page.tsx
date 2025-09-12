@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 
 interface Question {
   id: string
@@ -89,7 +90,7 @@ export default function Design4AssessmentPage() {
   const getPhaseColor = (phase: string) => {
     switch (phase) {
       case 'discover': return 'bg-design4-gold text-design4-ink'
-      case 'define': return 'bg-design4-plum text-white'
+      case 'define': return 'bg-design4-purple text-white'
       case 'develop': return 'bg-design4-green text-design4-ink'
       case 'deliver': return 'bg-design4-orange text-white'
       default: return 'bg-design4-primary text-white'
@@ -219,6 +220,7 @@ export default function Design4AssessmentPage() {
             </div>
           </section>
         </main>
+        <Footer />
       </>
     )
   }
@@ -267,6 +269,7 @@ export default function Design4AssessmentPage() {
             </div>
           </section>
         </main>
+        <Footer />
       </>
     )
   }
@@ -351,6 +354,7 @@ export default function Design4AssessmentPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </>
   )
 }

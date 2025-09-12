@@ -1,24 +1,60 @@
+'use client'
+
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
+import { useState, useEffect } from 'react'
+import Lottie from 'lottie-react'
+
+function LottieGraphic({ src, alt, className }) {
+  const [animationData, setAnimationData] = useState(null)
+
+  useEffect(() => {
+    fetch(src)
+      .then(response => response.json())
+      .then(data => setAnimationData(data))
+      .catch(error => console.error('Error loading Lottie animation:', error))
+  }, [src])
+
+  if (!animationData) {
+    return <div className={className}>Loading...</div>
+  }
+
+  return <Lottie animationData={animationData} className={className} />
+}
 
 export default function ConsultantPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-design4-bg">
+      <main className="min-h-screen bg-design4-teal">
         {/* Hero Section */}
-        <section className="bg-design4-green">
+        <section className="bg-design4-teal">
           <div className="mx-auto max-w-design4-container px-6 py-24">
-            <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-block bg-design4-ink text-design4-green rounded-full px-4 py-2 text-sm font-medium mb-6">
-                For Consultants & Business Architects
+            <div className="flex flex-col lg:flex-row items-center gap-8 max-w-6xl mx-auto">
+              {/* Content */}
+              <div className="flex-1 text-center lg:text-left order-2 lg:order-1">
+                <div className="inline-block bg-white text-design4-teal rounded-full px-4 py-2 text-sm font-medium mb-6">
+                  For Consultants & Business Architects
+                </div>
+                <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                  Master the methodology.
+                </h1>
+                <p className="text-lg lg:text-xl text-white/80 max-w-3xl mx-auto lg:mx-0 mb-8">
+                  Give your clients a proven framework that creates lasting transformation. The Design4 methodology helps you guide organizations from purpose to performance—building the sustainable change they'll credit you for.
+                </p>
               </div>
-              <h1 className="text-5xl lg:text-6xl font-bold text-design4-ink leading-tight mb-6">
-                Master the methodology.
-              </h1>
-              <p className="text-lg lg:text-xl text-design4-ink/80 max-w-3xl mx-auto mb-8">
-                Give your clients a proven framework that creates lasting transformation. The Design4 methodology helps you guide organizations from purpose to performance—building the sustainable change they'll credit you for.
-              </p>
+              
+              {/* Consultant Graphic */}
+              <div className="flex-shrink-0 order-1 lg:order-2">
+                <div className="w-80 h-80 flex items-center justify-center">
+                  <LottieGraphic 
+                    src="/businessman.json" 
+                    alt="Consultant / Business Architect" 
+                    className="w-64 h-64" 
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -170,6 +206,7 @@ export default function ConsultantPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </>
   )
 }

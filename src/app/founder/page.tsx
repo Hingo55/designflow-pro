@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 
 export default function FounderPage() {
   return (
@@ -7,18 +8,38 @@ export default function FounderPage() {
       <Navigation />
       <main className="min-h-screen bg-design4-bg">
         {/* Hero Section */}
-        <section className="bg-design4-primary">
+        <section className="bg-design4-teal">
           <div className="mx-auto max-w-design4-container px-6 py-24">
-            <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-block bg-design4-gold text-design4-ink rounded-full px-4 py-2 text-sm font-medium mb-6">
-                For Founders & Innovators
+            <div className="flex flex-col lg:flex-row items-center gap-8 max-w-6xl mx-auto">
+              {/* Content */}
+              <div className="flex-1 text-center lg:text-left order-2 lg:order-1">
+                <div className="inline-block bg-design4-gold text-design4-ink rounded-full px-4 py-2 text-sm font-medium mb-6">
+                  For Founders & Innovators
+                </div>
+                <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                  Scale without losing focus.
+                </h1>
+                <p className="text-lg lg:text-xl text-white/80 max-w-3xl mx-auto lg:mx-0 mb-8">
+                  Most startups lose their way as they scale. The Design4 Framework helps you build systems that grow with your vision—not against it.
+                </p>
               </div>
-              <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                Scale without losing focus.
-              </h1>
-              <p className="text-lg lg:text-xl text-white/90 max-w-3xl mx-auto mb-8">
-                Most startups lose their way as they scale. The Design4 Framework helps you build systems that grow with your vision—not against it.
-              </p>
+              
+              {/* Founder Graphic */}
+              <div className="flex-shrink-0 order-1 lg:order-2">
+                <div className="w-80 h-80 flex items-center justify-center">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 512 512"
+                    className="w-64 h-64"
+                    aria-label="Founder / Innovator"
+                  >
+                    <path 
+                      fill="#E5C823"
+                      d="M96 176h48c4.42 0 8-3.58 8-8s-3.58-8-8-8h-48c-4.42 0-8 3.58-8 8s3.58 8 8 8ZM360 168c0 4.42 3.58 8 8 8h48c4.42 0 8-3.58 8-8s-3.58-8-8-8h-48c-4.42 0-8 3.58-8 8ZM155.01 217.07l-41.57 24c-3.83 2.21-5.14 7.1-2.93 10.93 1.48 2.57 4.17 4 6.94 4 1.36 0 2.73-.35 3.99-1.07l41.57-24c3.83-2.21 5.14-7.1 2.93-10.93-2.21-3.83-7.1-5.14-10.93-2.93ZM353 120c1.36 0 2.73-.35 3.99-1.07l41.57-24c3.83-2.21 5.14-7.1 2.93-10.93-2.21-3.83-7.1-5.14-10.93-2.93l-41.57 24c-3.83 2.21-5.14 7.1-2.93 10.93 1.48 2.57 4.17 4 6.94 4ZM308 77.93c1.26.73 2.63 1.07 3.99 1.07 2.76 0 5.45-1.44 6.94-4l24-41.57c2.21-3.83.9-8.72-2.93-10.93-3.83-2.21-8.72-.9-10.93 2.93l-24 41.57c-2.21 3.83-.9 8.72 2.93 10.93ZM256 64c4.42 0 8-3.58 8-8V8c0-4.42-3.58-8-8-8s-8 3.58-8 8v48c0 4.42 3.58 8 8 8ZM193.07 75.01c1.48 2.57 4.17 4 6.94 4 1.36 0 2.73-.35 3.99-1.07 3.83-2.21 5.14-7.1 2.93-10.93l-24-41.57c-2.21-3.83-7.1-5.14-10.93-2.93-3.83 2.21-5.14 7.1-2.93 10.93l24 41.57ZM349 230.93l41.57 24c1.26.73 2.63 1.07 3.99 1.07 2.76 0 5.45-1.44 6.94-4 2.21-3.83.9-8.72-2.93-10.93l-41.57-24c-3.83-2.21-8.72-.9-10.93 2.93-2.21 3.83-.9 8.72 2.93 10.93ZM113.44 94.93l41.57 24c1.26.73 2.64 1.07 3.99 1.07 2.76 0 5.45-1.44 6.94-4 2.21-3.83.9-8.72-2.93-10.93l-41.57-24c-3.83-2.21-8.72-.9-10.93 2.93-2.21 3.83-.9 8.72 2.93 10.93ZM388.37 360.35l-90.31-24.08c-3.01-.8-6.21.21-8.21 2.61l-33.85 40.62-33.85-40.62c-2-2.39-5.2-3.41-8.21-2.61l-90.31 24.08c-20.98 5.59-35.63 24.67-35.63 46.38v97.27c0 4.42 3.58 8 8 8h320c4.42 0 8-3.58 8-8v-97.27c0-21.71-14.65-40.78-35.63-46.38ZM298.88 353.05l4.33 1.15-12.35 49.38-22.73-13.64 30.75-36.9ZM243.87 389.95l-22.73 13.64-12.35-49.38 4.33-1.15 30.75 36.9ZM408 496H104v-89.27c0-14.48 9.77-27.19 23.75-30.92l65.58-17.49 14.9 59.62c.61 2.46 2.36 4.48 4.7 5.45 2.34.97 5 .77 7.18-.53l35.88-21.53 35.88 21.53c1.26.76 2.69 1.14 4.12 1.14 1.04 0 2.08-.2 3.06-.61 2.34-.97 4.08-2.99 4.7-5.45l14.9-59.62 65.58 17.49c13.99 3.73 23.75 16.44 23.75 30.92v89.27ZM240 312h32c13.23 0 24-10.77 24-24v-24c0-8.15 7.27-19.59 14.96-31.71 11.74-18.48 25.04-39.42 25.04-64.29 0-44.11-35.89-80-80-80s-80 35.89-80 80c0 24.87 13.3 45.81 25.04 64.29 7.7 12.12 14.96 23.56 14.96 31.71v24c0 13.23 10.77 24 24 24ZM272 296h-32c-4.41 0-8-3.59-8-8v-16h48v16c0 4.41-3.59 8-8 8ZM214.54 223.71c-10.57-16.64-22.54-35.5-22.54-55.71 0-35.29 28.71-64 64-64s64 28.71 64 64c0 20.21-11.98 39.07-22.54 55.71-7.42 11.68-14.02 22.1-16.45 32.29h-17.01v-20.85c5.06-5.72 16-19.84 16-35.15v-24c0-4.42-3.58-8-8-8s-8 3.58-8 8v24c0 6.64-4.08 14.05-8 19.51-3.92-5.47-8-12.88-8-19.51v-24c0-4.42-3.58-8-8-8s-8 3.58-8 8v24c0 15.3 10.94 29.43 16 35.15v20.85h-17.01c-2.43-10.19-9.03-20.61-16.45-32.29Z" 
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -166,6 +187,7 @@ export default function FounderPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </>
   )
 }

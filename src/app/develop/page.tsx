@@ -1,5 +1,27 @@
+'use client'
+
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
+import { useState, useEffect } from 'react'
+import Lottie from 'lottie-react'
+
+function LottieGraphic({ src, alt, className }: { src: string, alt: string, className: string }) {
+  const [animationData, setAnimationData] = useState(null)
+
+  useEffect(() => {
+    fetch(src)
+      .then(response => response.json())
+      .then(data => setAnimationData(data))
+      .catch(error => console.error('Error loading Lottie animation:', error))
+  }, [src])
+
+  if (!animationData) {
+    return <div className={className}>Loading...</div>
+  }
+
+  return <Lottie animationData={animationData} className={className} />
+}
 
 export default function DevelopPage() {
   return (
@@ -9,29 +31,38 @@ export default function DevelopPage() {
       {/* Hero Section */}
       <section className="bg-design4-green">
         <div className="mx-auto max-w-design4-container px-6 py-24">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-block bg-design4-ink text-design4-green rounded-full px-4 py-2 text-sm font-medium mb-6">
-              Develop Phase
+          <div className="grid lg:grid-cols-[auto_1fr] gap-2 lg:gap-4 items-center">
+            {/* Capability Graphic */}
+            <div className="flex justify-center lg:justify-start order-2 lg:order-1">
+              <LottieGraphic
+                src="/capability.json"
+                alt="Capability Development Animation"
+                className="w-80 h-80"
+              />
             </div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-design4-ink leading-tight mb-6">
-              Connect the dots between strategy and execution.
-            </h1>
-            <p className="text-lg lg:text-xl text-design4-ink/80 max-w-3xl mx-auto mb-8">
-              Strategic choices mean nothing if your capabilities, processes, and systems don't align. Smart development means designing how your people, technology, and workflows work together—so strategy becomes reality.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link 
-                href="/resources" 
-                className="inline-block bg-design4-ink text-design4-green px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-green"
-              >
-                Get Development Tools
-              </Link>
-              <Link 
-                href="/define" 
-                className="inline-flex items-center text-design4-ink font-medium text-lg hover:text-design4-ink/80 transition-colors whitespace-nowrap"
-              >
-                ← Previous: Define
-              </Link>
+            
+            {/* Content */}
+            <div className="text-center lg:text-left order-1 lg:order-2 lg:max-w-3xl">
+              <h1 className="text-5xl lg:text-6xl font-bold text-design4-ink leading-tight mb-6">
+                Connect the dots between strategy and execution.
+              </h1>
+              <p className="text-lg lg:text-xl text-design4-ink/80 mb-8">
+                Strategic choices mean nothing if your capabilities don't align. Smart development means designing how your people, technology, and workflows work together.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
+                <Link 
+                  href="/resources" 
+                  className="inline-block bg-design4-ink text-design4-green px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-green"
+                >
+                  Get Development Tools
+                </Link>
+                <Link 
+                  href="/define" 
+                  className="inline-flex items-center text-design4-ink font-medium text-lg hover:text-design4-ink/80 transition-colors whitespace-nowrap"
+                >
+                  ← Previous: Define
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -229,6 +260,7 @@ export default function DevelopPage() {
         </div>
       </section>
       </main>
+      <Footer />
     </>
   )
 }

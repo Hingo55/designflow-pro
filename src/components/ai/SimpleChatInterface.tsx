@@ -115,7 +115,11 @@ export default function SimpleChatInterface() {
       {/* Chat Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+        className="fixed bottom-6 right-6 z-50 bg-design4-primary text-white p-4 rounded-full transition-all duration-200 hover:bg-design4-plum/90 hover:transform hover:-translate-y-1"
+        style={{
+          boxShadow: '0 0 0 4px rgba(255, 255, 255, 0.9), 0 8px 25px rgba(95, 39, 98, 0.3), 0 4px 15px rgba(0, 0, 0, 0.15)',
+          filter: 'drop-shadow(0 2px 8px rgba(255, 255, 255, 0.8))'
+        }}
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -124,12 +128,18 @@ export default function SimpleChatInterface() {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-20 right-6 z-40 w-96 bg-white rounded-lg shadow-xl border">
+        <div 
+          className="fixed bottom-20 right-6 z-40 w-96 bg-white rounded-2xl border border-design4-neutral-100"
+          style={{
+            boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.9), 0 20px 40px rgba(95, 39, 98, 0.15), 0 8px 32px rgba(0, 0, 0, 0.12)',
+            filter: 'drop-shadow(0 4px 12px rgba(255, 255, 255, 0.6))'
+          }}
+        >
           <div className="flex items-center justify-between p-4 border-b">
-            <h3 className="text-lg font-semibold text-gray-900">Design4 AI Assistant</h3>
+            <h3 className="text-lg font-semibold text-design4-ink">Design4 Assistant</h3>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-design4-neutral-500 hover:text-design4-ink transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -139,7 +149,7 @@ export default function SimpleChatInterface() {
 
           <div className="h-96 overflow-y-auto p-4 space-y-4">
             {messages.length === 0 && (
-              <div className="text-center text-gray-500 py-8">
+              <div className="text-center text-design4-neutral-500 py-8">
                 <div className="text-2xl mb-2">🎯</div>
                 <p>Ask me about the Design4 framework!</p>
                 <p className="text-sm mt-2">Strategy • Capabilities • Operations • Performance</p>
@@ -154,8 +164,8 @@ export default function SimpleChatInterface() {
                 <div
                   className={`max-w-xs px-4 py-2 rounded-lg ${
                     message.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-900'
+                      ? 'bg-design4-primary text-white'
+                      : 'bg-design4-neutral-100 text-design4-ink'
                   }`}
                 >
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -165,11 +175,11 @@ export default function SimpleChatInterface() {
             
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-gray-100 px-4 py-2 rounded-lg">
+                <div className="bg-design4-neutral-100 px-4 py-2 rounded-xl">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-design4-neutral-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-design4-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-design4-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                 </div>
               </div>
@@ -182,13 +192,13 @@ export default function SimpleChatInterface() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about strategy, capabilities, operations..."
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 border border-design4-neutral-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-design4-gold focus:border-design4-gold"
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-design4-primary text-white px-4 py-2 rounded-xl hover:bg-design4-plum/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

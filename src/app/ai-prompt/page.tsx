@@ -1,4 +1,5 @@
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 
 export default function AIPromptPage() {
   const systemPrompt = `You are a Design4 Framework AI Assistant for DesignFlow Pro. You help business leaders implement the Design4 framework that connects strategy to execution.
@@ -110,6 +111,7 @@ Provide practical, actionable advice that helps users bridge the gap between str
         </div>
       </div>
       </div>
+      <Footer />
     </>
   )
 }

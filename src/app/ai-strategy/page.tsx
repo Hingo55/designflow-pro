@@ -3,6 +3,8 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { usePersona } from '@/hooks/usePersona'
+import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 
 function AIStrategyContent() {
   const searchParams = useSearchParams()
@@ -164,58 +166,60 @@ function AIStrategyContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+    <>
+      <Navigation />
+      <main className="min-h-screen bg-design4-orange">
+        <div className="mx-auto max-w-design4-container px-6 py-24">
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
             {personaName ? `Design4 Assistant for ${personaName}` : 'Design4 Assistant'}
           </h1>
-          <p className="text-gray-600 mt-2">Get AI-powered strategic recommendations aligned with the Design4 framework</p>
+          <p className="text-lg lg:text-xl text-white/80 max-w-2xl mx-auto">Get AI-powered strategic recommendations aligned with the Design4 framework</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* Input Form */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">{getSectionTitle(currentPersona)}</h2>
+          <div className="bg-white border border-design4-neutral-100 rounded-2xl p-8 shadow-sm">
+            <h2 className="text-2xl font-semibold text-design4-ink mb-8">{getSectionTitle(currentPersona)}</h2>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-design4-ink mb-3">
                   {prompts.context.label}
                 </label>
                 <textarea
                   value={formData.businessContext}
                   onChange={(e) => handleInputChange('businessContext', e.target.value)}
                   placeholder={prompts.context.placeholder}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-4 border border-design4-neutral-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-design4-gold focus:border-design4-gold text-design4-ink placeholder:text-design4-neutral-500"
                   rows={4}
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-design4-ink mb-3">
                   {prompts.challenges.label}
                 </label>
                 <textarea
                   value={formData.currentChallenges}
                   onChange={(e) => handleInputChange('currentChallenges', e.target.value)}
                   placeholder={prompts.challenges.placeholder}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-4 border border-design4-neutral-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-design4-gold focus:border-design4-gold text-design4-ink placeholder:text-design4-neutral-500"
                   rows={4}
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-design4-ink mb-3">
                   {prompts.goals.label}
                 </label>
                 <textarea
                   value={formData.goals}
                   onChange={(e) => handleInputChange('goals', e.target.value)}
                   placeholder={prompts.goals.placeholder}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-4 border border-design4-neutral-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-design4-gold focus:border-design4-gold text-design4-ink placeholder:text-design4-neutral-500"
                   rows={4}
                   required
                 />
@@ -224,7 +228,7 @@ function AIStrategyContent() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-design4-primary text-white py-4 px-8 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
@@ -239,40 +243,40 @@ function AIStrategyContent() {
           </div>
 
           {/* Results */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">AI Analysis & Recommendations</h2>
+          <div className="bg-white border border-design4-neutral-100 rounded-2xl p-8 shadow-sm">
+            <h2 className="text-2xl font-semibold text-design4-ink mb-8">AI Analysis & Recommendations</h2>
             
             {!analysis && !isLoading && (
-              <div className="text-center text-gray-500 py-12">
-                <div className="text-4xl mb-4">🎯</div>
-                <p>Complete the form to get your personalized strategy analysis</p>
+              <div className="text-center text-design4-neutral-500 py-16">
+                <div className="text-6xl mb-6">🎯</div>
+                <p className="text-lg">Complete the form to get your personalized strategy analysis</p>
               </div>
             )}
 
             {analysis && (
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {/* Alignment Score */}
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-blue-900 mb-2">Strategy Alignment Score</h3>
+                <div className="bg-design4-gold/10 border border-design4-gold/20 p-6 rounded-xl">
+                  <h3 className="font-semibold text-design4-ink mb-4">Strategy Alignment Score</h3>
                   <div className="flex items-center">
-                    <div className="flex-1 bg-blue-200 rounded-full h-3 mr-3">
+                    <div className="flex-1 bg-design4-neutral-100 rounded-full h-4 mr-4">
                       <div 
-                        className="bg-blue-600 h-3 rounded-full transition-all duration-500"
+                        className="bg-design4-gold h-4 rounded-full transition-all duration-500"
                         style={{ width: `${analysis.alignmentScore}%` }}
                       ></div>
                     </div>
-                    <span className="text-blue-900 font-semibold">{analysis.alignmentScore}%</span>
+                    <span className="text-design4-ink font-bold text-lg">{analysis.alignmentScore}%</span>
                   </div>
                 </div>
 
                 {/* Key Insights */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-3">Key Insights</h3>
-                  <ul className="space-y-2">
+                  <h3 className="font-semibold text-design4-ink mb-4 text-xl">Key Insights</h3>
+                  <ul className="space-y-3">
                     {analysis.keyInsights.map((insight: string, index: number) => (
                       <li key={index} className="flex items-start">
-                        <span className="text-green-500 mr-2 mt-1">💡</span>
-                        <span className="text-gray-700">{insight}</span>
+                        <span className="text-design4-gold mr-3 mt-1 text-lg">💡</span>
+                        <span className="text-design4-neutral-500">{insight}</span>
                       </li>
                     ))}
                   </ul>
@@ -280,22 +284,22 @@ function AIStrategyContent() {
 
                 {/* Recommendations */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-3">Strategic Recommendations</h3>
+                  <h3 className="font-semibold text-design4-ink mb-4 text-xl">Strategic Recommendations</h3>
                   <div className="space-y-4">
                     {analysis.recommendations.map((rec: any, index: number) => (
-                      <div key={index} className="border-l-4 border-blue-500 pl-4 py-2">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-medium text-gray-900">{rec.title}</h4>
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            rec.priority === 'high' ? 'bg-red-100 text-red-800' :
-                            rec.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-green-100 text-green-800'
+                      <div key={index} className="border-l-4 border-design4-primary pl-6 py-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-medium text-design4-ink">{rec.title}</h4>
+                          <span className={`px-3 py-1 text-xs rounded-full font-medium ${
+                            rec.priority === 'high' ? 'bg-design4-orange/10 text-design4-orange border border-design4-orange/20' :
+                            rec.priority === 'medium' ? 'bg-design4-gold/10 text-design4-gold border border-design4-gold/20' :
+                            'bg-design4-green/10 text-design4-green border border-design4-green/20'
                           }`}>
                             {rec.priority} priority
                           </span>
                         </div>
-                        <p className="text-gray-600 text-sm mb-2">{rec.description}</p>
-                        <div className="flex text-xs text-gray-500 space-x-4">
+                        <p className="text-design4-neutral-500 mb-3">{rec.description}</p>
+                        <div className="flex text-sm text-design4-neutral-500 space-x-6">
                           <span>Timeline: {rec.timeline}</span>
                           <span>Impact: {rec.impact}</span>
                         </div>
@@ -306,14 +310,14 @@ function AIStrategyContent() {
 
                 {/* Next Steps */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-3">Next Steps</h3>
-                  <ol className="space-y-2">
+                  <h3 className="font-semibold text-design4-ink mb-4 text-xl">Next Steps</h3>
+                  <ol className="space-y-3">
                     {analysis.nextSteps.map((step: string, index: number) => (
                       <li key={index} className="flex items-start">
-                        <span className="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-1">
+                        <span className="bg-design4-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-4 mt-0.5 font-medium">
                           {index + 1}
                         </span>
-                        <span className="text-gray-700">{step}</span>
+                        <span className="text-design4-neutral-500">{step}</span>
                       </li>
                     ))}
                   </ol>
@@ -322,8 +326,9 @@ function AIStrategyContent() {
             )}
           </div>
         </div>
-      </div>
-    </div>
+        </div>
+      </main>
+    </>
   )
 }
 
