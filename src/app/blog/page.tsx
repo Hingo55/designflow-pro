@@ -146,7 +146,7 @@ export default async function Blog() {
                       <button
                         key={index}
                         className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          category.active 
+                          index === 0 
                             ? 'bg-design4-primary/10 text-design4-primary' 
                             : 'text-design4-neutral-500 hover:bg-design4-neutral-50 hover:text-design4-ink'
                         }`}
