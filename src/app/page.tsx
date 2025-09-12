@@ -283,7 +283,21 @@ export default function Home() {
           </div>
 
           {/* Features Grid */}
-          <div className="grid lg:grid-cols-2 gap-6 mb-6">
+          <div className="relative">
+            {/* Background Control System Animation */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-64 h-64 opacity-20" style={{
+                filter: 'invert(1) brightness(0.95) contrast(1.1)'
+              }}>
+                <LottieGraphic
+                  src="/control-system.json"
+                  alt="Design4 Control System"
+                  className="w-full h-full"
+                />
+              </div>
+            </div>
+            
+            <div className="relative grid lg:grid-cols-2 gap-6 mb-6 z-10">
             {/* Discover - Purpose */}
             <div className="group">
               <Link href="/discover" className="block">
@@ -451,6 +465,7 @@ export default function Home() {
                 </div>
               </Link>
             </div>
+          </div>
           </div>
 
           {/* Bottom CTA */}

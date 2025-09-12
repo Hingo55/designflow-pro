@@ -170,7 +170,10 @@ export async function incrementViewCount(slug: string): Promise<void> {
     const { error } = await supabase.rpc('increment_view_count', { post_slug: slug })
     
     if (error) {
-      console.error('Error incrementing view count:', error)
+      // Silently handle missing database function in development
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('View count function not configured:', error.message)
+      }
     }
   } catch (err) {
     // Fallback: get current count and increment
