@@ -14,6 +14,7 @@ export default function Navigation() {
     { href: '/develop', label: 'Develop' },
     { href: '/deliver', label: 'Deliver' },
     { href: '/resources', label: 'Resources' },
+    { href: '/blog', label: 'Blog' },
   ]
 
   // Get background color based on current page
@@ -22,13 +23,13 @@ export default function Navigation() {
       case '/discover':
         return 'bg-design4-gold border-b border-design4-gold/20'
       case '/define':
-        return 'bg-design4-plum border-b border-design4-plum/20'
+        return 'bg-design4-purple border-b border-design4-purple/20'
       case '/develop':
         return 'bg-design4-green border-b border-design4-green/20'
       case '/deliver':
         return 'bg-design4-orange border-b border-design4-orange/20'
       default:
-        return 'bg-design4-primary border-b border-design4-plum/20'
+        return 'bg-design4-teal border-b border-design4-teal/20'
     }
   }
 
@@ -43,6 +44,7 @@ export default function Navigation() {
           logoIcon: 'text-design4-gold bg-design4-ink',
           nav: 'text-design4-ink/80',
           navActive: 'text-design4-ink',
+          activeBorder: 'border-design4-ink',
           button: 'bg-design4-ink text-design4-gold',
           mobile: 'text-design4-ink'
         }
@@ -54,6 +56,7 @@ export default function Navigation() {
           logoIcon: 'text-design4-green bg-design4-ink',
           nav: 'text-design4-ink/80',
           navActive: 'text-design4-ink',
+          activeBorder: 'border-design4-ink',
           button: 'bg-design4-ink text-design4-green',
           mobile: 'text-design4-ink'
         }
@@ -61,10 +64,11 @@ export default function Navigation() {
         return {
           logo: 'text-white',
           logoText: 'text-white',
-          logoBackground: 'text-design4-plum',
+          logoBackground: 'text-design4-purple',
           logoIcon: 'text-design4-primary bg-white',
           nav: 'text-white/80',
           navActive: 'text-white',
+          activeBorder: 'border-white',
           button: 'bg-white text-design4-primary',
           mobile: 'text-white'
         }
@@ -76,6 +80,7 @@ export default function Navigation() {
           logoIcon: 'text-design4-primary bg-white',
           nav: 'text-white/80',
           navActive: 'text-white',
+          activeBorder: 'border-white',
           button: 'bg-white text-design4-primary',
           mobile: 'text-white'
         }
@@ -87,6 +92,7 @@ export default function Navigation() {
           logoIcon: 'text-design4-primary bg-white',
           nav: 'text-white/80',
           navActive: 'text-white',
+          activeBorder: 'border-design4-gold',
           button: 'bg-white text-design4-primary',
           mobile: 'text-white'
         }
@@ -98,28 +104,28 @@ export default function Navigation() {
   return (
     <nav className={getNavBackground()}>
       <div className="mx-auto max-w-design4-container px-6">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo/Home Link */}
           <Link 
             href="/" 
-            className={`flex items-center space-x-2 ${colors.logo} font-bold text-xl hover:opacity-90 transition-opacity`}
+            className={`flex items-center space-x-2 ${colors.logo} font-bold text-2xl hover:opacity-90 transition-opacity`}
           >
             <img 
               src={pathname === '/discover' || pathname === '/develop' ? '/design4_logo_black_v2.svg' : '/design4_logo_white_v2.svg'}
               alt="Design4 Logo" 
-              className="h-36 w-auto"
+              className="h-48 w-auto"
             />
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-10">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm font-medium transition-colors ${
+                className={`text-base font-medium transition-colors ${
                   pathname === item.href 
-                    ? `${colors.navActive} border-b-2 border-design4-gold pb-1` 
+                    ? `${colors.navActive} border-b-2 ${colors.activeBorder} pb-1` 
                     : `${colors.nav} hover:opacity-90`
                 }`}
               >
@@ -131,7 +137,7 @@ export default function Navigation() {
           {/* CTA Button */}
           <Link
             href={`/ai-strategy${selectedPersona ? `?persona=${selectedPersona}` : ''}`}
-            className={`${colors.button} px-6 py-2 rounded-full font-medium text-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2`}
+            className={`${colors.button} px-6 py-3 rounded-full font-medium text-base hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2`}
           >
             Design4 Assistant
           </Link>
