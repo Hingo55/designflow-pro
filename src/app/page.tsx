@@ -467,6 +467,16 @@ export default function Home() {
                   className="w-full h-full"
                 />
               </div>
+              
+              {/* Cycling Framework Button - Centered on gear */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
+                <Link 
+                  href={getHeroElement().href}
+                  className={`w-20 h-20 text-white rounded-full hero-button ${getHeroElement().bgClass} hover:transform hover:scale-105 flex items-center justify-center shadow-lg`}
+                >
+                  <span className="text-sm font-bold uppercase">{getHeroElementText()}</span>
+                </Link>
+              </div>
             </div>
             
             <div className="relative grid lg:grid-cols-2 gap-6 mb-6 z-10">
