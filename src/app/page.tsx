@@ -8,46 +8,159 @@ import React, { useState } from 'react'
 import { Compass } from 'lucide-react'
 import { usePersona } from '@/hooks/usePersona'
 import Lottie from 'lottie-react'
-import { useEffect, useState as useComponentState } from 'react'
+import { useEffect, useState as useComponentState, useRef } from 'react'
 
 function LottieGraphic({ src, alt, className }: { src: string, alt: string, className: string }) {
   const [animationData, setAnimationData] = useComponentState(null)
+  const [isLoading, setIsLoading] = useComponentState(true)
+  const [error, setError] = useComponentState<string | null>(null)
+  const lottieRef = useRef<any>(null)
 
+  // Load animation data
   useEffect(() => {
-    console.log('Loading Lottie animation from:', src) // Debug log
+    console.log('Loading Lottie animation from:', src)
+    setIsLoading(true)
+    setError(null)
+    
     fetch(src)
       .then(response => {
-        console.log('Fetch response:', response.status) // Debug log
+        console.log('Fetch response status:', response.status, response.statusText)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
+        }
         return response.json()
       })
       .then(data => {
-        console.log('Animation data loaded:', data) // Debug log
+        console.log('Animation data loaded successfully, frame count:', data.op || 'unknown')
         setAnimationData(data)
+        setIsLoading(false)
       })
-      .catch(error => console.error('Error loading Lottie animation:', error))
+      .catch(err => {
+        console.error('Error loading Lottie animation:', err)
+        setError(err.message)
+        setIsLoading(false)
+      })
   }, [src])
 
-  if (!animationData) {
-    return <div className={className} style={{background: 'red', color: 'white'}}>Loading Lottie...</div>
+  // Set speed after the animation loads and starts playing
+  useEffect(() => {
+    if (lottieRef.current && animationData) {
+      // Set speed to 0.33 for slower, more elegant animation
+      const attempts = [100, 500, 1000]
+      
+      attempts.forEach((delay) => {
+        setTimeout(() => {
+          if (lottieRef.current) {
+            // Force pause/play cycle to apply new speed
+            if (typeof lottieRef.current.pause === 'function' && typeof lottieRef.current.play === 'function') {
+              lottieRef.current.pause()
+              setTimeout(() => {
+                if (lottieRef.current) {
+                  lottieRef.current.setSpeed(0.33)
+                  lottieRef.current.play()
+                }
+              }, 50)
+            }
+          }
+        }, delay)
+      })
+    }
+  }, [animationData])
+
+  if (isLoading) {
+    return <div className={className} style={{background: 'rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Loading...</div>
   }
 
-  console.log('Rendering Lottie with data') // Debug log
-  return <Lottie animationData={animationData} className={className} />
+  if (error || !animationData) {
+    console.error('Failed to render Lottie:', error)
+    return <div className={className} style={{background: 'rgba(255,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Failed to load</div>
+  }
+
+  console.log('Rendering Lottie with data')
+  return (
+    <Lottie 
+      lottieRef={lottieRef}
+      animationData={animationData} 
+      className={className}
+      loop={true}
+      autoplay={true}
+      speed={0.33}
+    />
+  )
 }
 
 export default function Home() {
   const [isPersonaSelectorOpen, setIsPersonaSelectorOpen] = useState(false)
   const [showTopBanner, setShowTopBanner] = useState(true)
   const [activeFrameworkElement, setActiveFrameworkElement] = useState(0) // 0=discover, 1=define, 2=develop, 3=deliver
+  const [highlightedElement, setHighlightedElement] = useState(0) // For continuous visual highlighting
+  const [heroElement, setHeroElement] = useState(0) // For hero button/icon cycling (0=Discover, 1=Define, 2=Develop, 3=Deliver)
+  const [heroElementText, setHeroElementText] = useState(0) // For delayed text changes
   const { selectedPersona, handlePersonaSelect } = usePersona()
 
-  // Cycle through framework elements animation
+  // Synchronize framework highlighting with control-system Lottie cadence  
+  // Control-system animation at 0.33 speed: 90 frames at 30fps = 9 seconds total
+  // Frame timing: 0-15 (1.5s pause) -> 15-65 (5s rotation) -> 65-90 (2.5s pause)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveFrameworkElement((prev) => (prev + 1) % 4)
-    }, 4000) // 4 seconds per element
+    const LOTTIE_CYCLE_DURATION = 9000 // 9 seconds total (3s * 3 due to 0.33 speed)
+    const GEAR_ROTATION_START_DELAY = 1500 // Start transition when gear begins rotating (frame 15)
+    
+    // Start first transition after initial pause
+    setTimeout(() => {
+      setActiveFrameworkElement((prev) => {
+        const next = (prev + 1) % 4
+        console.log('Active framework element changing from', prev, 'to', next)
+        return next
+      })
+      setHighlightedElement((prev) => {
+        const next = (prev + 1) % 4
+        console.log('Highlighted element changing from', prev, 'to', next)
+        return next
+      })
+      setHeroElement((prev) => {
+        const next = (prev + 1) % 4
+        console.log('Hero element changing from', prev, 'to', next)
+        return next
+      })
+      // Delay text change by 1 second after color starts changing
+      setTimeout(() => {
+        setHeroElementText(1) // Set to 1 (Define) explicitly for first change
+        console.log('Hero element text changing to', 1)
+      }, 1000)
+    }, GEAR_ROTATION_START_DELAY)
+    
+    // Set up repeating cycle with delay for gear rotation start
+    const mainInterval = setInterval(() => {
+      setTimeout(() => {
+        setActiveFrameworkElement((prev) => {
+          const next = (prev + 1) % 4
+          console.log('Active framework element changing from', prev, 'to', next)
+          return next
+        })
+        setHighlightedElement((prev) => {
+          const next = (prev + 1) % 4
+          console.log('Highlighted element changing from', prev, 'to', next)
+          return next
+        })
+        setHeroElement((prev) => {
+          const next = (prev + 1) % 4
+          console.log('Hero element changing from', prev, 'to', next)
+          return next
+        })
+        // Delay text change by 1 second after color starts changing
+        setTimeout(() => {
+          setHeroElementText((prev) => {
+            const next = (prev + 1) % 4
+            console.log('Hero element text changing from', prev, 'to', next)
+            return next
+          })
+        }, 1000)
+      }, GEAR_ROTATION_START_DELAY)
+    }, LOTTIE_CYCLE_DURATION)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(mainInterval)
+    }
   }, [])
 
   const getPersonaGraphic = () => {
@@ -155,10 +268,86 @@ export default function Home() {
         }
     }
   }
+
+  const getHeroElement = () => {
+    switch (heroElement) {
+      case 0:
+        return {
+          bgClass: "hero-button-discover",
+          icon: "/purpose.json",
+          href: "/discover"
+        }
+      case 1:
+        return {
+          bgClass: "hero-button-define",
+          icon: "/strategy.json",
+          href: "/define"
+        }
+      case 2:
+        return {
+          bgClass: "hero-button-develop",
+          icon: "/capability.json",
+          href: "/develop"
+        }
+      case 3:
+        return {
+          bgClass: "hero-button-deliver",
+          icon: "/success.json", 
+          href: "/deliver"
+        }
+      default:
+        return {
+          bgClass: "hero-button-discover",
+          icon: "/purpose.json",
+          href: "/discover"
+        }
+    }
+  }
+
+  const getHeroElementText = () => {
+    switch (heroElementText) {
+      case 0:
+        return "Discover"
+      case 1:
+        return "Define"
+      case 2:
+        return "Develop"
+      case 3:
+        return "Deliver"
+      default:
+        return "Discover"
+    }
+  }
   return (
     <>
-      <Navigation />
-      <main className="min-h-screen bg-design4-teal">
+      {/* Custom scaling and transition CSS */}
+      <style jsx global>{`
+        .scale-200 {
+          transform: scale(2);
+        }
+        .scale-100 {
+          transform: scale(1);
+        }
+        .framework-box {
+          transition: background-color 3s ease-in-out !important;
+        }
+        .hero-button {
+          transition: all 2s ease-in-out !important;
+        }
+        .hero-button-discover {
+          background-color: #E5C823 !important;
+        }
+        .hero-button-define {
+          background-color: #A02B93 !important;
+        }
+        .hero-button-develop {
+          background-color: #7FBB47 !important;
+        }
+        .hero-button-deliver {
+          background-color: #EE7F24 !important;
+        }
+      `}</style>
+      
       {/* Black Floating Banner */}
       {showTopBanner && (
         <div className="bg-black text-white py-3 px-6 relative">
@@ -185,85 +374,69 @@ export default function Home() {
           </div>
         </div>
       )}
+      
+      <Navigation />
+      <main className="min-h-screen bg-design4-teal">
 
       {/* Hero Section */}
       <section className="bg-design4-teal">
         <div className="mx-auto max-w-design4-container px-6 py-24">
-          <div className="flex flex-col lg:flex-row items-center gap-8 max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-4">
+            {/* Control System Graphic with Framework Button */}
+            <div className="flex-shrink-0 order-1 lg:order-1 relative flex items-center justify-center">
+              {/* Control System Animation */}
+              <div className="w-[20rem] lg:w-[22rem] h-auto" style={{filter: 'invert(0.6) sepia(1) saturate(0.8) hue-rotate(180deg) brightness(1.1)'}}>
+                <LottieGraphic
+                  src="/control-system.json"
+                  alt="Design4 Framework Control System"
+                  className="w-full h-auto"
+                />
+              </div>
+              
+              {/* Cycling Framework Button - Centered on top */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Link 
+                  href={getHeroElement().href}
+                  className={`w-[6.4rem] h-[6.4rem] text-white rounded-full hero-button ${getHeroElement().bgClass} hover:transform hover:scale-105 flex items-center justify-center`}
+                >
+                  <span className="text-base font-bold uppercase">{getHeroElementText()}</span>
+                </Link>
+              </div>
+            </div>
+
             {/* Content */}
-            <div className="flex-1 text-center lg:text-left order-2 lg:order-1">
-              <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                <span className="lg:whitespace-nowrap">Design business that works...</span><br />
-                <span className="block text-center lg:text-left font-normal text-4xl lg:text-5xl">and keeps working</span>
+            <div className="flex-1 text-center lg:text-left order-2 lg:order-2 lg:pt-8">
+              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-6">
+                <span className="block">Design business that works...</span>
+                <span className="block font-normal text-3xl lg:text-4xl xl:text-5xl text-white/90">and keeps working</span>
               </h1>
-              <p className="text-lg lg:text-xl text-white/80 mb-8">
+              <p className="text-lg xl:text-xl text-white/80 mb-8 max-w-2xl lg:max-w-none">
                 {getHeroText()}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <div className={`${selectedPersona ? 'relative inline-block p-1 rounded-xl overflow-hidden animate-border-chase' : 'inline-block'}`} style={selectedPersona ? {
+                <div className="relative inline-block p-1 rounded-xl overflow-hidden animate-border-chase" style={{
                   background: `linear-gradient(90deg, 
-                    transparent 0%, 
-                    #000000 10%, 
-                    #000000 20%, 
-                    transparent 30%, 
-                    transparent 100%)`,
+                    #E5C823 0%, 
+                    #EE7F24 25%, 
+                    #A02B93 50%, 
+                    #7FBB47 75%, 
+                    #E5C823 100%)`,
                   backgroundSize: '300% 100%'
-                } : {}}>
+                }}>
                   <Link 
                     href={getButtonConfig().href}
-                    className="inline-flex items-center gap-3 bg-design4-ink text-white px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2"
+                    className="inline-flex items-center justify-center bg-design4-ink text-white px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2"
                   >
-                    {getPersonaGraphic().isLottie ? (
-                      <div className="w-12 h-12 flex items-center justify-center">
-                        <LottieGraphic
-                          src={getPersonaGraphic().src || ''}
-                          alt={getPersonaGraphic().alt || ''}
-                          className="w-12 h-12"
-                        />
-                      </div>
-                    ) : getPersonaGraphic().type === 'inline-svg' ? (
-                      <div className="w-12 h-12 flex items-center justify-center">
-                        {(() => {
-                          const graphic = getPersonaGraphic();
-                          return graphic.svgContent ? React.cloneElement(graphic.svgContent, { className: 'w-12 h-12' }) : null;
-                        })()}
-                      </div>
-                    ) : (
-                      <img 
-                        src={getPersonaGraphic().src || ''}
-                        alt={getPersonaGraphic().alt || ''}
-                        className="w-12 h-12 object-contain"
-                      />
-                    )}
                     {getButtonConfig().text}
                   </Link>
                 </div>
                 <Link 
                   href={`/ai-strategy${selectedPersona ? `?persona=${selectedPersona}` : ''}`} 
-                  className="inline-flex items-center text-design4-primary font-medium text-lg hover:text-design4-purple transition-colors"
+                  className="inline-flex items-center text-white/80 font-medium text-lg hover:text-white transition-colors"
                 >
                   Try the Design4 Assistant →
                 </Link>
               </div>
-            </div>
-
-            {/* Persona-specific Graphic */}
-            <div className="flex-shrink-0 order-1 lg:order-2">
-              {getPersonaGraphic().isLottie ? (
-                <LottieGraphic
-                  src={getPersonaGraphic().src || ''}
-                  alt={getPersonaGraphic().alt || ''}
-                  className={getPersonaGraphic().className}
-                />
-              ) : getPersonaGraphic().type === 'inline-svg' ? (
-                getPersonaGraphic().svgContent || null
-              ) : (
-                <img 
-                  src={getPersonaGraphic().src || ''}
-                  alt={getPersonaGraphic().alt || ''}
-                  className={getPersonaGraphic().className}
-                />
-              )}
             </div>
           </div>
         </div>
@@ -274,11 +447,11 @@ export default function Home() {
         <div className="mx-auto max-w-design4-container px-6">
           {/* Header */}
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-5xl font-bold text-design4-ink mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold text-design4-ink mb-6">
               Four Interconnected Framework Elements
             </h2>
-            <p className="text-xl text-design4-neutral-500 max-w-3xl mx-auto">
-              Discover Purpose, Define Strategy, Develop Capabilities, Deliver Value—each element depends on and strengthens the others in a continuous cycle.
+            <p className="text-xl text-design4-neutral-500 max-w-4xl mx-auto">
+              Each Design4 element depends on and strengthens the others in a continuous cycle.
             </p>
           </div>
 
@@ -286,8 +459,8 @@ export default function Home() {
           <div className="relative">
             {/* Background Control System Animation */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-64 h-64 opacity-20" style={{
-                filter: 'invert(1) brightness(0.95) contrast(1.1)'
+              <div className="w-64 h-64 opacity-15" style={{
+                filter: 'invert(0.2) sepia(1) saturate(3) hue-rotate(190deg) brightness(0.6)'
               }}>
                 <LottieGraphic
                   src="/control-system.json"
@@ -301,40 +474,27 @@ export default function Home() {
             {/* Discover - Purpose */}
             <div className="group">
               <Link href="/discover" className="block">
-                <div className={`relative p-1 rounded-3xl overflow-hidden ${activeFrameworkElement === 0 ? 'animate-border-chase' : ''}`} style={activeFrameworkElement === 0 ? {
-                  background: `linear-gradient(90deg, 
-                    transparent 0%, 
-                    #000000 10%, 
-                    #000000 20%, 
-                    transparent 30%, 
-                    transparent 100%)`,
-                  backgroundSize: '300% 100%'
-                } : {}}>
-                  <div className="flex items-start gap-6 p-8 rounded-3xl border border-design4-gold hover:border-design4-gold hover:shadow-lg transition-all duration-300 bg-design4-gold relative">
-                  <div className="flex-shrink-0 w-16 h-16 bg-design4-ink rounded-2xl flex items-center justify-center text-design4-gold font-bold text-lg">
-                    01
-                  </div>
+                <div className={`framework-box flex items-start gap-6 pl-12 pr-28 py-8 rounded-3xl border border-design4-gold hover:border-design4-gold hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 0 ? 'bg-design4-gold' : 'bg-design4-gold/30'}`}>
                   <div className="flex-1">
-                    <div className="inline-block bg-design4-ink text-design4-gold rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
+                    <div className="inline-block bg-white text-design4-gold rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
                       Discover
                     </div>
-                    <h3 className="text-2xl font-bold text-design4-ink mb-3">
+                    <h3 className="text-2xl font-bold text-white mb-3">
                       Purpose
                     </h3>
-                    <p className="text-design4-ink text-lg font-medium mb-3">
+                    <p className="text-white text-lg font-medium mb-3">
                       Ask: Are we getting the results?
                     </p>
-                    <p className="text-design4-ink/80 leading-relaxed">
-                      Start with outcomes that matter. Measure what creates real value for stakeholders and use those insights to drive continuous improvement across everything you do.
+                    <p className="text-white/80 leading-relaxed">
+                      <strong>Start with outcomes that matter.</strong> Measure what creates real value for stakeholders and use those insights to drive continuous improvement across everything you do.
                     </p>
                   </div>
-                  <div className="absolute top-4 right-4">
+                  <div className={`absolute bottom-4 right-4 transition-transform duration-700 ease-in-out ${highlightedElement === 0 ? 'scale-200' : 'scale-100'}`}>
                     <LottieGraphic
                       src="/purpose.json"
                       alt="Purpose Discovery Animation"
                       className="w-16 h-16"
                     />
-                  </div>
                   </div>
                 </div>
               </Link>
@@ -343,19 +503,7 @@ export default function Home() {
             {/* Define - Strategy */}
             <div className="group">
               <Link href="/define" className="block">
-                <div className={`relative p-1 rounded-3xl overflow-hidden ${activeFrameworkElement === 1 ? 'animate-border-chase' : ''}`} style={activeFrameworkElement === 1 ? {
-                  background: `linear-gradient(90deg, 
-                    transparent 0%, 
-                    #000000 10%, 
-                    #000000 20%, 
-                    transparent 30%, 
-                    transparent 100%)`,
-                  backgroundSize: '300% 100%'
-                } : {}}>
-                  <div className="flex items-start gap-6 p-8 rounded-3xl border border-design4-purple hover:border-design4-purple hover:shadow-lg transition-all duration-300 bg-design4-purple relative">
-                  <div className="flex-shrink-0 w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-design4-purple font-bold text-lg">
-                    02
-                  </div>
+                <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-purple hover:border-design4-purple hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 1 ? 'bg-design4-purple' : 'bg-design4-purple/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-purple rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
                       Define
@@ -367,16 +515,15 @@ export default function Home() {
                       Ask: Are we doing the right things?
                     </p>
                     <p className="text-white/80 leading-relaxed">
-                      Purpose without direction is just inspiration. Connect your organizational why to clear strategic choices about where to play, how to win, and what you won't do.
+                      <strong>Purpose without direction is just inspiration.</strong> Connect your organizational why to clear strategic choices about where to play, how to win, and what you won't do.
                     </p>
                   </div>
-                  <div className="absolute top-4 right-4">
+                  <div className={`absolute bottom-4 left-4 transition-transform duration-700 ease-in-out ${highlightedElement === 1 ? 'scale-200' : 'scale-100'}`}>
                     <LottieGraphic
                       src="/strategy.json"
                       alt="Strategy Definition Animation"
                       className="w-16 h-16"
                     />
-                  </div>
                   </div>
                 </div>
               </Link>
@@ -385,19 +532,7 @@ export default function Home() {
             {/* Deliver - Value */}
             <div className="group">
               <Link href="/deliver" className="block">
-                <div className={`relative p-1 rounded-3xl overflow-hidden ${activeFrameworkElement === 3 ? 'animate-border-chase' : ''}`} style={activeFrameworkElement === 3 ? {
-                  background: `linear-gradient(90deg, 
-                    transparent 0%, 
-                    #000000 10%, 
-                    #000000 20%, 
-                    transparent 30%, 
-                    transparent 100%)`,
-                  backgroundSize: '300% 100%'
-                } : {}}>
-                  <div className="flex items-start gap-6 p-8 rounded-3xl border border-design4-orange hover:border-design4-orange hover:shadow-lg transition-all duration-300 bg-design4-orange relative">
-                  <div className="flex-shrink-0 w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-design4-orange font-bold text-lg">
-                    04
-                  </div>
+                <div className={`framework-box flex items-start gap-6 pl-12 pr-28 py-8 rounded-3xl border border-design4-orange hover:border-design4-orange hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 3 ? 'bg-design4-orange' : 'bg-design4-orange/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-orange rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
                       Deliver
@@ -406,19 +541,18 @@ export default function Home() {
                       Value
                     </h3>
                     <p className="text-white text-lg font-medium mb-3">
-                      Are we getting them done well?
+                      Ask: Are we getting them done well?
                     </p>
                     <p className="text-white/80 leading-relaxed">
-                      Capabilities without execution deliver nothing. Align daily operations with strategic intent through disciplined delivery and clear accountability that drives results.
+                      <strong>Capabilities without execution deliver nothing.</strong> Align daily operations with strategic intent through disciplined delivery and clear accountability that drives results.
                     </p>
                   </div>
-                  <div className="absolute top-4 right-4">
+                  <div className={`absolute top-4 right-4 transition-transform duration-700 ease-in-out ${highlightedElement === 3 ? 'scale-200' : 'scale-100'}`}>
                     <LottieGraphic
                       src="/success.json"
                       alt="Success Delivery Animation"
                       className="w-16 h-16"
                     />
-                  </div>
                   </div>
                 </div>
               </Link>
@@ -427,40 +561,27 @@ export default function Home() {
             {/* Develop - Capabilities */}
             <div className="group">
               <Link href="/develop" className="block">
-                <div className={`relative p-1 rounded-3xl overflow-hidden ${activeFrameworkElement === 2 ? 'animate-border-chase' : ''}`} style={activeFrameworkElement === 2 ? {
-                  background: `linear-gradient(90deg, 
-                    transparent 0%, 
-                    #000000 10%, 
-                    #000000 20%, 
-                    transparent 30%, 
-                    transparent 100%)`,
-                  backgroundSize: '300% 100%'
-                } : {}}>
-                  <div className="flex items-start gap-6 p-8 rounded-3xl border border-design4-green hover:border-design4-green hover:shadow-lg transition-all duration-300 bg-design4-green relative">
-                  <div className="flex-shrink-0 w-16 h-16 bg-design4-ink rounded-2xl flex items-center justify-center text-design4-green font-bold text-lg">
-                    03
-                  </div>
+                <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-green hover:border-design4-green hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 2 ? 'bg-design4-green' : 'bg-design4-green/30'}`}>
                   <div className="flex-1">
-                    <div className="inline-block bg-design4-ink text-design4-green rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
+                    <div className="inline-block bg-white text-design4-green rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
                       Develop
                     </div>
-                    <h3 className="text-2xl font-bold text-design4-ink mb-3">
+                    <h3 className="text-2xl font-bold text-white mb-3">
                       Capabilities
                     </h3>
-                    <p className="text-design4-ink text-lg font-medium mb-3">
-                      Are we doing things the right way?
+                    <p className="text-white text-lg font-medium mb-3">
+                      Ask: Are we doing things the right way?
                     </p>
-                    <p className="text-design4-ink/80 leading-relaxed">
-                      Strategy without capability is just wishful thinking. Build the systematic approaches, skills, and resources that turn your strategic choices into competitive advantages.
+                    <p className="text-white/80 leading-relaxed">
+                      <strong>Strategy without capability is just wishful thinking.</strong> Build the systematic approaches, skills, and resources that turn your strategic choices into competitive advantages.
                     </p>
                   </div>
-                  <div className="absolute top-4 right-4">
+                  <div className={`absolute top-4 left-4 transition-transform duration-700 ease-in-out ${highlightedElement === 2 ? 'scale-200' : 'scale-100'}`}>
                     <LottieGraphic
                       src="/capability.json"
                       alt="Capability Development Animation"
                       className="w-16 h-16"
                     />
-                  </div>
                   </div>
                 </div>
               </Link>

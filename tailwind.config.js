@@ -116,7 +116,7 @@ module.exports = {
         "gradient-shift": "gradient-shift 3s ease-in-out infinite",
         "border-spin": "border-spin 3s linear infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
-        "border-chase": "border-chase 4s linear infinite",
+        "border-chase": "border-chase 3s linear infinite",
       },
     },
   },
