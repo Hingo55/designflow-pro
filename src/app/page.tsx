@@ -84,7 +84,6 @@ function LottieGraphic({ src, alt, className }: { src: string, alt: string, clas
       className={className}
       loop={true}
       autoplay={true}
-      speed={0.33}
     />
   )
 }
