@@ -2,8 +2,12 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
-import StructuredData from '@/components/StructuredData'
-import { getBlogPost, getRelatedPosts, incrementViewCount } from '@/lib/blog'
+import { getBlogPost, getAllBlogPosts, incrementViewCount, getPostSeries } from '@/lib/blog'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { LearnBox } from '@/components/blog/LearnBox'
+import { PostCTA } from '@/components/blog/PostCTA'
+import { AuthorCard } from '@/components/blog/AuthorCard'
+import { RelatedPosts } from '@/components/blog/RelatedPosts'
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -31,10 +35,10 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
       publishedTime: post.published_at || undefined,
       authors: [post.author],
       tags: post.seo_keywords || [post.category],
-      url: `https://design4.biz/blog/${resolvedParams.slug}`,
+      images: post.featured_image_url ? [post.featured_image_url] : [],
     },
     alternates: {
-      canonical: `https://design4.biz/blog/${resolvedParams.slug}`,
+      canonical: `/blog/${resolvedParams.slug}`,
     },
   }
 }
@@ -50,8 +54,36 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
   // Increment view count (fire and forget)
   incrementViewCount(resolvedParams.slug)
 
-  // Get related posts
-  const relatedPosts = await getRelatedPosts(resolvedParams.slug, post.category, 3)
+  // Get all posts for related post matching
+  const allPosts = await getAllBlogPosts()
+  
+  // Generate sample personas and phases based on category
+  const samplePersonas = post.category === 'Leadership' ? ['Founder'] : 
+                        post.category === 'Strategy' ? ['Transformation Leader'] :
+                        post.category === 'Operations' ? ['Project Operations'] : ['Consultant']
+  const samplePhases = post.category === 'Leadership' ? ['Discover', 'Define'] :
+                      post.category === 'Strategy' ? ['Define', 'Develop'] :
+                      post.category === 'Operations' ? ['Develop', 'Deliver'] : ['Discover', 'Deliver']
+  
+  // Related posts matching algorithm (same persona OR same phase) then by pillar; exclude current slug
+  const related = allPosts
+    .filter(p => p.slug !== post.slug)
+    .map(p => {
+      const pPersonas = p.category === 'Leadership' ? ['Founder'] : 
+                       p.category === 'Strategy' ? ['Transformation Leader'] :
+                       p.category === 'Operations' ? ['Project Operations'] : ['Consultant']
+      const pPhases = p.category === 'Leadership' ? ['Discover', 'Define'] :
+                     p.category === 'Strategy' ? ['Define', 'Develop'] :
+                     p.category === 'Operations' ? ['Develop', 'Deliver'] : ['Discover', 'Deliver']
+      
+      const score = (pPersonas.some(x => samplePersonas.includes(x)) ? 2 : 0) +
+                   (pPhases.some(x => samplePhases.includes(x)) ? 2 : 0) +
+                   (p.category === post.category ? 1 : 0)
+      return { p, score }
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(x => x.p)
 
   // Format date for display
   const formatDate = (dateString: string | null) => {
@@ -63,11 +95,30 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
     })
   }
 
-  const formatReadTime = (minutes: number) => `${minutes} min read`
+  // Sample learning outcomes based on category
+  const sampleLearningOutcomes = post.category === 'Leadership' ? [
+    'How to align organizational vision with operational execution',
+    'Frameworks for strategic decision-making under uncertainty',
+    'Methods to build and maintain high-performing teams'
+  ] : post.category === 'Strategy' ? [
+    'Strategic planning methodologies for transformation',
+    'Change management best practices and frameworks',
+    'How to measure and track transformation success'
+  ] : post.category === 'Operations' ? [
+    'Operational excellence principles and implementation',
+    'Process optimization and continuous improvement methods',
+    'Project management techniques for complex initiatives'
+  ] : [
+    'Consulting methodologies and engagement frameworks',
+    'Client relationship management strategies',
+    'How to deliver measurable business value'
+  ]
+
+  // Get series information for this post
+  const seriesInfo = getPostSeries(post)
 
   return (
     <>
-      <StructuredData post={post} />
       <Navigation />
       <main className="min-h-screen bg-design4-bg">
         {/* Breadcrumb */}
@@ -85,187 +136,151 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
 
         {/* Article */}
         <section className="py-16 lg:py-24">
-          <div className="mx-auto max-w-design4-container px-6 flex flex-col gap-12 lg:flex-row lg:gap-24">
-            <article className="mx-auto max-w-3xl">
-              {/* Featured Image */}
-              <div className="mb-8 aspect-video w-full rounded-2xl bg-gradient-to-br from-design4-primary/10 to-design4-gold/10 flex items-center justify-center border border-design4-neutral-100">
-                <div className="w-24 h-24 bg-design4-primary/20 rounded-2xl flex items-center justify-center">
-                  <svg className="w-12 h-12 text-design4-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Article Content */}
-              <div className="prose prose-lg dark:prose-invert max-w-none">
-                <div className="mb-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="bg-design4-primary/10 text-design4-primary px-3 py-1 rounded-full text-sm font-medium">
-                      {post.category}
-                    </span>
-                    <span className="text-design4-neutral-400 text-sm">{formatReadTime(post.read_time_minutes)}</span>
-                  </div>
-                  <h1 className="text-3xl lg:text-4xl font-bold text-design4-ink mb-4 leading-tight">
-                    {post.title}
-                  </h1>
-                  <div className="flex items-center mb-6">
-                    <div className="w-12 h-12 bg-design4-primary/10 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-design4-primary font-medium">
-                        {post.author.split(' ').map(n => n[0]).join('')}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-design4-ink font-medium">{post.author}</p>
-                      <p className="text-design4-neutral-400 text-sm">{formatDate(post.published_at)}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div 
-                  className="prose-headings:text-design4-ink prose-p:text-design4-neutral-600 prose-strong:text-design4-ink prose-blockquote:border-l-design4-primary prose-blockquote:bg-design4-primary/5 prose-blockquote:text-design4-ink prose-a:text-design4-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-design4-neutral-600 prose-ol:text-design4-neutral-600 prose-li:text-design4-neutral-600"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
-              </div>
-
-              {/* Article Footer */}
-              <div className="mt-12 pt-8 border-t border-design4-neutral-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-16 h-16 bg-design4-primary/10 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-design4-primary font-medium text-lg">
-                        {post.author.split(' ').map(n => n[0]).join('')}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-design4-ink font-medium text-lg">{post.author}</p>
-                      <p className="text-design4-neutral-500">Strategic Transformation Expert</p>
-                    </div>
-                  </div>
-                  <div className="flex space-x-4">
-                    <button className="text-design4-neutral-400 hover:text-design4-primary transition-colors">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84" />
+          <div className="mx-auto max-w-design4-container px-6">
+            <article className="prose prose-lg max-w-none mx-auto max-w-4xl">
+              
+              {/* Header: title, dek, badges (personas, phases, pillar, time to apply), read time */}
+              <header className="mb-12">
+                {/* Series link if present */}
+                {seriesInfo && (
+                  <div className="mb-4">
+                    <Link 
+                      href={`/blog/series/${seriesInfo.slug}`}
+                      className="inline-flex items-center gap-2 text-design4-primary hover:text-design4-primary/80 transition-colors group"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                       </svg>
-                    </button>
-                    <button className="text-design4-neutral-400 hover:text-design4-primary transition-colors">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clipRule="evenodd" />
+                      <span className="text-sm font-medium">Part of the {seriesInfo.name} Series</span>
+                      <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            {/* Sidebar */}
-            <aside className="lg:max-w-[300px]">
-              <div className="bg-white border border-design4-neutral-100 flex flex-col items-start rounded-2xl py-8">
-                <div className="mb-8 px-6">
-                  <img
-                    src="/design4_logo_color.svg"
-                    alt="Design4 Logo"
-                    className="max-h-8 w-full"
-                  />
-                </div>
-                <div className="mb-5 px-6 last:mb-0">
-                  <div className="mb-2 text-xs font-semibold text-design4-ink">Framework</div>
-                  <div className="text-design4-neutral-500 overflow-hidden text-xs md:text-sm">
-                    Design4 provides systematic approaches to align organizational purpose with daily operations for sustainable competitive advantage.
-                  </div>
-                </div>
-                <div className="mb-5 px-6 last:mb-0">
-                  <div className="mb-2 text-xs font-semibold text-design4-ink">Focus Areas</div>
-                  <div className="text-design4-neutral-500 overflow-hidden text-xs md:text-sm">
-                    Strategy, Capabilities, Operations, Transformation
-                  </div>
-                </div>
-                <div className="border-design4-neutral-200 mb-5 w-full border-t px-6 pt-5 last:mb-0">
-                  <div className="mb-2 text-xs font-semibold text-design4-ink">Created by</div>
-                  <div className="text-design4-neutral-500 overflow-hidden text-xs md:text-sm">
-                    Omar Choudhry & Design4 Team
-                  </div>
-                </div>
-                <div className="mb-5 px-6 last:mb-0">
-                  <div className="mb-2 text-xs font-semibold text-design4-ink">Industries</div>
-                  <div className="text-design4-neutral-500 overflow-hidden text-xs md:text-sm">
-                    Technology, Financial Services, Healthcare, Manufacturing
-                  </div>
-                </div>
-                <div className="mb-5 px-6 last:mb-0">
-                  <div className="mb-2 text-xs font-semibold text-design4-ink">Website</div>
-                  <div className="text-design4-neutral-500 overflow-hidden text-xs md:text-sm">
-                    <Link href="/" className="hover:text-design4-primary underline transition-colors">
-                      https://design4.biz
                     </Link>
                   </div>
+                )}
+                
+                <div className="flex items-center gap-3 mb-6 flex-wrap">
+                  {/* Personas */}
+                  {samplePersonas.map((persona) => (
+                    <span key={persona} className="bg-design4-primary/10 text-design4-primary px-3 py-1 rounded-full text-sm font-medium">
+                      👑 {persona}
+                    </span>
+                  ))}
+                  
+                  {/* Phases */}
+                  {samplePhases.map((phase) => (
+                    <span key={phase} className="bg-design4-gold/10 text-design4-ink px-3 py-1 rounded-full text-sm font-medium">
+                      🔄 {phase}
+                    </span>
+                  ))}
+                  
+                  {/* Category (Pillar) */}
+                  <span className="bg-design4-neutral-100 text-design4-neutral-600 px-3 py-1 rounded-full text-sm font-medium">
+                    📋 {post.category}
+                  </span>
+                  
+                  {/* Read time */}
+                  <span className="text-design4-neutral-400 text-sm">
+                    ⏱️ {post.read_time_minutes} min read
+                  </span>
+                  
+                  {/* Time to apply */}
+                  <span className="text-design4-neutral-400 text-sm">
+                    🎯 Apply in 30 mins
+                  </span>
                 </div>
-                <div className="mb-5 px-6 last:mb-0">
-                  <div className="mb-2 text-xs font-semibold text-design4-ink">Topics</div>
-                  <div className="text-design4-neutral-500 overflow-hidden text-xs md:text-sm">
-                    Business Transformation, Strategic Alignment, Organizational Design
+
+                <h1 className="text-4xl lg:text-5xl font-bold text-design4-ink mb-4 leading-tight">
+                  {post.title}
+                </h1>
+                
+                {seriesInfo && (
+                  <div className="inline-flex items-center gap-2 bg-design4-primary/5 text-design4-primary px-3 py-1.5 rounded-lg text-sm font-medium mb-4">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    {seriesInfo.name} Series
+                  </div>
+                )}
+                
+                {post.excerpt && (
+                  <p className="text-xl text-design4-neutral-600 leading-relaxed mb-6">
+                    {post.excerpt}
+                  </p>
+                )}
+                
+                <div className="flex items-center mb-8">
+                  <div className="w-12 h-12 bg-design4-primary/10 rounded-full flex items-center justify-center mr-4">
+                    <span className="text-design4-primary font-medium">
+                      {post.author.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-design4-ink font-medium">{post.author}</p>
+                    <p className="text-design4-neutral-400 text-sm">{formatDate(post.published_at)}</p>
                   </div>
                 </div>
+              </header>
+
+              {/* What you'll learn: bordered box rendering whatYoullLearn list if present */}
+              <LearnBox items={sampleLearningOutcomes} />
+
+              {/* Primary CTA: top button; use post-specific cta or fall back to persona default map */}
+              <PostCTA personas={samplePersonas} />
+
+              {/* MDX content */}
+              <div className="prose-headings:text-design4-ink prose-p:text-design4-neutral-600 prose-strong:text-design4-ink prose-blockquote:border-l-design4-primary prose-blockquote:bg-design4-primary/5 prose-blockquote:text-design4-ink prose-a:text-design4-primary prose-a:no-underline hover:prose-a:underline prose-ul:text-design4-neutral-600 prose-ol:text-design4-neutral-600 prose-li:text-design4-neutral-600 mb-12">
+                <div dangerouslySetInnerHTML={{ __html: post.content }} />
               </div>
 
-              {/* Related Articles */}
-              {relatedPosts.length > 0 && (
-                <div className="mt-8 bg-white border border-design4-neutral-100 rounded-2xl p-6">
-                  <h3 className="text-lg font-bold text-design4-ink mb-4">Related Articles</h3>
-                  <div className="space-y-4">
-                    {relatedPosts.map((relatedPost) => (
-                      <Link
-                        key={relatedPost.id}
-                        href={`/blog/${relatedPost.slug}`}
-                        className="block group"
-                      >
-                        <h4 className="text-sm font-medium text-design4-ink group-hover:text-design4-primary transition-colors mb-1">
-                          {relatedPost.title}
-                        </h4>
-                        <p className="text-xs text-design4-neutral-500 mb-2">
-                          {relatedPost.excerpt?.substring(0, 100)}...
-                        </p>
-                        <div className="flex items-center text-xs text-design4-neutral-400">
-                          <span>{formatDate(relatedPost.published_at)}</span>
-                          <span className="mx-2">•</span>
-                          <span>{formatReadTime(relatedPost.read_time_minutes)}</span>
-                        </div>
-                      </Link>
-                    ))}
+              {/* Content upgrade: inline download card if present (placeholder for now) */}
+              {post.category === 'Leadership' && (
+                <div className="my-12 p-6 bg-gradient-to-r from-design4-neutral-50 to-design4-primary/5 rounded-xl border border-design4-neutral-200">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-design4-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <svg className="w-8 h-8 text-design4-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-design4-ink mb-2">Download the Leadership Framework Template</h3>
+                      <p className="text-design4-neutral-600 text-sm mb-3">Get our complete framework template to implement these strategies in your organization.</p>
+                      <button className="inline-flex items-center gap-2 bg-design4-primary text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-design4-primary/90 transition-colors">
+                        Download Template
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
-            </aside>
-          </div>
-        </section>
 
-        {/* CTA Section */}
-        <section className="bg-design4-primary py-16">
-          <div className="mx-auto max-w-design4-container px-6">
-            <div className="max-w-2xl mx-auto text-center">
-              <h2 className="text-3xl font-bold text-white mb-4">
-                Ready to Transform Your Organization?
-              </h2>
-              <p className="text-lg text-white/90 mb-8">
-                Discover how the Design4 framework can help you build sustainable competitive advantage.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link 
-                  href="/design4assessment"
-                  className="inline-flex items-center justify-center bg-white text-design4-primary px-8 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Take Assessment
-                </Link>
-                <Link 
-                  href="/ai-strategy"
-                  className="inline-flex items-center justify-center text-white font-medium hover:text-white/80 transition-colors"
-                >
-                  Try Design4 Assistant →
-                </Link>
-              </div>
-            </div>
+              {/* Author card */}
+              <AuthorCard 
+                name={post.author}
+                email={post.author_email}
+                bio="Strategic transformation expert with 15+ years helping organizations implement systematic change and achieve sustainable competitive advantage."
+                social={{
+                  linkedin: "https://linkedin.com/in/design4expert",
+                  twitter: "https://twitter.com/design4expert",
+                  website: "https://design4.biz"
+                }}
+              />
+
+              {/* Related posts: 3 posts, matched by (same persona OR same phase) then by pillar; exclude current slug */}
+              <RelatedPosts posts={related} />
+
+              {/* Secondary CTA: same as top */}
+              <PostCTA personas={samplePersonas} className="mt-16" />
+            </article>
           </div>
         </section>
       </main>
+      
+      {/* JsonLd for SEO */}
+      <JsonLd post={post} personas={samplePersonas} phases={samplePhases} />
+      
       <Footer />
     </>
   )

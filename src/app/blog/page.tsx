@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
-import { getAllBlogPosts, getFeaturedBlogPost, getBlogCategories } from '@/lib/blog'
+import { getAllBlogPosts, getFeaturedBlogPost, getBlogCategories, getAllPersonas, getAllPhases } from '@/lib/blog'
+import BlogFilters from './BlogFilters'
 
 export const metadata = {
   title: 'Design4 Blog | Insights & Strategies',
@@ -17,12 +18,34 @@ export const metadata = {
   },
 }
 
-export default async function Blog() {
-  const [featuredPost, recentPosts, categories] = await Promise.all([
+interface BlogPageProps {
+  searchParams: Promise<{
+    persona?: string
+    phase?: string
+  }>
+}
+
+export default async function Blog({ searchParams }: BlogPageProps) {
+  const resolvedSearchParams = await searchParams
+  const selectedPersonas = new Set(resolvedSearchParams.persona?.split(',').filter(Boolean) || [])
+  const selectedPhases = new Set(resolvedSearchParams.phase?.split(',').filter(Boolean) || [])
+
+  const [featuredPost, allPosts, categories, personas, phases] = await Promise.all([
     getFeaturedBlogPost(),
     getAllBlogPosts(),
-    getBlogCategories()
+    getBlogCategories(),
+    getAllPersonas(),
+    getAllPhases()
   ])
+
+  // Filter posts based on query parameters
+  // For now, since we don't have post_meta in database, we'll simulate filtering
+  // When post_meta is available, this will filter based on actual metadata
+  const filteredPosts = allPosts.filter(post => {
+    // Until database has post_meta, we'll show all posts for now
+    // In future: filter by post.post_meta?.target_personas and post.post_meta?.design4_phases
+    return true
+  })
 
   // Format dates for display
   const formatDate = (dateString: string | null) => {
@@ -51,33 +74,14 @@ export default async function Blog() {
           </div>
         </section>
 
-        {/* Header Section */}
-        <section className="bg-design4-bg py-16">
-          <div className="mx-auto max-w-design4-container px-6">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="inline-flex items-center bg-design4-primary/10 text-design4-ink rounded-full px-4 py-2 text-sm font-medium mb-6">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-                Design4 Insights
-              </div>
-              <h1 className="text-4xl lg:text-5xl font-bold text-design4-ink leading-tight mb-6">
-                Transforming Business Through Design
-              </h1>
-              <p className="text-lg text-design4-neutral-500 mb-8 leading-relaxed">
-                Expert insights, practical strategies, and real-world case studies on building businesses that outpace change through the Design4 framework.
-              </p>
-            </div>
-          </div>
-        </section>
 
-        {/* Featured Post */}
+        {/* Featured Post - Prominent */}
         {featuredPost && (
-          <section className="bg-design4-bg py-16">
+          <section className="bg-design4-bg pt-8 pb-20">
             <div className="mx-auto max-w-design4-container px-6">
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-design4-ink mb-2">Featured Article</h2>
-                <p className="text-design4-neutral-500">Our latest insights on business transformation</p>
+              <div className="mb-10">
+                <h1 className="text-3xl lg:text-4xl font-bold text-design4-ink mb-3">Featured Article</h1>
+                <p className="text-lg text-design4-neutral-500">Expert insights on business transformation</p>
               </div>
               
               <div className="bg-white rounded-3xl shadow-sm border border-design4-neutral-100 overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -133,12 +137,54 @@ export default async function Blog() {
           </section>
         )}
 
-        {/* Categories and Recent Posts */}
+        {/* Interactive Filters and Recent Posts */}
         <section className="bg-design4-neutral-100 py-20">
           <div className="mx-auto max-w-design4-container px-6">
+            {/* Interactive Filter Bar */}
+            <div className="mb-12">
+              <BlogFilters />
+            </div>
+
             <div className="flex flex-col lg:flex-row gap-12">
-              {/* Categories Sidebar */}
-              <div className="lg:w-1/4">
+              {/* Enhanced Filters Sidebar */}
+              <div className="lg:w-1/4 space-y-6">
+                {/* Persona Filter */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100">
+                  <h3 className="text-lg font-bold text-design4-ink mb-4">For Your Role</h3>
+                  <div className="space-y-2">
+                    {personas.map((persona) => (
+                      <button
+                        key={persona.id}
+                        className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors text-design4-neutral-500 hover:bg-design4-neutral-50 hover:text-design4-ink"
+                      >
+                        <div className="flex items-center">
+                          <span className="mr-2">{persona.icon}</span>
+                          <span>{persona.name}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Phase Filter */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100">
+                  <h3 className="text-lg font-bold text-design4-ink mb-4">Design4 Phases</h3>
+                  <div className="space-y-2">
+                    {phases.map((phase) => (
+                      <button
+                        key={phase.id}
+                        className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors text-design4-neutral-500 hover:bg-design4-neutral-50 hover:text-design4-ink"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span>{phase.name}</span>
+                          <span className="text-xs text-design4-neutral-400">{phase.order}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Categories Filter */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 sticky top-6">
                   <h3 className="text-lg font-bold text-design4-ink mb-4">Categories</h3>
                   <div className="space-y-2">
@@ -169,7 +215,7 @@ export default async function Blog() {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                  {recentPosts.map((post) => (
+                  {filteredPosts.map((post) => (
                     <article key={post.id} className="bg-white rounded-2xl shadow-sm border border-design4-neutral-100 overflow-hidden hover:shadow-lg hover:border-design4-primary/20 transition-all duration-300 group">
                       <div className="h-48 bg-gradient-to-br from-design4-primary/5 to-design4-gold/5 flex items-center justify-center">
                         <div className="w-16 h-16 bg-design4-primary/10 rounded-xl flex items-center justify-center group-hover:bg-design4-primary/20 transition-colors">
@@ -179,18 +225,84 @@ export default async function Blog() {
                         </div>
                       </div>
                       <div className="p-6">
-                        <div className="flex items-center gap-3 mb-3">
+                        <div className="flex items-center gap-2 mb-3 flex-wrap">
                           <span className="bg-design4-primary/10 text-design4-primary px-2 py-1 rounded-full text-xs font-medium">
                             {post.category}
                           </span>
+                          {post.post_meta?.content_format && (
+                            <span className="bg-design4-gold/10 text-design4-ink px-2 py-1 rounded-full text-xs font-medium">
+                              {post.post_meta.content_format}
+                            </span>
+                          )}
+                          {post.post_meta?.difficulty_level && (
+                            <span className="bg-design4-neutral-100 text-design4-neutral-600 px-2 py-1 rounded-full text-xs font-medium">
+                              {post.post_meta.difficulty_level}
+                            </span>
+                          )}
                           <span className="text-design4-neutral-400 text-xs">{formatReadTime(post.read_time_minutes)}</span>
                         </div>
                         <h3 className="text-lg font-bold text-design4-ink mb-2 leading-tight group-hover:text-design4-primary transition-colors">
                           {post.title}
                         </h3>
-                        <p className="text-design4-neutral-500 text-sm mb-4 leading-relaxed">
+                        <p className="text-design4-neutral-500 text-sm mb-3 leading-relaxed">
                           {post.excerpt}
                         </p>
+                        
+                        {/* Enhanced Persona and Phase Badges */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {/* Persona Badges - For now showing sample personas since post_meta is null */}
+                          {post.category === 'Leadership' && (
+                            <span className="bg-design4-primary/10 text-design4-primary px-2 py-1 rounded-full text-xs font-medium">
+                              👑 Founder
+                            </span>
+                          )}
+                          {post.category === 'Strategy' && (
+                            <span className="bg-design4-primary/10 text-design4-primary px-2 py-1 rounded-full text-xs font-medium">
+                              🚀 Transformation Leader
+                            </span>
+                          )}
+                          {post.category === 'Case Studies' && (
+                            <span className="bg-design4-primary/10 text-design4-primary px-2 py-1 rounded-full text-xs font-medium">
+                              🎯 Consultant
+                            </span>
+                          )}
+                          {post.category === 'Capabilities' && (
+                            <span className="bg-design4-primary/10 text-design4-primary px-2 py-1 rounded-full text-xs font-medium">
+                              ⚙️ Project Operations
+                            </span>
+                          )}
+                          
+                          {/* Phase Badges - Sample mapping based on content */}
+                          {(post.title.toLowerCase().includes('transformation') || post.category === 'Case Studies') && (
+                            <span className="bg-design4-gold/10 text-design4-ink px-2 py-1 rounded-full text-xs font-medium">
+                              Define
+                            </span>
+                          )}
+                          {post.title.toLowerCase().includes('capabilities') && (
+                            <span className="bg-design4-gold/10 text-design4-ink px-2 py-1 rounded-full text-xs font-medium">
+                              Develop
+                            </span>
+                          )}
+                          {post.title.toLowerCase().includes('strategic') && (
+                            <span className="bg-design4-gold/10 text-design4-ink px-2 py-1 rounded-full text-xs font-medium">
+                              Discover
+                            </span>
+                          )}
+                        </div>
+
+                        {post.post_meta?.target_personas && post.post_meta.target_personas.length > 0 && (
+                          <div className="flex items-center gap-1 mb-4">
+                            <span className="text-design4-neutral-400 text-xs">For:</span>
+                            {post.post_meta.target_personas.slice(0, 2).map((persona, index) => (
+                              <span key={persona} className="text-design4-primary text-xs font-medium">
+                                {persona.charAt(0).toUpperCase() + persona.slice(1).replace('-', ' ')}{index < Math.min(post.post_meta.target_personas.length, 2) - 1 ? ', ' : ''}
+                              </span>
+                            ))}
+                            {post.post_meta.target_personas.length > 2 && (
+                              <span className="text-design4-neutral-400 text-xs">+{post.post_meta.target_personas.length - 2} more</span>
+                            )}
+                          </div>
+                        )}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
                             <div className="w-8 h-8 bg-design4-primary/10 rounded-full flex items-center justify-center mr-2">

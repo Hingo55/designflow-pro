@@ -91,9 +91,9 @@ function LottieGraphic({ src, alt, className }: { src: string, alt: string, clas
 export default function Home() {
   const [isPersonaSelectorOpen, setIsPersonaSelectorOpen] = useState(false)
   const [showTopBanner, setShowTopBanner] = useState(true)
-  const [activeFrameworkElement, setActiveFrameworkElement] = useState(0) // 0=discover, 1=define, 2=develop, 3=deliver
+  const [activeFrameworkElement, setActiveFrameworkElement] = useState(0) // 0=discover, 1=define, 2=develop, 3=deliver, 4=design4 logo
   const [highlightedElement, setHighlightedElement] = useState(0) // For continuous visual highlighting
-  const [heroElement, setHeroElement] = useState(0) // For hero button/icon cycling (0=Discover, 1=Define, 2=Develop, 3=Deliver)
+  const [heroElement, setHeroElement] = useState(0) // For hero button/icon cycling (0=Discover, 1=Define, 2=Develop, 3=Deliver, 4=Design4)
   const [heroElementText, setHeroElementText] = useState(0) // For delayed text changes
   const { selectedPersona, handlePersonaSelect } = usePersona()
 
@@ -107,17 +107,17 @@ export default function Home() {
     // Start first transition after initial pause
     setTimeout(() => {
       setActiveFrameworkElement((prev) => {
-        const next = (prev + 1) % 4
+        const next = (prev + 1) % 5
         console.log('Active framework element changing from', prev, 'to', next)
         return next
       })
       setHighlightedElement((prev) => {
-        const next = (prev + 1) % 4
+        const next = (prev + 1) % 5
         console.log('Highlighted element changing from', prev, 'to', next)
         return next
       })
       setHeroElement((prev) => {
-        const next = (prev + 1) % 4
+        const next = (prev + 1) % 5
         console.log('Hero element changing from', prev, 'to', next)
         return next
       })
@@ -132,24 +132,24 @@ export default function Home() {
     const mainInterval = setInterval(() => {
       setTimeout(() => {
         setActiveFrameworkElement((prev) => {
-          const next = (prev + 1) % 4
+          const next = (prev + 1) % 5
           console.log('Active framework element changing from', prev, 'to', next)
           return next
         })
         setHighlightedElement((prev) => {
-          const next = (prev + 1) % 4
+          const next = (prev + 1) % 5
           console.log('Highlighted element changing from', prev, 'to', next)
           return next
         })
         setHeroElement((prev) => {
-          const next = (prev + 1) % 4
+          const next = (prev + 1) % 5
           console.log('Hero element changing from', prev, 'to', next)
           return next
         })
         // Delay text change by 1 second after color starts changing
         setTimeout(() => {
           setHeroElementText((prev) => {
-            const next = (prev + 1) % 4
+            const next = (prev + 1) % 5
             console.log('Hero element text changing from', prev, 'to', next)
             return next
           })
@@ -234,7 +234,7 @@ export default function Home() {
       case 'project-operations':
         return "Most organizations have great strategies that fail in execution—processes don't connect, capabilities aren't aligned, and performance metrics miss the mark. The Design4 Framework bridges strategy and operations, ensuring what gets planned actually gets done."
       default:
-        return "Most businesses struggle to stay aligned as they grow and change. The Design4 Framework keeps your outcomes, strategy, capabilities, and operations working together—no matter what comes next."
+        return "Use the Design4 Framework to keep your outcomes, strategy, capabilities, and operations working together—no matter what comes next."
     }
   }
 
@@ -294,6 +294,12 @@ export default function Home() {
           icon: "/success.json", 
           href: "/deliver"
         }
+      case 4:
+        return {
+          bgClass: "hero-button-design4",
+          icon: "/design4_logo_white_v2.svg",
+          href: "/resources"
+        }
       default:
         return {
           bgClass: "hero-button-discover",
@@ -313,6 +319,8 @@ export default function Home() {
         return "Develop"
       case 3:
         return "Deliver"
+      case 4:
+        return "Design4"
       default:
         return "Discover"
     }
@@ -344,6 +352,9 @@ export default function Home() {
         }
         .hero-button-deliver {
           background-color: #EE7F24 !important;
+        }
+        .hero-button-design4 {
+          background-color: #5F2762 !important;
         }
       `}</style>
       
@@ -398,7 +409,15 @@ export default function Home() {
                   href={getHeroElement().href}
                   className={`w-[6.4rem] h-[6.4rem] text-white rounded-full hero-button ${getHeroElement().bgClass} hover:transform hover:scale-105 flex items-center justify-center`}
                 >
-                  <span className="text-base font-bold uppercase">{getHeroElementText()}</span>
+                  {heroElementText === 4 ? (
+                    <img 
+                      src="/design4_logo_white_v2.svg" 
+                      alt="Design4 Logo" 
+                      className="w-32 h-32"
+                    />
+                  ) : (
+                    <span className="text-base font-bold uppercase">{getHeroElementText()}</span>
+                  )}
                 </Link>
               </div>
             </div>
@@ -409,7 +428,7 @@ export default function Home() {
                 <span className="block">Design business that works...</span>
                 <span className="block font-normal text-3xl lg:text-4xl xl:text-5xl text-white/90">and keeps working</span>
               </h1>
-              <p className="text-lg xl:text-xl text-white/80 mb-8 max-w-2xl lg:max-w-none">
+              <p className="text-lg xl:text-xl text-white/80 mb-8 max-w-2xl lg:max-w-4xl lg:pr-8">
                 {getHeroText()}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -474,7 +493,15 @@ export default function Home() {
                   href={getHeroElement().href}
                   className={`w-20 h-20 text-white rounded-full hero-button ${getHeroElement().bgClass} hover:transform hover:scale-105 flex items-center justify-center shadow-lg`}
                 >
-                  <span className="text-sm font-bold uppercase">{getHeroElementText()}</span>
+                  {heroElementText === 4 ? (
+                    <img 
+                      src="/design4_logo_white_v2.svg" 
+                      alt="Design4 Logo" 
+                      className="w-16 h-16"
+                    />
+                  ) : (
+                    <span className="text-sm font-bold uppercase">{getHeroElementText()}</span>
+                  )}
                 </Link>
               </div>
             </div>
@@ -486,11 +513,8 @@ export default function Home() {
                 <div className={`framework-box flex items-start gap-6 pl-12 pr-28 py-8 rounded-3xl border border-design4-gold hover:border-design4-gold hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 0 ? 'bg-design4-gold' : 'bg-design4-gold/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-gold rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
-                      Discover
+                      Discover Your Purpose
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-3">
-                      Purpose
-                    </h3>
                     <p className="text-white text-lg font-medium mb-3">
                       Ask: Are we getting the results?
                     </p>
@@ -515,11 +539,8 @@ export default function Home() {
                 <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-purple hover:border-design4-purple hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 1 ? 'bg-design4-purple' : 'bg-design4-purple/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-purple rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
-                      Define
+                      Define Your Strategy
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-3">
-                      Strategy
-                    </h3>
                     <p className="text-white text-lg font-medium mb-3">
                       Ask: Are we doing the right things?
                     </p>
@@ -544,11 +565,8 @@ export default function Home() {
                 <div className={`framework-box flex items-start gap-6 pl-12 pr-28 py-8 rounded-3xl border border-design4-orange hover:border-design4-orange hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 3 ? 'bg-design4-orange' : 'bg-design4-orange/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-orange rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
-                      Deliver
+                      Deliver Real Value
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-3">
-                      Value
-                    </h3>
                     <p className="text-white text-lg font-medium mb-3">
                       Ask: Are we getting them done well?
                     </p>
@@ -573,16 +591,13 @@ export default function Home() {
                 <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-green hover:border-design4-green hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 2 ? 'bg-design4-green' : 'bg-design4-green/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-green rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
-                      Develop
+                      Develop Your Capabilities
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-3">
-                      Capabilities
-                    </h3>
                     <p className="text-white text-lg font-medium mb-3">
                       Ask: Are we doing things the right way?
                     </p>
                     <p className="text-white/80 leading-relaxed">
-                      <strong>Strategy without capability is just wishful thinking.</strong> Build the systematic approaches, skills, and resources that turn your strategic choices into competitive advantages.
+                      <strong>Strategy without capability is just wishful thinking.</strong> Build systematic approaches, skills, and resources that turn your strategic choices into competitive advantages.
                     </p>
                   </div>
                   <div className={`absolute top-4 left-4 transition-transform duration-700 ease-in-out ${highlightedElement === 2 ? 'scale-200' : 'scale-100'}`}>
