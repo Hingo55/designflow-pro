@@ -384,16 +384,16 @@ export default function Blog() {
                           )}
                         </div>
 
-                        {post.post_meta?.target_personas && post.post_meta.target_personas.length > 0 && (
+                        {post.post_meta?.target_personas && post.post_meta?.target_personas?.length > 0 && (
                           <div className="flex items-center gap-1 mb-4">
                             <span className="text-design4-neutral-400 text-xs">For:</span>
-                            {post.post_meta.target_personas.slice(0, 2).map((persona, index) => (
+                            {post.post_meta?.target_personas?.slice(0, 2).map((persona, index) => (
                               <span key={persona} className="text-design4-primary text-xs font-medium">
-                                {persona.charAt(0).toUpperCase() + persona.slice(1).replace('-', ' ')}{index < Math.min(post.post_meta.target_personas.length, 2) - 1 ? ', ' : ''}
+                                {persona.charAt(0).toUpperCase() + persona.slice(1).replace('-', ' ')}{index < Math.min(post.post_meta?.target_personas?.length || 0, 2) - 1 ? ', ' : ''}
                               </span>
                             ))}
-                            {post.post_meta.target_personas.length > 2 && (
-                              <span className="text-design4-neutral-400 text-xs">+{post.post_meta.target_personas.length - 2} more</span>
+                            {(post.post_meta?.target_personas?.length || 0) > 2 && (
+                              <span className="text-design4-neutral-400 text-xs">+{(post.post_meta?.target_personas?.length || 0) - 2} more</span>
                             )}
                           </div>
                         )}
