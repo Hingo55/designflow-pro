@@ -1,51 +1,163 @@
+'use client'
+
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
-import { getAllBlogPosts, getFeaturedBlogPost, getBlogCategories, getAllPersonas, getAllPhases } from '@/lib/blog'
+import { getAllBlogPosts, getFeaturedBlogPost } from '@/lib/blog'
+import { prepareBlogImageUrl } from '@/lib/images'
 import BlogFilters from './BlogFilters'
 
-export const metadata = {
-  title: 'Design4 Blog | Insights & Strategies',
-  description: 'Expert insights on business transformation, strategic alignment, and organizational design from the Design4 framework.',
-  openGraph: {
-    title: 'Design4 Blog | Insights & Strategies',
-    description: 'Expert insights on business transformation, strategic alignment, and organizational design from the Design4 framework.',
-    type: 'website',
-    url: 'https://design4.biz/blog',
-  },
-  alternates: {
-    canonical: 'https://design4.biz/blog',
-  },
+interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  category: string
+  author: string
+  published_at: string | null
+  read_time_minutes: number
+  featured_image_url: string | null
+  featured: boolean
+  post_meta?: {
+    target_personas?: string[]
+    design4_phases?: string[]
+    content_format?: string
+    difficulty_level?: string
+  } | null
 }
 
-interface BlogPageProps {
-  searchParams: Promise<{
-    persona?: string
-    phase?: string
-  }>
-}
-
-export default async function Blog({ searchParams }: BlogPageProps) {
-  const resolvedSearchParams = await searchParams
-  const selectedPersonas = new Set(resolvedSearchParams.persona?.split(',').filter(Boolean) || [])
-  const selectedPhases = new Set(resolvedSearchParams.phase?.split(',').filter(Boolean) || [])
-
-  const [featuredPost, allPosts, categories, personas, phases] = await Promise.all([
-    getFeaturedBlogPost(),
-    getAllBlogPosts(),
-    getBlogCategories(),
-    getAllPersonas(),
-    getAllPhases()
-  ])
-
-  // Filter posts based on query parameters
-  // For now, since we don't have post_meta in database, we'll simulate filtering
-  // When post_meta is available, this will filter based on actual metadata
-  const filteredPosts = allPosts.filter(post => {
-    // Until database has post_meta, we'll show all posts for now
-    // In future: filter by post.post_meta?.target_personas and post.post_meta?.design4_phases
-    return true
+export default function Blog() {
+  const [featuredPost, setFeaturedPost] = useState<BlogPost | null>(null)
+  const [allPosts, setAllPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState({
+    persona: '',
+    phase: '',
+    search: ''
   })
+
+  // Load blog posts function
+  const loadPosts = useCallback(async () => {
+    try {
+      setLoading(true)
+      const [featured, posts] = await Promise.all([
+        getFeaturedBlogPost(),
+        getAllBlogPosts()
+      ])
+      
+      // Debug logging for image URLs
+      if (featured) {
+        console.log('Featured post:', featured.title, 'Image URL:', featured.featured_image_url)
+        console.log('Featured post slug:', featured.slug)
+        console.log('Featured post featured flag:', featured.featured)
+      } else {
+        console.log('No featured post found')
+      }
+      
+      const cmhaPost = posts.find(p => p.title.includes('CMHA'))
+      if (cmhaPost) {
+        console.log('CMHA post image URL:', cmhaPost.featured_image_url)
+        console.log('CMHA post slug:', cmhaPost.slug)
+        console.log('CMHA post featured flag:', cmhaPost.featured)
+      }
+      
+      // Log all posts with their featured status
+      console.log('All posts with featured status:', posts.map(p => ({
+        title: p.title.substring(0, 30) + '...',
+        slug: p.slug,
+        featured: p.featured,
+        hasImage: !!p.featured_image_url
+      })))
+      
+      setFeaturedPost(featured)
+      setAllPosts(posts)
+    } catch (error) {
+      console.error('Error loading blog posts:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Load blog posts on mount
+  useEffect(() => {
+    loadPosts()
+  }, [loadPosts])
+
+  // Listen for storage events to refresh when images are updated
+  useEffect(() => {
+    const handleStorageChange = () => {
+      loadPosts()
+    }
+    
+    // Also listen for focus events (when user switches back to this tab)
+    const handleFocus = () => {
+      loadPosts()
+    }
+    
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('focus', handleFocus)
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [loadPosts])
+
+  // Add a manual refresh button for development
+  const handleRefresh = () => {
+    console.log('🔄 Manual refresh triggered')
+    loadPosts()
+  }
+
+  // Filter posts based on current filters
+  const filteredPosts = useMemo(() => {
+    return allPosts.filter(post => {
+      // Search filter
+      if (filters.search) {
+        const searchTerm = filters.search.toLowerCase()
+        const matchesTitle = post.title.toLowerCase().includes(searchTerm)
+        const matchesExcerpt = post.excerpt.toLowerCase().includes(searchTerm)
+        const matchesCategory = post.category.toLowerCase().includes(searchTerm)
+        if (!matchesTitle && !matchesExcerpt && !matchesCategory) {
+          return false
+        }
+      }
+
+      // Persona filter - for now using category-based mapping since post_meta is not populated
+      if (filters.persona && filters.persona !== 'All Roles') {
+        const personaMatches = {
+          'Founder': post.category === 'Leadership',
+          'Transformation Leader': post.category === 'Strategy',
+          'Consultant': post.category === 'Case Studies',
+          'Project Operations': post.category === 'Capabilities'
+        }
+        if (!personaMatches[filters.persona as keyof typeof personaMatches]) {
+          return false
+        }
+      }
+
+      // Phase filter - using content-based mapping
+      if (filters.phase && filters.phase !== 'All Phases') {
+        const phaseMatches = {
+          'Discover': post.title.toLowerCase().includes('strategic'),
+          'Define': post.title.toLowerCase().includes('transformation') || post.category === 'Case Studies',
+          'Develop': post.title.toLowerCase().includes('capabilities'),
+          'Deliver': post.title.toLowerCase().includes('deliver') || post.title.toLowerCase().includes('implementation')
+        }
+        if (!phaseMatches[filters.phase as keyof typeof phaseMatches]) {
+          return false
+        }
+      }
+
+      return true
+    })
+  }, [allPosts, filters])
+
+  // Handle filter changes
+  const handleFiltersChange = useCallback((newFilters: { persona: string; phase: string; search: string }) => {
+    setFilters(newFilters)
+  }, [])
 
   // Format dates for display
   const formatDate = (dateString: string | null) => {
@@ -58,6 +170,23 @@ export default async function Blog({ searchParams }: BlogPageProps) {
   }
 
   const formatReadTime = (minutes: number) => `${minutes} min read`
+
+  if (loading) {
+    return (
+      <>
+        <Navigation />
+        <main className="min-h-screen bg-design4-bg">
+          <div className="mx-auto max-w-design4-container px-6 py-20">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-design4-primary mx-auto"></div>
+              <p className="mt-4 text-design4-neutral-500">Loading articles...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
+  }
 
   return (
     <>
@@ -74,7 +203,6 @@ export default async function Blog({ searchParams }: BlogPageProps) {
           </div>
         </section>
 
-
         {/* Featured Post - Prominent */}
         {featuredPost && (
           <section className="bg-design4-bg pt-8 pb-20">
@@ -87,12 +215,16 @@ export default async function Blog({ searchParams }: BlogPageProps) {
               <div className="bg-white rounded-3xl shadow-sm border border-design4-neutral-100 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <div className="lg:flex">
                   <div className="lg:w-1/2">
-                    <div className="h-64 lg:h-full bg-gradient-to-br from-design4-primary/10 to-design4-gold/10 flex items-center justify-center">
-                      <div className="w-24 h-24 bg-design4-primary/20 rounded-2xl flex items-center justify-center">
-                        <svg className="w-12 h-12 text-design4-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                      </div>
+                    <div className="h-64 lg:h-full relative overflow-hidden">
+                      <Image
+                        src={prepareBlogImageUrl(featuredPost.featured_image_url, featuredPost.category, { width: 600, height: 400, quality: 85 })}
+                        alt={featuredPost.title}
+                        fill
+                        priority
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-design4-primary/10 via-transparent to-design4-gold/10" />
                     </div>
                   </div>
                   <div className="lg:w-1/2 p-8 lg:p-12">
@@ -141,88 +273,50 @@ export default async function Blog({ searchParams }: BlogPageProps) {
         <section className="bg-design4-neutral-100 py-20">
           <div className="mx-auto max-w-design4-container px-6">
             {/* Interactive Filter Bar */}
-            <div className="mb-12">
-              <BlogFilters />
-            </div>
+            <BlogFilters onFiltersChange={handleFiltersChange} />
 
-            <div className="flex flex-col lg:flex-row gap-12">
-              {/* Enhanced Filters Sidebar */}
-              <div className="lg:w-1/4 space-y-6">
-                {/* Persona Filter */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100">
-                  <h3 className="text-lg font-bold text-design4-ink mb-4">For Your Role</h3>
-                  <div className="space-y-2">
-                    {personas.map((persona) => (
-                      <button
-                        key={persona.id}
-                        className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors text-design4-neutral-500 hover:bg-design4-neutral-50 hover:text-design4-ink"
-                      >
-                        <div className="flex items-center">
-                          <span className="mr-2">{persona.icon}</span>
-                          <span>{persona.name}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Phase Filter */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100">
-                  <h3 className="text-lg font-bold text-design4-ink mb-4">Design4 Phases</h3>
-                  <div className="space-y-2">
-                    {phases.map((phase) => (
-                      <button
-                        key={phase.id}
-                        className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors text-design4-neutral-500 hover:bg-design4-neutral-50 hover:text-design4-ink"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span>{phase.name}</span>
-                          <span className="text-xs text-design4-neutral-400">{phase.order}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Categories Filter */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 sticky top-6">
-                  <h3 className="text-lg font-bold text-design4-ink mb-4">Categories</h3>
-                  <div className="space-y-2">
-                    {categories.map((category, index) => (
-                      <button
-                        key={index}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          index === 0 
-                            ? 'bg-design4-primary/10 text-design4-primary' 
-                            : 'text-design4-neutral-500 hover:bg-design4-neutral-50 hover:text-design4-ink'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span>{category.name}</span>
-                          <span className="text-xs text-design4-neutral-400">{category.count}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            {/* Recent Posts Grid */}
+            <div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-design4-ink mb-2">
+                  {filters.search || filters.persona !== '' || filters.phase !== '' 
+                    ? `Filtered Articles (${filteredPosts.length})` 
+                    : 'Recent Articles'
+                  }
+                </h2>
+                <p className="text-design4-neutral-500">
+                  {filters.search || filters.persona !== '' || filters.phase !== ''
+                    ? `Showing ${filteredPosts.length} articles matching your criteria`
+                    : 'Latest insights and strategies from our team'
+                  }
+                </p>
               </div>
 
-              {/* Recent Posts Grid */}
-              <div className="lg:w-3/4">
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-design4-ink mb-2">Recent Articles</h2>
-                  <p className="text-design4-neutral-500">Latest insights and strategies from our team</p>
+              {filteredPosts.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-design4-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-design4-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-design4-ink mb-2">No articles found</h3>
+                  <p className="text-design4-neutral-500 mb-4">
+                    Try adjusting your filters or search terms to find more articles.
+                  </p>
                 </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
+              ) : (
+                <div className="grid md:grid-cols-3 gap-6">
                   {filteredPosts.map((post) => (
                     <article key={post.id} className="bg-white rounded-2xl shadow-sm border border-design4-neutral-100 overflow-hidden hover:shadow-lg hover:border-design4-primary/20 transition-all duration-300 group">
-                      <div className="h-48 bg-gradient-to-br from-design4-primary/5 to-design4-gold/5 flex items-center justify-center">
-                        <div className="w-16 h-16 bg-design4-primary/10 rounded-xl flex items-center justify-center group-hover:bg-design4-primary/20 transition-colors">
-                          <svg className="w-8 h-8 text-design4-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                          </svg>
-                        </div>
+                      <div className="h-56 relative overflow-hidden">
+                        <Image
+                          src={prepareBlogImageUrl(post.featured_image_url, post.category, { width: 400, height: 320, quality: 85 })}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-design4-primary/20 via-transparent to-transparent" />
                       </div>
                       <div className="p-6">
                         <div className="flex items-center gap-2 mb-3 flex-wrap">
@@ -326,14 +420,16 @@ export default async function Blog({ searchParams }: BlogPageProps) {
                     </article>
                   ))}
                 </div>
+              )}
 
-                {/* Load More */}
+              {/* Load More - only show if there are results and no filters active */}
+              {filteredPosts.length > 0 && !filters.search && !filters.persona && !filters.phase && (
                 <div className="text-center mt-12">
                   <button className="bg-design4-primary text-white px-8 py-3 rounded-xl font-medium hover:bg-design4-primary/90 transition-colors">
                     Load More Articles
                   </button>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </section>

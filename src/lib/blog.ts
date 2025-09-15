@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase, supabaseAdmin } from './supabase'
 
 export interface Persona {
   id: string
@@ -76,7 +76,7 @@ export interface BlogPostSummary {
 // supabase client is imported from ./supabase
 
 export async function getAllBlogPosts(): Promise<BlogPostSummary[]> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('blog_posts')
     .select(`
       id,
@@ -97,6 +97,14 @@ export async function getAllBlogPosts(): Promise<BlogPostSummary[]> {
     console.error('Error fetching blog posts:', error)
     return []
   }
+
+  // Debug: log raw data from database
+  console.log('🔍 Raw blog posts data from database:', data?.map(post => ({
+    title: post.title?.substring(0, 30) + '...',
+    slug: post.slug,
+    featured_image_url: post.featured_image_url,
+    featured: post.featured
+  })))
 
   return (data || []).map(post => ({ ...post, post_meta: null }))
 }
@@ -138,7 +146,7 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
 }
 
 export async function getFeaturedBlogPost(): Promise<BlogPostSummary | null> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('blog_posts')
     .select(`
       id,
@@ -162,6 +170,14 @@ export async function getFeaturedBlogPost(): Promise<BlogPostSummary | null> {
     console.error('Error fetching featured blog post:', error)
     return null
   }
+
+  // Debug: log raw featured post data from database
+  console.log('🔍 Raw featured post data from database:', {
+    title: data?.title,
+    slug: data?.slug,
+    featured_image_url: data?.featured_image_url,
+    featured: data?.featured
+  })
 
   return data ? { ...data, post_meta: null } : null
 }
@@ -467,4 +483,45 @@ export function getPostSeries(post: BlogPost | BlogPostSummary): { name: string;
   }
   
   return null
+}
+
+/**
+ * Update a blog post's featured image URL
+ * @param slug - The blog post slug
+ * @param imageUrl - The new image URL (or null to remove)
+ * @returns Promise with success/error result
+ */
+export async function updateBlogPostImage(slug: string, imageUrl: string | null): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log('🔧 Attempting update with slug:', slug)
+    console.log('🔧 Image URL:', imageUrl)
+    
+    // Simple, direct update - remove status filter for now
+    const { data, error } = await supabaseAdmin
+      .from('blog_posts')
+      .update({ featured_image_url: imageUrl })
+      .eq('slug', slug)
+      .select('id, title, slug, featured_image_url, status')
+
+    console.log('🔧 Direct update result:', { data, error })
+
+    if (error) {
+      console.error('Error updating blog post image:', error)
+      return { success: false, error: error.message }
+    }
+
+    if (!data || data.length === 0) {
+      console.error('No rows updated - post not found or not published')
+      return { success: false, error: 'Post not found or not published' }
+    }
+
+    console.log('✅ Update successful:', data[0])
+    return { success: true }
+  } catch (error) {
+    console.error('Update blog post image error:', error)
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred' 
+    }
+  }
 }

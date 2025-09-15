@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { BlogPostSummary } from '@/lib/blog'
+import { prepareBlogImageUrl } from '@/lib/images'
 
 interface RelatedPostsProps {
   posts: BlogPostSummary[]
@@ -22,12 +24,15 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
             href={`/blog/${post.slug}`}
             className="group block bg-white rounded-xl border border-design4-neutral-100 overflow-hidden hover:shadow-lg hover:border-design4-primary/20 transition-all duration-300"
           >
-            <div className="h-40 bg-gradient-to-br from-design4-primary/5 to-design4-gold/5 flex items-center justify-center">
-              <div className="w-12 h-12 bg-design4-primary/10 rounded-lg flex items-center justify-center group-hover:bg-design4-primary/20 transition-colors">
-                <svg className="w-6 h-6 text-design4-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-              </div>
+            <div className="h-40 relative overflow-hidden">
+              <Image
+                src={prepareBlogImageUrl(post.featured_image_url, post.category, { width: 400, height: 160, quality: 85 })}
+                alt={post.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-design4-primary/20 via-transparent to-transparent" />
             </div>
             
             <div className="p-4">
