@@ -1,115 +1,116 @@
 "use client"
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { Search, X } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-const PERSONAS = ["Founder", "Transformation Leader", "Consultant", "Project Operations"]
-const PHASES = ["Discover", "Define", "Develop", "Deliver"]
+const PERSONAS = ["All Roles", "Founder", "Transformation Leader", "Consultant", "Project Operations"]
+const PHASES = ["All Phases", "Discover", "Define", "Develop", "Deliver"]
 
-export default function BlogFilters() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+interface BlogFiltersProps {
+  onFiltersChange: (filters: { persona: string; phase: string; search: string }) => void
+}
 
-  const createQueryString = useCallback(
-    (name: string, value: string | null) => {
-      const params = new URLSearchParams(searchParams.toString())
-      if (value === null) {
-        params.delete(name)
-      } else {
-        params.set(name, value)
-      }
-      return params.toString()
-    },
-    [searchParams]
-  )
+export default function BlogFilters({ onFiltersChange }: BlogFiltersProps) {
+  const [selectedPersona, setSelectedPersona] = useState("All Roles")
+  const [selectedPhase, setSelectedPhase] = useState("All Phases")
+  const [searchQuery, setSearchQuery] = useState("")
 
-  const toggle = (key: "persona" | "phase", value: string) => {
-    const currentValues = searchParams.get(key)?.split(',').filter(Boolean) || []
-    const currentSet = new Set(currentValues)
-    
-    if (currentSet.has(value)) {
-      currentSet.delete(value)
-    } else {
-      currentSet.add(value)
-    }
-    
-    const newValue = currentSet.size > 0 ? Array.from(currentSet).join(',') : null
-    const queryString = createQueryString(key, newValue)
-    router.push(`${pathname}?${queryString}`)
+  // Notify parent component when filters change
+  useEffect(() => {
+    onFiltersChange({
+      persona: selectedPersona === "All Roles" ? "" : selectedPersona,
+      phase: selectedPhase === "All Phases" ? "" : selectedPhase,
+      search: searchQuery
+    })
+  }, [selectedPersona, selectedPhase, searchQuery])
+
+  const hasActiveFilters = selectedPersona !== "All Roles" || selectedPhase !== "All Phases" || searchQuery.length > 0
+
+  const clearAllFilters = () => {
+    setSelectedPersona("All Roles")
+    setSelectedPhase("All Phases")
+    setSearchQuery("")
   }
 
-  const clearAll = () => {
-    router.push(pathname)
+  const clearSearch = () => {
+    setSearchQuery("")
   }
-
-  const activePersonas = new Set(searchParams.get('persona')?.split(',').filter(Boolean) || [])
-  const activePhases = new Set(searchParams.get('phase')?.split(',').filter(Boolean) || [])
-  const hasActiveFilters = activePersonas.size > 0 || activePhases.size > 0
 
   return (
-    <div className="mb-8 space-y-4">
-      {/* Persona Filters */}
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium text-design4-ink">Filter by Role</h3>
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by persona">
-          {PERSONAS.map((persona) => {
-            const isActive = activePersonas.has(persona)
-            return (
+    <div className="mb-8">
+      {/* Enhanced Filter Bar with Search */}
+      <div className="bg-white rounded-2xl border border-design4-neutral-100 shadow-sm p-6">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          
+          {/* Search Bar */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-design4-neutral-400" />
+            <Input
+              placeholder="Search articles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10 h-10 border-design4-neutral-200 focus:border-design4-primary focus:ring-design4-primary"
+            />
+            {searchQuery && (
               <button
-                key={persona}
-                onClick={() => toggle("persona", persona)}
-                className={`px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-primary focus:ring-offset-2 ${
-                  isActive
-                    ? 'bg-design4-primary text-white border-design4-primary shadow-sm'
-                    : 'bg-white text-design4-neutral-600 border-design4-neutral-200 hover:bg-design4-neutral-50 hover:border-design4-primary'
-                }`}
-                aria-pressed={isActive}
-                tabIndex={0}
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-design4-neutral-400 hover:text-design4-neutral-600 transition-colors"
               >
-                {persona}
+                <X className="h-4 w-4" />
               </button>
-            )
-          })}
+            )}
+          </div>
+
+          {/* Filters Row */}
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Role Filter */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-design4-neutral-600 whitespace-nowrap">Role:</span>
+              <Select value={selectedPersona} onValueChange={setSelectedPersona}>
+                <SelectTrigger className="w-44 h-10 border-design4-neutral-200 focus:border-design4-primary focus:ring-design4-primary">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PERSONAS.map((persona) => (
+                    <SelectItem key={persona} value={persona}>
+                      {persona}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Phase Filter */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-design4-neutral-600 whitespace-nowrap">Phase:</span>
+              <Select value={selectedPhase} onValueChange={setSelectedPhase}>
+                <SelectTrigger className="w-36 h-10 border-design4-neutral-200 focus:border-design4-primary focus:ring-design4-primary">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PHASES.map((phase) => (
+                    <SelectItem key={phase} value={phase}>
+                      {phase}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Clear All Button */}
+            {hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="px-3 py-1.5 text-sm font-medium text-design4-neutral-500 hover:text-design4-primary transition-colors focus:outline-none focus:ring-2 focus:ring-design4-primary focus:ring-offset-1 rounded-lg hover:bg-design4-neutral-50 whitespace-nowrap"
+              >
+                Clear All
+              </button>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Phase Filters */}
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium text-design4-ink">Filter by Design4 Phase</h3>
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by phase">
-          {PHASES.map((phase) => {
-            const isActive = activePhases.has(phase)
-            return (
-              <button
-                key={phase}
-                onClick={() => toggle("phase", phase)}
-                className={`px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-primary focus:ring-offset-2 ${
-                  isActive
-                    ? 'bg-design4-gold text-design4-ink border-design4-gold shadow-sm'
-                    : 'bg-white text-design4-neutral-600 border-design4-neutral-200 hover:bg-design4-neutral-50 hover:border-design4-gold'
-                }`}
-                aria-pressed={isActive}
-                tabIndex={0}
-              >
-                {phase}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Clear All Button */}
-      {hasActiveFilters && (
-        <div className="pt-2">
-          <button
-            onClick={clearAll}
-            className="px-4 py-2 text-sm font-medium text-design4-neutral-500 hover:text-design4-primary transition-colors focus:outline-none focus:ring-2 focus:ring-design4-primary focus:ring-offset-2 rounded-md"
-          >
-            Clear All Filters
-          </button>
-        </div>
-      )}
     </div>
   )
 }

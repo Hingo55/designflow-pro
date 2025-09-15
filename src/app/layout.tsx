@@ -12,6 +12,11 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: 'DesignFlow Pro - Design4 Framework Platform',
   description: 'A comprehensive platform that helps business leaders implement the Design4 framework through interactive tools, resources, and community features.',
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
 }
 
 export default function RootLayout({
