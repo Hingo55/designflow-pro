@@ -69,6 +69,7 @@ export interface BlogPostSummary {
   featured_image_url: string | null
   read_time_minutes: number
   published_at: string | null
+  created_at: string
   featured: boolean
   post_meta: PostMeta | null
 }
@@ -88,6 +89,7 @@ export async function getAllBlogPosts(): Promise<BlogPostSummary[]> {
       featured_image_url,
       read_time_minutes,
       published_at,
+      created_at,
       featured
     `)
     .eq('status', 'published')
@@ -158,6 +160,7 @@ export async function getFeaturedBlogPost(): Promise<BlogPostSummary | null> {
       featured_image_url,
       read_time_minutes,
       published_at,
+      created_at,
       featured
     `)
     .eq('status', 'published')
@@ -195,6 +198,7 @@ export async function getBlogPostsByCategory(category: string): Promise<BlogPost
       featured_image_url,
       read_time_minutes,
       published_at,
+      created_at,
       featured
     `)
     .eq('status', 'published')
@@ -279,6 +283,7 @@ export async function getRelatedPosts(currentSlug: string, category: string, lim
       featured_image_url,
       read_time_minutes,
       published_at,
+      created_at,
       featured
     `)
     .eq('status', 'published')

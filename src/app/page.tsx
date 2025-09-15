@@ -510,7 +510,7 @@ export default function Home() {
             {/* Discover - Purpose */}
             <div className="group">
               <Link href="/discover" className="block">
-                <div className={`framework-box flex items-start gap-6 pl-12 pr-28 py-8 rounded-3xl border border-design4-gold hover:border-design4-gold hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 0 ? 'bg-design4-gold' : 'bg-design4-gold/30'}`}>
+                <div className={`framework-box flex items-start gap-6 pl-12 pr-28 py-8 rounded-3xl border border-design4-gold hover:border-design4-gold hover:shadow-lg transition-colors duration-[3s] ease-in-out relative ${highlightedElement === 0 ? 'bg-design4-gold' : 'bg-design4-gold/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-gold rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
                       Discover Your Purpose
@@ -536,7 +536,7 @@ export default function Home() {
             {/* Define - Strategy */}
             <div className="group">
               <Link href="/define" className="block">
-                <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-purple hover:border-design4-purple hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 1 ? 'bg-design4-purple' : 'bg-design4-purple/30'}`}>
+                <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-purple hover:border-design4-purple hover:shadow-lg transition-colors duration-[3s] ease-in-out relative ${highlightedElement === 1 ? 'bg-design4-purple' : 'bg-design4-purple/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-purple rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
                       Define Your Strategy
@@ -562,7 +562,7 @@ export default function Home() {
             {/* Deliver - Value */}
             <div className="group">
               <Link href="/deliver" className="block">
-                <div className={`framework-box flex items-start gap-6 pl-12 pr-28 py-8 rounded-3xl border border-design4-orange hover:border-design4-orange hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 3 ? 'bg-design4-orange' : 'bg-design4-orange/30'}`}>
+                <div className={`framework-box flex items-start gap-6 pl-12 pr-28 py-8 rounded-3xl border border-design4-orange hover:border-design4-orange hover:shadow-lg transition-colors duration-[3s] ease-in-out relative ${highlightedElement === 3 ? 'bg-design4-orange' : 'bg-design4-orange/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-orange rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
                       Deliver Real Value
@@ -588,7 +588,7 @@ export default function Home() {
             {/* Develop - Capabilities */}
             <div className="group">
               <Link href="/develop" className="block">
-                <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-green hover:border-design4-green hover:shadow-lg transition-colors duration-[3000ms] ease-in-out relative ${highlightedElement === 2 ? 'bg-design4-green' : 'bg-design4-green/30'}`}>
+                <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-green hover:border-design4-green hover:shadow-lg transition-colors duration-[3s] ease-in-out relative ${highlightedElement === 2 ? 'bg-design4-green' : 'bg-design4-green/30'}`}>
                   <div className="flex-1">
                     <div className="inline-block bg-white text-design4-green rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
                       Develop Your Capabilities
