@@ -13,7 +13,7 @@ interface BlogPost {
   id: string
   title: string
   slug: string
-  excerpt: string
+  excerpt: string | null
   category: string
   author: string
   published_at: string | null
@@ -117,7 +117,7 @@ export default function Blog() {
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase()
         const matchesTitle = post.title.toLowerCase().includes(searchTerm)
-        const matchesExcerpt = post.excerpt.toLowerCase().includes(searchTerm)
+        const matchesExcerpt = post.excerpt?.toLowerCase().includes(searchTerm) || false
         const matchesCategory = post.category.toLowerCase().includes(searchTerm)
         if (!matchesTitle && !matchesExcerpt && !matchesCategory) {
           return false
@@ -339,7 +339,7 @@ export default function Blog() {
                           {post.title}
                         </h3>
                         <p className="text-design4-neutral-500 text-sm mb-3 leading-relaxed">
-                          {post.excerpt}
+                          {post.excerpt || 'No excerpt available'}
                         </p>
                         
                         {/* Enhanced Persona and Phase Badges */}
