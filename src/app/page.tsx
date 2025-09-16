@@ -410,11 +410,7 @@ export default function Home() {
                   className={`w-[6.4rem] h-[6.4rem] text-white rounded-full hero-button ${getHeroElement().bgClass} hover:transform hover:scale-105 flex items-center justify-center`}
                 >
                   {heroElementText === 4 ? (
-                    <img 
-                      src="/design4_logo_white_v2.svg" 
-                      alt="Design4 Logo" 
-                      className="w-32 h-32"
-                    />
+                    <span className="text-base font-bold">Design4</span>
                   ) : (
                     <span className="text-base font-bold uppercase">{getHeroElementText()}</span>
                   )}
@@ -477,13 +473,13 @@ export default function Home() {
           <div className="relative">
             {/* Background Control System Animation */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-64 h-64 opacity-15" style={{
+              <div className="w-[20rem] lg:w-[22rem] h-auto opacity-15" style={{
                 filter: 'invert(0.2) sepia(1) saturate(3) hue-rotate(190deg) brightness(0.6)'
               }}>
                 <LottieGraphic
                   src="/control-system.json"
                   alt="Design4 Control System"
-                  className="w-full h-full"
+                  className="w-full h-auto"
                 />
               </div>
               
@@ -491,16 +487,16 @@ export default function Home() {
               <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
                 <Link 
                   href={getHeroElement().href}
-                  className={`w-20 h-20 text-white rounded-full hero-button ${getHeroElement().bgClass} hover:transform hover:scale-105 flex items-center justify-center shadow-lg`}
+                  className={`w-[8rem] h-[8rem] text-white rounded-full hero-button ${getHeroElement().bgClass} hover:transform hover:scale-105 flex items-center justify-center shadow-lg`}
                 >
                   {heroElementText === 4 ? (
                     <img 
                       src="/design4_logo_white_v2.svg" 
                       alt="Design4 Logo" 
-                      className="w-16 h-16"
+                      className="w-40 h-40"
                     />
                   ) : (
-                    <span className="text-sm font-bold uppercase">{getHeroElementText()}</span>
+                    <span className="text-lg font-bold uppercase">{getHeroElementText()}</span>
                   )}
                 </Link>
               </div>

@@ -7,7 +7,7 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { getAllBlogPosts, getFeaturedBlogPost } from '@/lib/blog'
 import { prepareBlogImageUrl } from '@/lib/images'
-import BlogFilters from './BlogFilters'
+import SidebarFilters from './SidebarFilters'
 
 interface BlogPost {
   id: string
@@ -37,6 +37,7 @@ export default function Blog() {
     phase: '',
     search: ''
   })
+  const [showMobileFilters, setShowMobileFilters] = useState(false)
 
   // Load blog posts function
   const loadPosts = useCallback(async () => {
@@ -192,16 +193,6 @@ export default function Blog() {
     <>
       <Navigation />
       <main className="min-h-screen bg-design4-bg">
-        {/* Breadcrumb */}
-        <section className="bg-design4-bg border-b border-design4-neutral-100">
-          <div className="mx-auto max-w-design4-container px-6 py-4">
-            <nav className="flex items-center space-x-2 text-sm text-design4-neutral-500">
-              <Link href="/" className="hover:text-design4-primary transition-colors">Home</Link>
-              <span>/</span>
-              <span className="text-design4-ink">Blog</span>
-            </nav>
-          </div>
-        </section>
 
         {/* Featured Post - Prominent */}
         {featuredPost && (
@@ -269,14 +260,51 @@ export default function Blog() {
           </section>
         )}
 
-        {/* Interactive Filters and Recent Posts */}
-        <section className="bg-design4-neutral-100 py-20">
-          <div className="mx-auto max-w-design4-container px-6">
-            {/* Interactive Filter Bar */}
-            <BlogFilters onFiltersChange={handleFiltersChange} />
+        {/* Sidebar Layout with Filters and Recent Posts */}
+        <section className="bg-white py-20">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="flex gap-12">
+              {/* Left Sidebar - Filters */}
+              <div className="w-64 flex-shrink-0 hidden lg:block">
+                <SidebarFilters onFiltersChange={handleFiltersChange} />
+              </div>
 
-            {/* Recent Posts Grid */}
-            <div>
+              {/* Main Content */}
+              <div className="flex-1 min-w-0">
+                {/* Mobile Filter Button */}
+                <div className="lg:hidden mb-6">
+                  <button
+                    onClick={() => setShowMobileFilters(true)}
+                    className="inline-flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
+                    </svg>
+                    Filters
+                  </button>
+                </div>
+
+                {/* Mobile Filter Overlay */}
+                {showMobileFilters && (
+                  <div className="fixed inset-0 z-50 lg:hidden">
+                    <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowMobileFilters(false)} />
+                    <div className="fixed inset-y-0 left-0 w-80 bg-white shadow-xl p-6 overflow-y-auto">
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                        <button
+                          onClick={() => setShowMobileFilters(false)}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <SidebarFilters onFiltersChange={handleFiltersChange} />
+                    </div>
+                  </div>
+                )}
+
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-design4-ink mb-2">
                   {filters.search || filters.persona !== '' || filters.phase !== '' 
@@ -430,6 +458,7 @@ export default function Blog() {
                   </button>
                 </div>
               )}
+              </div>
             </div>
           </div>
         </section>
