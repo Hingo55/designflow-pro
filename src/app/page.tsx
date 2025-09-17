@@ -484,10 +484,10 @@ export default function Home() {
               </div>
               
               {/* Cycling Framework Button - Centered on gear */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-auto z-20">
                 <Link 
                   href={getHeroElement().href}
-                  className={`w-[8rem] h-[8rem] text-white rounded-full hero-button ${getHeroElement().bgClass} hover:transform hover:scale-105 flex items-center justify-center shadow-lg`}
+                  className={`w-[8rem] h-[8rem] text-white rounded-full hero-button ${getHeroElement().bgClass} hover:transform hover:scale-105 flex items-center justify-center`}
                 >
                   {heroElementText === 4 ? (
                     <img 
@@ -518,7 +518,7 @@ export default function Home() {
                       <strong>Start with outcomes that matter.</strong> Measure what creates real value for stakeholders and use those insights to drive continuous improvement across everything you do.
                     </p>
                   </div>
-                  <div className={`absolute bottom-4 right-4 transition-transform duration-700 ease-in-out ${highlightedElement === 0 ? 'scale-200' : 'scale-100'}`}>
+                  <div className={`absolute top-1/3 right-4 -translate-y-1/2 transition-all duration-700 ease-in-out ${highlightedElement === 0 ? 'scale-200 opacity-100' : 'scale-100 opacity-0'}`}>
                     <LottieGraphic
                       src="/purpose.json"
                       alt="Purpose Discovery Animation"
@@ -534,8 +534,10 @@ export default function Home() {
               <Link href="/define" className="block">
                 <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-purple hover:border-design4-purple hover:shadow-lg transition-colors duration-[3s] ease-in-out relative ${highlightedElement === 1 ? 'bg-design4-purple' : 'bg-design4-purple/30'}`}>
                   <div className="flex-1">
-                    <div className="inline-block bg-white text-design4-purple rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
-                      Define Your Strategy
+                    <div className="text-right mb-4">
+                      <div className="inline-block bg-white text-design4-purple rounded-full px-4 py-1.5 text-sm font-semibold">
+                        Define Your Strategy
+                      </div>
                     </div>
                     <p className="text-white text-lg font-medium mb-3">
                       Ask: Are we doing the right things?
@@ -544,7 +546,7 @@ export default function Home() {
                       <strong>Purpose without direction is just inspiration.</strong> Connect your organizational why to clear strategic choices about where to play, how to win, and what you won't do.
                     </p>
                   </div>
-                  <div className={`absolute bottom-4 left-4 transition-transform duration-700 ease-in-out ${highlightedElement === 1 ? 'scale-200' : 'scale-100'}`}>
+                  <div className={`absolute top-1/3 left-4 -translate-y-1/2 transition-all duration-700 ease-in-out ${highlightedElement === 1 ? 'scale-200 opacity-100' : 'scale-100 opacity-0'}`}>
                     <LottieGraphic
                       src="/strategy.json"
                       alt="Strategy Definition Animation"
@@ -570,7 +572,7 @@ export default function Home() {
                       <strong>Capabilities without execution deliver nothing.</strong> Align daily operations with strategic intent through disciplined delivery and clear accountability that drives results.
                     </p>
                   </div>
-                  <div className={`absolute top-4 right-4 transition-transform duration-700 ease-in-out ${highlightedElement === 3 ? 'scale-200' : 'scale-100'}`}>
+                  <div className={`absolute top-1/2 right-4 -translate-y-1/2 transition-all duration-700 ease-in-out ${highlightedElement === 3 ? 'scale-200 opacity-100' : 'scale-100 opacity-0'}`}>
                     <LottieGraphic
                       src="/success.json"
                       alt="Success Delivery Animation"
@@ -586,8 +588,10 @@ export default function Home() {
               <Link href="/develop" className="block">
                 <div className={`framework-box flex items-start gap-6 pl-28 pr-12 py-8 rounded-3xl border border-design4-green hover:border-design4-green hover:shadow-lg transition-colors duration-[3s] ease-in-out relative ${highlightedElement === 2 ? 'bg-design4-green' : 'bg-design4-green/30'}`}>
                   <div className="flex-1">
-                    <div className="inline-block bg-white text-design4-green rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
-                      Develop Your Capabilities
+                    <div className="text-right mb-4">
+                      <div className="inline-block bg-white text-design4-green rounded-full px-4 py-1.5 text-sm font-semibold">
+                        Develop Your Capabilities
+                      </div>
                     </div>
                     <p className="text-white text-lg font-medium mb-3">
                       Ask: Are we doing things the right way?
@@ -596,7 +600,7 @@ export default function Home() {
                       <strong>Strategy without capability is just wishful thinking.</strong> Build systematic approaches, skills, and resources that turn your strategic choices into competitive advantages.
                     </p>
                   </div>
-                  <div className={`absolute top-4 left-4 transition-transform duration-700 ease-in-out ${highlightedElement === 2 ? 'scale-200' : 'scale-100'}`}>
+                  <div className={`absolute top-1/2 left-4 -translate-y-1/2 transition-all duration-700 ease-in-out ${highlightedElement === 2 ? 'scale-200 opacity-100' : 'scale-100 opacity-0'}`}>
                     <LottieGraphic
                       src="/capability.json"
                       alt="Capability Development Animation"

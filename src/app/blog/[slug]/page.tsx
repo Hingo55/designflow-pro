@@ -257,7 +257,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
                       </p>
                     ),
                     blockquote: ({ children }) => (
-                      <blockquote className="border-l-4 border-design4-primary bg-design4-primary/5 pl-6 pt-1 pb-1 my-6 text-base italic text-design4-ink leading-7">
+                      <blockquote className="border-l-4 border-design4-primary bg-design4-primary/5 pl-6 py-3 my-6 text-base italic text-design4-ink leading-7">
                         {children}
                       </blockquote>
                     ),
