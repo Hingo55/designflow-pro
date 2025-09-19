@@ -104,7 +104,7 @@ export default function Navigation() {
   const colors = getTextColors()
 
   return (
-    <nav className={getNavBackground()}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 ${getNavBackground()}`}>
       <div className="mx-auto max-w-design4-container px-6">
         <div className="flex items-center justify-between h-20">
           {/* Logo/Home Link */}
@@ -112,9 +112,9 @@ export default function Navigation() {
             href="/" 
             className={`flex items-center space-x-2 ${colors.logo} font-bold text-2xl hover:opacity-90 transition-opacity`}
           >
-            <img 
+            <img
               src={pathname === '/discover' || pathname === '/develop' ? '/design4_logo_black_v2.svg' : '/design4_logo_white_v2.svg'}
-              alt="Design4 Logo" 
+              alt="Design4 Logo"
               className="h-48 w-auto"
             />
           </Link>

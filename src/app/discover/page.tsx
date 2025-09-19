@@ -5,6 +5,7 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { useState, useEffect } from 'react'
 import Lottie from 'lottie-react'
+import { Users, Target, TrendingUp } from 'lucide-react'
 
 function LottieGraphic({ src, alt, className }: { src: string, alt: string, className: string }) {
   const [animationData, setAnimationData] = useState<any>(null)
@@ -84,7 +85,7 @@ export default function DiscoverPage() {
             {/* Step 1 */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm">
               <div className="w-12 h-12 bg-design4-gold rounded-xl flex items-center justify-center mx-auto mb-4">
-                <span className="text-design4-ink font-bold text-lg">1</span>
+                <Users className="w-6 h-6 text-design4-ink" />
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3 text-center">
                 Stakeholder Insights
@@ -97,7 +98,7 @@ export default function DiscoverPage() {
             {/* Step 2 */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm">
               <div className="w-12 h-12 bg-design4-gold rounded-xl flex items-center justify-center mx-auto mb-4">
-                <span className="text-design4-ink font-bold text-lg">2</span>
+                <Target className="w-6 h-6 text-design4-ink" />
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3 text-center">
                 Purpose Alignment
@@ -110,7 +111,7 @@ export default function DiscoverPage() {
             {/* Step 3 */}
             <article className="bg-white border border-design4-neutral-100 rounded-2xl p-6 shadow-sm">
               <div className="w-12 h-12 bg-design4-gold rounded-xl flex items-center justify-center mx-auto mb-4">
-                <span className="text-design4-ink font-bold text-lg">3</span>
+                <TrendingUp className="w-6 h-6 text-design4-ink" />
               </div>
               <h3 className="text-xl font-semibold text-design4-ink mb-3 text-center">
                 Success Metrics

@@ -26,101 +26,85 @@ export default function Resources() {
         {/* Header Section */}
         <section className="bg-design4-bg py-16">
           <div className="mx-auto max-w-design4-container px-6">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="inline-flex items-center bg-design4-green/10 text-design4-ink rounded-full px-4 py-2 text-sm font-medium mb-6">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-                Design4 Resources
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left Content */}
+              <div>
+                <h1 className="text-4xl lg:text-5xl font-bold text-design4-ink leading-tight mb-6">
+                  Everything You Need to Implement Design4
+                </h1>
+                <p className="text-lg text-design4-neutral-500 mb-8 leading-relaxed">
+                  Access our complete library of tools, templates, and playbooks to accelerate your Design4 implementation and maximize your transformation success.
+                </p>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="email"
+                    placeholder="What's your work email?"
+                    className="flex-1 px-4 py-3 border border-design4-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-design4-primary focus:border-transparent"
+                  />
+                  <button className="bg-design4-ink text-white px-6 py-3 rounded-xl font-medium hover:bg-design4-ink/90 transition-colors whitespace-nowrap">
+                    Get Started →
+                  </button>
+                </div>
               </div>
-              <h1 className="text-4xl lg:text-5xl font-bold text-design4-ink leading-tight mb-6">
-                Everything You Need to Implement Design4
-              </h1>
-              <p className="text-lg text-design4-neutral-500 mb-8 leading-relaxed">
-                Access our complete library of tools, templates, and guides to accelerate your Design4 implementation and maximize your transformation success.
-              </p>
+
+              {/* Right Featured Resource */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-design4-neutral-100">
+                <div className="text-sm text-design4-neutral-500 mb-4">Featured Resource</div>
+                <div className="w-16 h-16 bg-design4-gold/10 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                  <svg className="w-8 h-8 text-design4-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-design4-ink mb-4 text-center">
+                  Outcomes Model Development Playbook
+                </h3>
+                <p className="text-design4-neutral-500 text-sm mb-6 leading-relaxed">
+                  The complete guide to developing and implementing an effective outcomes model that aligns organizational purpose with customer needs and strategic goals, ensuring measurable business results.
+                </p>
+                <Link
+                  href="/resources/outcomes-model-development"
+                  className="block w-full bg-design4-gold text-design4-ink px-4 py-3 rounded-xl font-medium hover:bg-design4-gold/90 transition-colors text-center"
+                >
+                  Access Playbook →
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Featured Resources */}
-        <section className="bg-design4-neutral-100 py-20">
-          <div className="mx-auto max-w-design4-container px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-design4-ink mb-4">
-                Featured Resources
-              </h2>
-              <p className="text-design4-neutral-500 max-w-2xl mx-auto">
-                Start with these essential resources to build a strong foundation for your Design4 journey
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 mb-16">
-              {/* Whitepaper Feature Card */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm border border-design4-neutral-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-design4-gold/5 rounded-full -translate-y-16 translate-x-16"></div>
-                <div className="relative">
-                  <div className="w-16 h-16 bg-design4-gold/10 rounded-2xl flex items-center justify-center mb-6">
-                    <svg className="w-8 h-8 text-design4-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-design4-ink mb-4">Design4 Framework Whitepaper</h3>
-                  <p className="text-design4-neutral-500 mb-6 leading-relaxed">
-                    The complete guide to aligning purpose, strategy, capabilities, and operations. 40+ pages of frameworks, tools, and implementation guidance.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Link
-                      href="/whitepaper"
-                      className="inline-flex items-center justify-center bg-design4-gold text-design4-ink px-6 py-3 rounded-xl font-medium hover:bg-design4-gold/90 transition-colors"
-                    >
-                      Read Overview
-                    </Link>
-                    <Link
-                      href="/whitepapers/design4-whitepaper.html"
-                      className="inline-flex items-center justify-center text-design4-gold font-medium hover:text-design4-gold/80 transition-colors"
-                    >
-                      Read Online →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              {/* Assessment Feature Card */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm border border-design4-neutral-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-design4-primary/5 rounded-full -translate-y-16 translate-x-16"></div>
-                <div className="relative">
-                  <div className="w-16 h-16 bg-design4-primary/10 rounded-2xl flex items-center justify-center mb-6">
-                    <svg className="w-8 h-8 text-design4-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-design4-ink mb-4">Design4 Assessment</h3>
-                  <p className="text-design4-neutral-500 mb-6 leading-relaxed">
-                    Discover where your organization stands across the four Design4 phases. Get personalized recommendations in just 5 minutes.
-                  </p>
-                  <Link
-                    href="/design4assessment"
-                    className="inline-flex items-center justify-center bg-design4-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-design4-plum/90 transition-colors w-full sm:w-auto"
-                  >
-                    Take Assessment
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Tools & Templates */}
         <section className="bg-design4-bg py-20">
           <div className="mx-auto max-w-design4-container px-6">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-design4-ink mb-4">
-                Tools & Templates
+                Design4 Playbooks
               </h2>
-              <p className="text-design4-neutral-500 max-w-2xl mx-auto">
+              <p className="text-design4-neutral-500 max-w-2xl mx-auto mb-8">
                 Practical resources to accelerate your Design4 implementation
               </p>
+
+              {/* Filter Tabs */}
+              <div className="flex flex-wrap justify-center gap-3">
+                <button className="inline-flex items-center bg-design4-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-ink/90 transition-colors">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  All
+                </button>
+                <button className="inline-flex items-center bg-design4-neutral-100 text-design4-neutral-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-gold/10 hover:text-design4-gold transition-colors">
+                  Discover
+                </button>
+                <button className="inline-flex items-center bg-design4-neutral-100 text-design4-neutral-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-purple/10 hover:text-design4-purple transition-colors">
+                  Define
+                </button>
+                <button className="inline-flex items-center bg-design4-neutral-100 text-design4-neutral-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-green/10 hover:text-design4-green transition-colors">
+                  Develop
+                </button>
+                <button className="inline-flex items-center bg-design4-neutral-100 text-design4-neutral-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-orange/10 hover:text-design4-orange transition-colors">
+                  Deliver
+                </button>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
