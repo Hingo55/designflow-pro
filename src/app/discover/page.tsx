@@ -30,7 +30,7 @@ export default function DiscoverPage() {
       <Navigation />
       <main className="min-h-screen bg-design4-gold">
       {/* Hero Section */}
-      <section className="bg-design4-gold">
+      <section className="bg-design4-gold pt-20">
         <div className="mx-auto max-w-design4-container px-6 py-24">
           <div className="grid lg:grid-cols-[auto_1fr] gap-2 lg:gap-4 items-center">
             {/* Purpose Graphic */}

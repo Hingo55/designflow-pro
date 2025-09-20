@@ -124,7 +124,7 @@ export default async function BlogPost({ params }: BlogPostPageProps) {
       <Navigation />
       <main className="min-h-screen bg-design4-bg">
         {/* Article */}
-        <section className="pt-4 lg:pt-6 pb-16 lg:pb-24">
+        <section className="pt-24 lg:pt-28 pb-16 lg:pb-24">
           <div className="mx-auto max-w-4xl px-6 lg:px-8">
             <article className="prose prose-xl max-w-none">
               

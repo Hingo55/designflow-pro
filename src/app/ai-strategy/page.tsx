@@ -168,7 +168,7 @@ function AIStrategyContent() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-design4-orange">
+      <main className="min-h-screen bg-design4-orange pt-20">
         <div className="mx-auto max-w-design4-container px-6 py-24">
         <div className="mb-12 text-center">
           <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">

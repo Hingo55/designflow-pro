@@ -5,7 +5,6 @@ import Navigation from '@/components/Navigation'
 import PersonaSelector from '@/components/PersonaSelector'
 import Footer from '@/components/Footer'
 import React, { useState } from 'react'
-import { Compass } from 'lucide-react'
 import { usePersona } from '@/hooks/usePersona'
 import Lottie from 'lottie-react'
 import { useEffect, useState as useComponentState, useRef } from 'react'
@@ -90,7 +89,6 @@ function LottieGraphic({ src, alt, className }: { src: string, alt: string, clas
 
 export default function Home() {
   const [isPersonaSelectorOpen, setIsPersonaSelectorOpen] = useState(false)
-  const [showTopBanner, setShowTopBanner] = useState(true)
   const [activeFrameworkElement, setActiveFrameworkElement] = useState(0) // 0=discover, 1=define, 2=develop, 3=deliver, 4=design4 logo
   const [highlightedElement, setHighlightedElement] = useState(0) // For continuous visual highlighting
   const [heroElement, setHeroElement] = useState(0) // For hero button/icon cycling (0=Discover, 1=Define, 2=Develop, 3=Deliver, 4=Design4)
@@ -161,6 +159,17 @@ export default function Home() {
       clearInterval(mainInterval)
     }
   }, [])
+
+  // Auto-open persona selector 5 seconds after page load if no persona is set
+  useEffect(() => {
+    if (!selectedPersona) {
+      const timer = setTimeout(() => {
+        setIsPersonaSelectorOpen(true)
+      }, 5000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [selectedPersona])
 
   const getPersonaGraphic = () => {
     console.log('Selected persona:', selectedPersona) // Debug log
@@ -358,38 +367,11 @@ export default function Home() {
         }
       `}</style>
       
-      {/* Black Floating Banner */}
-      {showTopBanner && (
-        <div className="bg-black text-white py-3 px-6 relative">
-          <div className="mx-auto max-w-design4-container flex items-center justify-center">
-            <button
-              onClick={() => setIsPersonaSelectorOpen(true)}
-              className="flex items-center gap-3 text-white hover:text-white/80 transition-colors"
-            >
-              <Compass className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm font-medium">
-                Discover how to use the Design4 Framework to accelerate your business success
-              </span>
-              <span className="ml-2 text-white/60">→</span>
-            </button>
-            <button
-              onClick={() => setShowTopBanner(false)}
-              className="absolute right-6 text-white/60 hover:text-white/80 transition-colors p-1"
-              aria-label="Close banner"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
-      
       <Navigation />
       <main className="min-h-screen bg-design4-teal">
 
       {/* Hero Section */}
-      <section className="bg-design4-teal">
+      <section className="bg-design4-teal pt-20">
         <div className="mx-auto max-w-design4-container px-6 py-24">
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-4">
             {/* Control System Graphic with Framework Button */}

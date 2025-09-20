@@ -13,7 +13,7 @@ export default function Resources() {
       <Navigation />
       <main className="min-h-screen bg-design4-bg">
         {/* Breadcrumb */}
-        <section className="bg-design4-bg border-b border-design4-neutral-100">
+        <section className="bg-design4-bg border-b border-design4-neutral-100 pt-20">
           <div className="mx-auto max-w-design4-container px-6 py-4">
             <nav className="flex items-center space-x-2 text-sm text-design4-neutral-500">
               <Link href="/" className="hover:text-design4-primary transition-colors">Home</Link>

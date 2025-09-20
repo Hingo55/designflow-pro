@@ -177,7 +177,7 @@ export default function Blog() {
       <>
         <Navigation />
         <main className="min-h-screen bg-design4-bg">
-          <div className="mx-auto max-w-design4-container px-6 py-20">
+          <div className="mx-auto max-w-design4-container px-6 py-20 pt-28">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-design4-primary mx-auto"></div>
               <p className="mt-4 text-design4-neutral-500">Loading articles...</p>
@@ -196,7 +196,7 @@ export default function Blog() {
 
         {/* Featured Post - Prominent */}
         {featuredPost && (
-          <section className="bg-design4-bg pt-8 pb-20">
+          <section className="bg-design4-bg pt-28 pb-20">
             <div className="mx-auto max-w-design4-container px-6">
               <div className="mb-10">
                 <h1 className="text-3xl lg:text-4xl font-bold text-design4-ink mb-3">Featured Article</h1>
@@ -261,7 +261,7 @@ export default function Blog() {
         )}
 
         {/* Sidebar Layout with Filters and Recent Posts */}
-        <section className="bg-white py-20">
+        <section className={`bg-white py-20 ${!featuredPost ? 'pt-28' : ''}`}>
           <div className="mx-auto max-w-7xl px-6">
             <div className="flex gap-12">
               {/* Left Sidebar - Filters */}
