@@ -1,19 +1,140 @@
+'use client'
+
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
+import { BookOpen, Target, BarChart, Users, TrendingUp, Lightbulb, Search, PenTool, Code, Truck, Wrench } from 'lucide-react'
 
-export const metadata = {
-  title: 'Design4 Resources | Design4.biz',
-  description: 'Tools, templates, and guides for implementing the Design4 framework in your organization.',
-}
+// Metadata moved to layout.tsx for client component
 
 export default function Resources() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-design4-bg">
+
+      {/* Content with Sidebar */}
+      <SidebarProvider>
+        <div className="flex w-full bg-design4-bg min-h-screen pt-20">
+          <Sidebar variant="floating" className="hidden md:flex mt-20 z-[60]">
+            <SidebarHeader>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="flex items-center gap-2 px-2 py-1 hover:opacity-80 transition-opacity w-full text-left"
+              >
+                <BookOpen className="h-5 w-5" />
+                <span className="text-sm font-semibold">Design4 Resources</span>
+              </button>
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupLabel>Interactive Tools</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/resources/tools">
+                          <Wrench className="h-4 w-4" />
+                          <span>All Tools</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/resources/tools/outcomes-model-tool">
+                          <Target className="h-4 w-4" />
+                          <span>Outcomes Model Tool</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+
+              <SidebarGroup>
+                <SidebarGroupLabel>Playbooks</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/resources/outcomes-model-development">
+                          <BookOpen className="h-4 w-4" />
+                          <span>Outcomes Model Development</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+
+              <SidebarGroup>
+                <SidebarGroupLabel>Framework Phases</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/discover">
+                          <Search className="h-4 w-4" />
+                          <span>Discover</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/define">
+                          <PenTool className="h-4 w-4" />
+                          <span>Define</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/develop">
+                          <Code className="h-4 w-4" />
+                          <span>Develop</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/deliver">
+                          <Truck className="h-4 w-4" />
+                          <span>Deliver</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </SidebarContent>
+          </Sidebar>
+
+          <SidebarInset className="flex-1 md:ml-4">
+            {/* Mobile Sidebar Trigger */}
+            <div className="md:hidden p-4">
+              <SidebarTrigger />
+            </div>
+
+            <main className="min-h-screen bg-design4-bg">
         {/* Breadcrumb */}
-        <section className="bg-design4-bg border-b border-design4-neutral-100 pt-20">
+        <section className="bg-design4-bg border-b border-design4-neutral-100">
           <div className="mx-auto max-w-design4-container px-6 py-4">
             <nav className="flex items-center space-x-2 text-sm text-design4-neutral-500">
               <Link href="/" className="hover:text-design4-primary transition-colors">Home</Link>
@@ -108,6 +229,17 @@ export default function Resources() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Link href="/resources/tools" className="group bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 hover:shadow-lg hover:border-design4-teal/20 transition-all duration-200 block">
+                <div className="w-12 h-12 bg-design4-teal/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-teal/20 transition-colors">
+                  <Wrench className="w-6 h-6 text-design4-teal" />
+                </div>
+                <h3 className="text-lg font-semibold text-design4-ink mb-2">Interactive Tools</h3>
+                <p className="text-design4-neutral-500 text-sm mb-4">Access our suite of interactive tools including the Outcomes Model Tool and more coming soon.</p>
+                <span className="text-design4-teal font-medium text-sm hover:text-design4-teal/80 transition-colors">
+                  View All Tools →
+                </span>
+              </Link>
+
               <div className="group bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 hover:shadow-lg hover:border-design4-gold/20 transition-all duration-200">
                 <div className="w-12 h-12 bg-design4-gold/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-gold/20 transition-colors">
                   <svg className="w-6 h-6 text-design4-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -326,7 +458,11 @@ export default function Resources() {
             </div>
           </div>
         </section>
-      </main>
+            </main>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+
       <Footer />
     </>
   )

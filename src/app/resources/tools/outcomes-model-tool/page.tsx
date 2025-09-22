@@ -17,7 +17,13 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { BookOpen, Target, Users, Heart, TrendingUp, BarChart, CheckCircle, Bot, Send, Download } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { BookOpen, Target, Users, Heart, TrendingUp, BarChart, CheckCircle, Bot, Send, Download, X } from 'lucide-react'
 import { useState, useRef } from 'react'
 
 export default function OutcomesModelToolPage() {
@@ -39,6 +45,9 @@ export default function OutcomesModelToolPage() {
   const [conversationHistory, setConversationHistory] = useState<any[]>([])
   const [currentMessage, setCurrentMessage] = useState('')
   const [finalOutcomesModel, setFinalOutcomesModel] = useState<any>(null)
+
+  // Video modal state
+  const [openVideoModal, setOpenVideoModal] = useState<string | null>(null)
 
   // PDF export ref
   const pdfContentRef = useRef<HTMLDivElement>(null)
@@ -488,6 +497,7 @@ export default function OutcomesModelToolPage() {
                               variant="outline"
                               size="sm"
                               className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50"
+                              onClick={() => setOpenVideoModal('purpose')}
                             >
                               Show me
                             </Button>
@@ -535,6 +545,7 @@ export default function OutcomesModelToolPage() {
                               variant="outline"
                               size="sm"
                               className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50"
+                              onClick={() => setOpenVideoModal('groups')}
                             >
                               Show me
                             </Button>
@@ -582,6 +593,7 @@ export default function OutcomesModelToolPage() {
                               variant="outline"
                               size="sm"
                               className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50"
+                              onClick={() => setOpenVideoModal('needs')}
                             >
                               Show me
                             </Button>
@@ -629,6 +641,7 @@ export default function OutcomesModelToolPage() {
                               variant="outline"
                               size="sm"
                               className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50"
+                              onClick={() => setOpenVideoModal('goals')}
                             >
                               Show me
                             </Button>
@@ -676,6 +689,7 @@ export default function OutcomesModelToolPage() {
                               variant="outline"
                               size="sm"
                               className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50"
+                              onClick={() => setOpenVideoModal('outcomes')}
                             >
                               Show me
                             </Button>
@@ -703,9 +717,9 @@ export default function OutcomesModelToolPage() {
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={50}>
-              <div className="h-full bg-white">
+              <div className="h-full bg-white px-4">
                 {finalOutcomesModel ? (
-                  <div className="h-full p-6 overflow-y-auto">
+                  <div className="h-full p-6 pl-6 overflow-y-auto">
                     <div className="mb-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
@@ -1071,10 +1085,10 @@ export default function OutcomesModelToolPage() {
                     <div className="text-center">
                       <CheckCircle className="w-16 h-16 text-design4-primary mx-auto mb-6" />
                       <h1 className="text-2xl font-bold text-design4-ink mb-4">
-                        Ready for AI Enhancement!
+                        Ready for Design4 AI Enhancement!
                       </h1>
                       <p className="text-design4-neutral-600 mb-6 max-w-md">
-                        All components are complete. Start the AI assistant to refine your outcomes model with expert guidance.
+                        All components are complete. Start the Design4 Outcomes Model AI assistant to refine your outcomes model with expert guidance.
                       </p>
                       <Button
                         onClick={startAIAssistant}
@@ -1089,20 +1103,20 @@ export default function OutcomesModelToolPage() {
                         ) : (
                           <div className="flex items-center gap-2">
                             <Bot className="w-5 h-5" />
-                            Start AI Assistant
+                            Start Design4 AI Assistant
                           </div>
                         )}
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="h-full flex items-center justify-center">
+                  <div className="h-full flex items-center justify-center px-4">
                     <div className="text-center">
                       <h1 className="text-2xl font-bold text-design4-ink mb-4">
                         Outcomes Model Progress
                       </h1>
                       <p className="text-design4-neutral-600 mb-6">
-                        Complete all sections and mark them done to unlock AI assistance.
+                        Complete all sections and mark them done to unlock Design4 AI assistance.
                       </p>
                       <div className="space-y-3 text-left max-w-sm">
                         <div className={`flex items-center gap-3 ${purposeDone && purposeText.trim() ? 'text-design4-primary' : 'text-design4-neutral-400'}`}>
@@ -1136,6 +1150,94 @@ export default function OutcomesModelToolPage() {
       </div>
 
       <Footer />
+
+      {/* Video Modal */}
+      <Dialog open={!!openVideoModal} onOpenChange={() => setOpenVideoModal(null)}>
+        <DialogContent className="max-w-4xl w-full h-[80vh] p-0 bg-black border-0">
+          <DialogHeader className="absolute top-4 right-4 z-50">
+            <Button
+              onClick={() => setOpenVideoModal(null)}
+              variant="ghost"
+              size="icon"
+              className="bg-black/50 hover:bg-black/70 text-white rounded-full"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </DialogHeader>
+          <div className="relative w-full h-full rounded-lg overflow-hidden">
+            {openVideoModal === 'purpose' && (
+              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Purpose Statement Video</h3>
+                  <p className="text-gray-300">Learn how to craft compelling purpose statements</p>
+                  <p className="text-sm text-gray-400 mt-4">Video content coming soon...</p>
+                </div>
+              </div>
+            )}
+            {openVideoModal === 'groups' && (
+              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Customer Groups Video</h3>
+                  <p className="text-gray-300">Identify and categorize your customer segments</p>
+                  <p className="text-sm text-gray-400 mt-4">Video content coming soon...</p>
+                </div>
+              </div>
+            )}
+            {openVideoModal === 'needs' && (
+              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Customer Needs Video</h3>
+                  <p className="text-gray-300">Understand and document customer requirements</p>
+                  <p className="text-sm text-gray-400 mt-4">Video content coming soon...</p>
+                </div>
+              </div>
+            )}
+            {openVideoModal === 'goals' && (
+              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Strategic Goals Video</h3>
+                  <p className="text-gray-300">Define SMART strategic objectives</p>
+                  <p className="text-sm text-gray-400 mt-4">Video content coming soon...</p>
+                </div>
+              </div>
+            )}
+            {openVideoModal === 'outcomes' && (
+              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Outcomes Video</h3>
+                  <p className="text-gray-300">Measure and track meaningful outcomes</p>
+                  <p className="text-sm text-gray-400 mt-4">Video content coming soon...</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

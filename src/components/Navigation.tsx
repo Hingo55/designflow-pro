@@ -17,6 +17,7 @@ export default function Navigation() {
     { href: '/deliver', label: 'Deliver' },
     { href: '/resources', label: 'Resources' },
     { href: '/blog', label: 'Blog' },
+    { href: '/admin', label: 'Admin' },
   ]
 
   // Get background color based on current page
