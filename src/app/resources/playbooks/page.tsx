@@ -17,7 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { BookOpen, Target, BarChart, Users, TrendingUp, Lightbulb, Search, PenTool, Code, Truck, FileText, Download } from 'lucide-react'
+import { BookOpen, Target, BarChart, Users, TrendingUp, Lightbulb, Search, PenTool, Code, Truck, FileText, Download, FolderOpen } from 'lucide-react'
 
 export default function PlaybooksPage() {
   return (
@@ -59,7 +59,7 @@ export default function PlaybooksPage() {
                           }}
                         >
                           <Search className="h-4 w-4" />
-                          <span>Discover</span>
+                          <span>Discover Playbooks</span>
                         </a>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -73,7 +73,7 @@ export default function PlaybooksPage() {
                           }}
                         >
                           <PenTool className="h-4 w-4" />
-                          <span>Define</span>
+                          <span>Define Playbooks</span>
                         </a>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -87,7 +87,7 @@ export default function PlaybooksPage() {
                           }}
                         >
                           <Code className="h-4 w-4" />
-                          <span>Develop</span>
+                          <span>Develop Playbooks</span>
                         </a>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -101,8 +101,24 @@ export default function PlaybooksPage() {
                           }}
                         >
                           <Truck className="h-4 w-4" />
-                          <span>Deliver</span>
+                          <span>Deliver Playbooks</span>
                         </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+
+              <SidebarGroup>
+                <SidebarGroupLabel>Navigate</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/resources">
+                          <FolderOpen className="h-4 w-4" />
+                          <span>Back to Resources</span>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>
