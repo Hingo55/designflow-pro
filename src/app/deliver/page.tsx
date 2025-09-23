@@ -51,8 +51,8 @@ export default function DeliverPage() {
                 The best strategies mean nothing without disciplined execution. Effective delivery means clear objectives, focused effort, and the courage to abandon what doesn't work.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link 
-                  href="/resources" 
+                <Link
+                  href="/resources/tools#deliver"
                   className="inline-block bg-white text-design4-orange px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-orange"
                 >
                   Get Delivery Tools

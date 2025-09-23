@@ -505,7 +505,7 @@ export default function CustomerJourneyMapToolPage() {
                               <Switch
                                 checked={personaDone}
                                 onCheckedChange={setPersonaDone}
-                                className="data-[state=checked]:bg-design4-orange"
+                                className="data-[state=checked]:bg-design4-primary"
                               />
                               <span className="text-sm text-design4-ink">Done</span>
                             </div>
@@ -553,7 +553,7 @@ export default function CustomerJourneyMapToolPage() {
                               <Switch
                                 checked={stagesDone}
                                 onCheckedChange={setStagesDone}
-                                className="data-[state=checked]:bg-design4-orange"
+                                className="data-[state=checked]:bg-design4-primary"
                               />
                               <span className="text-sm text-design4-ink">Done</span>
                             </div>
@@ -601,7 +601,7 @@ export default function CustomerJourneyMapToolPage() {
                               <Switch
                                 checked={touchpointsDone}
                                 onCheckedChange={setTouchpointsDone}
-                                className="data-[state=checked]:bg-design4-orange"
+                                className="data-[state=checked]:bg-design4-primary"
                               />
                               <span className="text-sm text-design4-ink">Done</span>
                             </div>
@@ -649,7 +649,7 @@ export default function CustomerJourneyMapToolPage() {
                               <Switch
                                 checked={emotionsDone}
                                 onCheckedChange={setEmotionsDone}
-                                className="data-[state=checked]:bg-design4-orange"
+                                className="data-[state=checked]:bg-design4-primary"
                               />
                               <span className="text-sm text-design4-ink">Done</span>
                             </div>
@@ -697,7 +697,7 @@ export default function CustomerJourneyMapToolPage() {
                               <Switch
                                 checked={opportunitiesDone}
                                 onCheckedChange={setOpportunitiesDone}
-                                className="data-[state=checked]:bg-design4-orange"
+                                className="data-[state=checked]:bg-design4-primary"
                               />
                               <span className="text-sm text-design4-ink">Done</span>
                             </div>

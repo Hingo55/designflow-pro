@@ -51,8 +51,8 @@ export default function DefinePage() {
                 Most organizations try to be everything to everyone. Real strategy means deciding where to play, how to win, and what you won't do.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link 
-                  href="/resources" 
+                <Link
+                  href="/resources/tools#define"
                   className="inline-block bg-white text-design4-purple px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2 focus:ring-offset-design4-purple"
                 >
                   Get Strategy Tools

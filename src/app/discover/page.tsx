@@ -51,8 +51,8 @@ export default function DiscoverPage() {
                 Great leaders know their WHY. But the best leaders build organizations where everyone knows it too—and acts on it every single day.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link 
-                  href="/resources" 
+                <Link
+                  href="/resources/tools#discover"
                   className="inline-block bg-design4-ink text-design4-gold px-8 py-4 rounded-xl font-medium text-lg hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-design4-plum focus:ring-offset-2 focus:ring-offset-design4-gold"
                 >
                   Get Discovery Tools

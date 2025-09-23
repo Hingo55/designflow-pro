@@ -723,7 +723,7 @@ export default function ValuePropositionToolPage() {
                                 <Switch
                                   checked={businessContextDone}
                                   onCheckedChange={setBusinessContextDone}
-                                  className="data-[state=checked]:bg-design4-purple"
+                                  className="data-[state=checked]:bg-design4-primary"
                                   disabled={aiActive}
                                 />
                                 <span className="text-sm text-white">Done</span>
@@ -765,7 +765,7 @@ export default function ValuePropositionToolPage() {
                                 <Switch
                                   checked={customerPersonaDone}
                                   onCheckedChange={setCustomerPersonaDone}
-                                  className="data-[state=checked]:bg-design4-purple"
+                                  className="data-[state=checked]:bg-design4-primary"
                                   disabled={aiActive}
                                 />
                                 <span className="text-sm text-white">Done</span>
@@ -807,7 +807,7 @@ export default function ValuePropositionToolPage() {
                                 <Switch
                                   checked={painsCurrentStateDone}
                                   onCheckedChange={setPainsCurrentStateDone}
-                                  className="data-[state=checked]:bg-design4-purple"
+                                  className="data-[state=checked]:bg-design4-primary"
                                   disabled={aiActive}
                                 />
                                 <span className="text-sm text-white">Done</span>
@@ -849,7 +849,7 @@ export default function ValuePropositionToolPage() {
                                 <Switch
                                   checked={gainsDesiredStateDone}
                                   onCheckedChange={setGainsDesiredStateDone}
-                                  className="data-[state=checked]:bg-design4-purple"
+                                  className="data-[state=checked]:bg-design4-primary"
                                   disabled={aiActive}
                                 />
                                 <span className="text-sm text-white">Done</span>
@@ -891,7 +891,7 @@ export default function ValuePropositionToolPage() {
                                 <Switch
                                   checked={featuresValueDone}
                                   onCheckedChange={setFeaturesValueDone}
-                                  className="data-[state=checked]:bg-design4-purple"
+                                  className="data-[state=checked]:bg-design4-primary"
                                   disabled={aiActive}
                                 />
                                 <span className="text-sm text-white">Done</span>

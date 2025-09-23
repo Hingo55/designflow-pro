@@ -17,7 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { BookOpen, Target, BarChart, Users, TrendingUp, Lightbulb, Search, PenTool, Code, Truck, Wrench } from 'lucide-react'
+import { BookOpen, Target, BarChart, Users, TrendingUp, Lightbulb, Search, PenTool, Code, Truck, Wrench, FolderOpen, Folder } from 'lucide-react'
 
 // Metadata moved to layout.tsx for client component
 
@@ -29,7 +29,7 @@ export default function Resources() {
       {/* Content with Sidebar */}
       <SidebarProvider>
         <div className="flex w-full bg-design4-bg min-h-screen pt-20">
-          <Sidebar variant="floating" className="hidden md:flex mt-20 z-[60]">
+          <Sidebar variant="floating" className="hidden md:flex mt-20 z-[60] max-h-[calc(100vh-5rem)] overflow-hidden">
             <SidebarHeader>
               <button
                 onClick={(e) => {
@@ -43,7 +43,23 @@ export default function Resources() {
                 <span className="text-sm font-semibold">Design4 Resources</span>
               </button>
             </SidebarHeader>
-            <SidebarContent>
+            <SidebarContent className="overflow-y-auto flex-1">
+              <SidebarGroup>
+                <SidebarGroupLabel>Projects</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/projects">
+                          <FolderOpen className="h-4 w-4" />
+                          <span>My Projects</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+
               <SidebarGroup>
                 <SidebarGroupLabel>Interactive Tools</SidebarGroupLabel>
                 <SidebarGroupContent>
@@ -58,9 +74,33 @@ export default function Resources() {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Link href="/resources/tools/outcomes-model-tool">
-                          <Target className="h-4 w-4" />
-                          <span>Outcomes Model Tool</span>
+                        <Link href="/resources/tools#discover">
+                          <Search className="h-4 w-4" />
+                          <span>Discover Tools</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/resources/tools#define">
+                          <PenTool className="h-4 w-4" />
+                          <span>Define Tools</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/resources/tools#develop">
+                          <Code className="h-4 w-4" />
+                          <span>Develop Tools</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <Link href="/resources/tools#deliver">
+                          <Truck className="h-4 w-4" />
+                          <span>Deliver Tools</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -74,49 +114,41 @@ export default function Resources() {
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Link href="/resources/outcomes-model-development">
+                        <Link href="/resources/playbooks">
                           <BookOpen className="h-4 w-4" />
-                          <span>Outcomes Model Development</span>
+                          <span>All Playbooks</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-
-              <SidebarGroup>
-                <SidebarGroupLabel>Framework Phases</SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Link href="/discover">
+                        <Link href="/resources/playbooks#discover">
                           <Search className="h-4 w-4" />
-                          <span>Discover</span>
+                          <span>Discover Playbooks</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Link href="/define">
+                        <Link href="/resources/playbooks#define">
                           <PenTool className="h-4 w-4" />
-                          <span>Define</span>
+                          <span>Define Playbooks</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Link href="/develop">
+                        <Link href="/resources/playbooks#develop">
                           <Code className="h-4 w-4" />
-                          <span>Develop</span>
+                          <span>Develop Playbooks</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <Link href="/deliver">
+                        <Link href="/resources/playbooks#deliver">
                           <Truck className="h-4 w-4" />
-                          <span>Deliver</span>
+                          <span>Deliver Playbooks</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -194,133 +226,6 @@ export default function Resources() {
         </section>
 
 
-        {/* Tools & Templates */}
-        <section className="bg-design4-bg py-20">
-          <div className="mx-auto max-w-design4-container px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-design4-ink mb-4">
-                Design4 Playbooks
-              </h2>
-              <p className="text-design4-neutral-500 max-w-2xl mx-auto mb-8">
-                Practical resources to accelerate your Design4 implementation
-              </p>
-
-              {/* Filter Tabs */}
-              <div className="flex flex-wrap justify-center gap-3">
-                <button className="inline-flex items-center bg-design4-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-ink/90 transition-colors">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  All
-                </button>
-                <button className="inline-flex items-center bg-design4-neutral-100 text-design4-neutral-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-gold/10 hover:text-design4-gold transition-colors">
-                  Discover
-                </button>
-                <button className="inline-flex items-center bg-design4-neutral-100 text-design4-neutral-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-purple/10 hover:text-design4-purple transition-colors">
-                  Define
-                </button>
-                <button className="inline-flex items-center bg-design4-neutral-100 text-design4-neutral-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-green/10 hover:text-design4-green transition-colors">
-                  Develop
-                </button>
-                <button className="inline-flex items-center bg-design4-neutral-100 text-design4-neutral-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-design4-orange/10 hover:text-design4-orange transition-colors">
-                  Deliver
-                </button>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Link href="/resources/tools" className="group bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 hover:shadow-lg hover:border-design4-teal/20 transition-all duration-200 block">
-                <div className="w-12 h-12 bg-design4-teal/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-teal/20 transition-colors">
-                  <Wrench className="w-6 h-6 text-design4-teal" />
-                </div>
-                <h3 className="text-lg font-semibold text-design4-ink mb-2">Interactive Tools</h3>
-                <p className="text-design4-neutral-500 text-sm mb-4">Access our suite of interactive tools including the Outcomes Model Tool and more coming soon.</p>
-                <span className="text-design4-teal font-medium text-sm hover:text-design4-teal/80 transition-colors">
-                  View All Tools →
-                </span>
-              </Link>
-
-              <div className="group bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 hover:shadow-lg hover:border-design4-gold/20 transition-all duration-200">
-                <div className="w-12 h-12 bg-design4-gold/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-gold/20 transition-colors">
-                  <svg className="w-6 h-6 text-design4-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-design4-ink mb-2">Strategy Canvas</h3>
-                <p className="text-design4-neutral-500 text-sm mb-4">Visualize and align your strategic direction with organizational purpose using this comprehensive template.</p>
-                <button className="text-design4-gold font-medium text-sm hover:text-design4-gold/80 transition-colors">
-                  View Template →
-                </button>
-              </div>
-
-              <div className="group bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 hover:shadow-lg hover:border-design4-primary/20 transition-all duration-200">
-                <div className="w-12 h-12 bg-design4-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-primary/20 transition-colors">
-                  <svg className="w-6 h-6 text-design4-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-design4-ink mb-2">Capability Assessment</h3>
-                <p className="text-design4-neutral-500 text-sm mb-4">Evaluate your organization's execution capabilities and identify critical gaps.</p>
-                <button className="text-design4-primary font-medium text-sm hover:text-design4-primary/80 transition-colors">
-                  Start Assessment →
-                </button>
-              </div>
-
-              <div className="group bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 hover:shadow-lg hover:border-design4-green/20 transition-all duration-200">
-                <div className="w-12 h-12 bg-design4-green/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-green/20 transition-colors">
-                  <svg className="w-6 h-6 text-design4-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-design4-ink mb-2">Operations Playbook</h3>
-                <p className="text-design4-neutral-500 text-sm mb-4">Best practices for aligning daily operations with strategic objectives.</p>
-                <button className="text-design4-green font-medium text-sm hover:text-design4-green/80 transition-colors">
-                  Download Guide →
-                </button>
-              </div>
-
-              <div className="group bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 hover:shadow-lg hover:border-design4-orange/20 transition-all duration-200">
-                <div className="w-12 h-12 bg-design4-orange/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-orange/20 transition-colors">
-                  <svg className="w-6 h-6 text-design4-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-design4-ink mb-2">Performance Metrics</h3>
-                <p className="text-design4-neutral-500 text-sm mb-4">Key indicators for measuring transformation success and ROI.</p>
-                <button className="text-design4-orange font-medium text-sm hover:text-design4-orange/80 transition-colors">
-                  View Metrics →
-                </button>
-              </div>
-
-              <div className="group bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 hover:shadow-lg hover:border-design4-primary/20 transition-all duration-200">
-                <div className="w-12 h-12 bg-design4-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-primary/20 transition-colors">
-                  <svg className="w-6 h-6 text-design4-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-design4-ink mb-2">Implementation Roadmap</h3>
-                <p className="text-design4-neutral-500 text-sm mb-4">Step-by-step guide for rolling out Design4 principles across your organization.</p>
-                <button className="text-design4-primary font-medium text-sm hover:text-design4-primary/80 transition-colors">
-                  Get Roadmap →
-                </button>
-              </div>
-
-              <div className="group bg-white rounded-2xl p-6 shadow-sm border border-design4-neutral-100 hover:shadow-lg hover:border-design4-gold/20 transition-all duration-200">
-                <div className="w-12 h-12 bg-design4-gold/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-gold/20 transition-colors">
-                  <svg className="w-6 h-6 text-design4-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-design4-ink mb-2">Community Forum</h3>
-                <p className="text-design4-neutral-500 text-sm mb-4">Connect with other leaders implementing Design4 in their organizations.</p>
-                <button className="text-design4-gold font-medium text-sm hover:text-design4-gold/80 transition-colors">
-                  Join Community →
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Framework Overview */}
         <section className="bg-design4-neutral-100 py-20">
