@@ -1,0 +1,784 @@
+'use client'
+
+import Footer from '@/components/Footer'
+import Link from 'next/link'
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { BookOpen, Target, Building, User, Zap, Star, ArrowRight, CheckCircle, Bot, Send, X, Download } from 'lucide-react'
+import { useState, useRef } from 'react'
+
+export default function ValuePropositionToolPage() {
+  const [businessContextText, setBusinessContextText] = useState('')
+  const [customerPersonaText, setCustomerPersonaText] = useState('')
+  const [painsCurrentStateText, setPainsCurrentStateText] = useState('')
+  const [gainsDesiredStateText, setGainsDesiredStateText] = useState('')
+  const [featuresValueText, setFeaturesValueText] = useState('')
+
+  const [businessContextDone, setBusinessContextDone] = useState(false)
+  const [customerPersonaDone, setCustomerPersonaDone] = useState(false)
+  const [painsCurrentStateDone, setPainsCurrentStateDone] = useState(false)
+  const [gainsDesiredStateDone, setGainsDesiredStateDone] = useState(false)
+  const [featuresValueDone, setFeaturesValueDone] = useState(false)
+
+  // AI Assistant state
+  const [aiActive, setAiActive] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [conversationHistory, setConversationHistory] = useState<any[]>([])
+  const [currentMessage, setCurrentMessage] = useState('')
+  const [finalValueProposition, setFinalValueProposition] = useState<any>(null)
+
+  // PDF export ref
+  const pdfContentRef = useRef<HTMLDivElement>(null)
+
+  const getCharacterCountDisplay = (text: string, limit: number = 500) => {
+    const isNearLimit = text.length > limit * 0.8
+    const isOverLimit = text.length > limit
+    const colorClass = isOverLimit ? 'text-red-600' : isNearLimit ? 'text-yellow-600' : 'text-design4-neutral-500'
+    return { count: text.length, colorClass, isOverLimit }
+  }
+
+  const allComponentsComplete = businessContextDone && customerPersonaDone && painsCurrentStateDone && gainsDesiredStateDone && featuresValueDone
+  const allFieldsHaveText = businessContextText.trim() && customerPersonaText.trim() && painsCurrentStateText.trim() && gainsDesiredStateText.trim() && featuresValueText.trim()
+  const readyForAI = allComponentsComplete && allFieldsHaveText
+
+  const startAIAssistant = async () => {
+    if (!readyForAI) return
+
+    setAiActive(true)
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/ai/value-proposition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          businessContextText,
+          customerPersonaText,
+          painsCurrentStateText,
+          gainsDesiredStateText,
+          featuresValueText
+        })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        setConversationHistory([
+          { role: 'assistant', content: result.analysis }
+        ])
+      }
+    } catch (error) {
+      console.error('Error starting AI assistant:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const sendMessage = async (message?: string) => {
+    const messageToSend = message || currentMessage
+    if (!messageToSend.trim()) return
+
+    setCurrentMessage('')
+    setIsLoading(true)
+
+    const newHistory = [...conversationHistory, { role: 'user', content: messageToSend }]
+    setConversationHistory(newHistory)
+
+    try {
+      const response = await fetch('/api/ai/value-proposition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          businessContextText,
+          customerPersonaText,
+          painsCurrentStateText,
+          gainsDesiredStateText,
+          featuresValueText,
+          conversationHistory: newHistory
+        })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        setConversationHistory(result.conversation || [...newHistory, { role: 'assistant', content: result.analysis }])
+      }
+    } catch (error) {
+      console.error('Error sending message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Function to format JSON responses from AI
+  const formatAIResponse = (content: string) => {
+    try {
+      const parsed = JSON.parse(content)
+      return (
+        <div className="space-y-4">
+          <div className="bg-design4-purple/10 rounded-lg p-4">
+            <h3 className="font-semibold text-design4-purple mb-2">Stage: {parsed.stage}</h3>
+
+            {parsed.questions && parsed.questions.length > 0 && (
+              <div className="mb-4">
+                <h4 className="font-medium text-design4-ink mb-2">Strategic Questions:</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  {parsed.questions.map((question: string, index: number) => (
+                    <li key={index} className="text-design4-neutral-600">{question}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {parsed.insights && parsed.insights.length > 0 && (
+              <div className="mb-4">
+                <h4 className="font-medium text-design4-ink mb-2">Business Insights:</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  {parsed.insights.map((insight: string, index: number) => (
+                    <li key={index} className="text-design4-neutral-600">{insight}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {parsed.validation && (
+              <div className="mb-4">
+                <h4 className="font-medium text-design4-ink mb-2">Validation Required:</h4>
+                <p className="text-design4-neutral-600">{parsed.validation}</p>
+              </div>
+            )}
+
+            {parsed.next_stage && (
+              <div className="mb-4">
+                <h4 className="font-medium text-design4-ink mb-2">Next Stage:</h4>
+                <p className="text-design4-neutral-600">{parsed.next_stage}</p>
+              </div>
+            )}
+
+            {parsed.caveats && parsed.caveats.length > 0 && (
+              <div>
+                <h4 className="font-medium text-design4-ink mb-2">Considerations:</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  {parsed.caveats.map((caveat: string, index: number) => (
+                    <li key={index} className="text-design4-neutral-600 text-sm">{caveat}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    } catch (error) {
+      // If not valid JSON, return as plain text
+      return <div className="text-sm whitespace-pre-wrap">{content}</div>
+    }
+  }
+
+  // PDF Export function
+  const exportToPDF = async () => {
+    try {
+      const { jsPDF } = await import('jspdf')
+
+      const pdf = new jsPDF('p', 'pt', 'a4')
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const pageHeight = pdf.internal.pageSize.getHeight()
+      const margin = 40
+      const contentWidth = pageWidth - (margin * 2)
+      const headerHeight = 60
+      const footerHeight = 30
+
+      let yPosition = margin + headerHeight
+      let currentPageNumber = 1
+
+      // Helper function to add header and footer
+      const addHeaderFooter = () => {
+        // Header
+        pdf.setFillColor('#9333EA') // design4-purple
+        pdf.rect(0, 0, pageWidth, headerHeight)
+
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(18)
+        pdf.setTextColor('#FFFFFF')
+        pdf.text('Value Proposition Analysis', margin, 35)
+
+        // Footer
+        pdf.setFontSize(10)
+        pdf.setTextColor('#6b7280')
+        pdf.text('Generated by Design4.biz', margin, pageHeight - footerHeight + 15)
+
+        const pageText = `Page ${currentPageNumber}`
+        const pageTextWidth = pdf.getTextWidth(pageText)
+        pdf.text(pageText, pageWidth - margin - pageTextWidth, pageHeight - footerHeight + 15)
+
+        // Footer line
+        pdf.setDrawColor('#e5e7eb')
+        pdf.line(margin, pageHeight - footerHeight - 5, pageWidth - margin, pageHeight - footerHeight - 5)
+      }
+
+      // Add header/footer to first page
+      addHeaderFooter()
+
+      // Helper function to add text with automatic page breaks
+      const addText = (text: string, fontSize: number = 10, isBold: boolean = false, color: string = '#000000') => {
+        pdf.setFontSize(fontSize)
+        pdf.setFont('helvetica', isBold ? 'bold' : 'normal')
+        pdf.setTextColor(color)
+
+        const lines = pdf.splitTextToSize(text, contentWidth)
+        const lineHeight = fontSize * 0.4
+
+        // Check if we need a new page
+        if (yPosition + (lines.length * lineHeight) > pageHeight - margin - footerHeight - 10) {
+          pdf.addPage()
+          currentPageNumber++
+          addHeaderFooter()
+          yPosition = margin + headerHeight + 10 // Reset position below header
+        }
+
+        lines.forEach((line: string) => {
+          pdf.text(line, margin, yPosition)
+          yPosition += lineHeight
+        })
+
+        return yPosition
+      }
+
+      // Content sections
+      yPosition += 10
+
+      // Business Context
+      if (businessContextText.trim()) {
+        addText('Business Context', 16, true, '#9333EA')
+        yPosition += 10
+        addText(businessContextText, 10)
+        yPosition += 15
+      }
+
+      // Customer Persona & Jobs
+      if (customerPersonaText.trim()) {
+        addText('Customer Persona & Jobs', 16, true, '#9333EA')
+        yPosition += 10
+        addText(customerPersonaText, 10)
+        yPosition += 15
+      }
+
+      // Customer Pains & Current State
+      if (painsCurrentStateText.trim()) {
+        addText('Customer Pains & Current State', 16, true, '#9333EA')
+        yPosition += 10
+        addText(painsCurrentStateText, 10)
+        yPosition += 15
+      }
+
+      // Customer Gains & Desired State
+      if (gainsDesiredStateText.trim()) {
+        addText('Customer Gains & Desired State', 16, true, '#9333EA')
+        yPosition += 10
+        addText(gainsDesiredStateText, 10)
+        yPosition += 15
+      }
+
+      // Features & Value Proposition
+      if (featuresValueText.trim()) {
+        addText('Features & Value Proposition', 16, true, '#9333EA')
+        yPosition += 10
+        addText(featuresValueText, 10)
+        yPosition += 15
+      }
+
+      // AI Analysis
+      if (conversationHistory.length > 0) {
+        addText('AI Strategic Analysis', 16, true, '#9333EA')
+        yPosition += 10
+
+        conversationHistory.forEach((message, index) => {
+          if (message.role === 'assistant') {
+            try {
+              const parsed = JSON.parse(message.content)
+              addText(`Stage ${index + 1}: ${parsed.stage}`, 12, true)
+              yPosition += 8
+
+              if (parsed.questions) {
+                addText('Key Questions:', 11, true)
+                yPosition += 5
+                parsed.questions.forEach((q: string) => {
+                  addText(`• ${q}`, 10)
+                  yPosition += 3
+                })
+                yPosition += 5
+              }
+
+              if (parsed.insights) {
+                addText('Strategic Insights:', 11, true)
+                yPosition += 5
+                parsed.insights.forEach((insight: string) => {
+                  addText(`• ${insight}`, 10)
+                  yPosition += 3
+                })
+                yPosition += 5
+              }
+
+              yPosition += 10
+            } catch (error) {
+              addText(`AI Response ${index + 1}:`, 12, true)
+              yPosition += 8
+              addText(message.content, 10)
+              yPosition += 15
+            }
+          }
+        })
+      }
+
+      // Save the PDF
+      const timestamp = new Date().toISOString().slice(0, 10)
+      pdf.save(`value-proposition-analysis-${timestamp}.pdf`)
+
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      alert('Error generating PDF. Please try again.')
+    }
+  }
+
+  return (
+    <>
+      <div className="h-screen flex">
+        {/* Fixed Sidebar */}
+        <div className="w-64 h-full bg-design4-purple border-r border-design4-purple/20 p-4 flex-shrink-0">
+          <Link
+            href="/resources/tools"
+            className="flex items-center gap-2 mb-6 hover:bg-white/10 rounded p-2 -m-2 transition-colors"
+          >
+            <BookOpen className="h-5 w-5 text-white" />
+            <span className="text-sm font-semibold text-white">Design4 Tools</span>
+          </Link>
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-xs font-medium text-white/70 uppercase tracking-wide mb-2">
+                Value Proposition Components
+              </h3>
+              <div className="space-y-1">
+                <a href="#business-context" className="flex items-center gap-2 px-2 py-1 text-sm text-white hover:bg-white/10 rounded">
+                  <Building className="h-4 w-4" />
+                  <span>Business Context</span>
+                </a>
+                <a href="#customer-persona" className="flex items-center gap-2 px-2 py-1 text-sm text-white hover:bg-white/10 rounded">
+                  <User className="h-4 w-4" />
+                  <span>Customer Persona & Jobs</span>
+                </a>
+                <a href="#customer-pains" className="flex items-center gap-2 px-2 py-1 text-sm text-white hover:bg-white/10 rounded">
+                  <Zap className="h-4 w-4" />
+                  <span>Customer Pains</span>
+                </a>
+                <a href="#customer-gains" className="flex items-center gap-2 px-2 py-1 text-sm text-white hover:bg-white/10 rounded">
+                  <Star className="h-4 w-4" />
+                  <span>Customer Gains</span>
+                </a>
+                <a href="#features-value" className="flex items-center gap-2 px-2 py-1 text-sm text-white hover:bg-white/10 rounded">
+                  <ArrowRight className="h-4 w-4" />
+                  <span>Features & Value</span>
+                </a>
+              </div>
+            </div>
+            {readyForAI && !aiActive && (
+              <div className="pt-4 border-t border-white/20">
+                <Button
+                  onClick={startAIAssistant}
+                  className="w-full bg-white text-design4-purple hover:bg-white/90"
+                >
+                  <Bot className="w-4 h-4 mr-2" />
+                  Start AI Assistant
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1 h-full">
+          <div className="h-full bg-design4-bg">
+            <ResizablePanelGroup direction="horizontal">
+              {/* Left side: Cards */}
+              <ResizablePanel defaultSize={70}>
+                <div className={`h-full p-6 overflow-y-auto ${aiActive ? 'opacity-50 pointer-events-none' : ''}`}>
+                  <div className="space-y-6">
+                    <Card id="business-context" className="bg-design4-purple scroll-mt-6">
+                      <CardHeader>
+                        <CardTitle className="text-lg text-white flex items-center gap-2">
+                          <Building className="h-5 w-5" />
+                          Business Context
+                        </CardTitle>
+                        <CardDescription className="text-white/70">
+                          Describe your product, business, target audience, and how your business works
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <Textarea
+                            value={businessContextText}
+                            onChange={(e) => setBusinessContextText(e.target.value)}
+                            placeholder="What is your product/service? What business are you in? Who is your target audience? How does your business model work? Include any key details about your offering..."
+                            className="min-h-[100px] bg-white border-design4-neutral-200 text-design4-ink placeholder:text-design4-neutral-500 focus:border-design4-purple focus:ring-design4-purple"
+                            disabled={aiActive}
+                          />
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <Button variant="outline" size="sm" className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50">
+                                Show me an example
+                              </Button>
+                              <div className="flex items-center gap-2">
+                                <Switch
+                                  checked={businessContextDone}
+                                  onCheckedChange={setBusinessContextDone}
+                                  className="data-[state=checked]:bg-design4-purple"
+                                  disabled={aiActive}
+                                />
+                                <span className="text-sm text-white">Done</span>
+                              </div>
+                            </div>
+                            <div className={`text-xs ${getCharacterCountDisplay(businessContextText).colorClass}`}>
+                              {getCharacterCountDisplay(businessContextText).count}/500 characters
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card id="customer-persona" className="bg-design4-purple scroll-mt-6">
+                      <CardHeader>
+                        <CardTitle className="text-lg text-white flex items-center gap-2">
+                          <User className="h-5 w-5" />
+                          Customer Persona & Jobs
+                        </CardTitle>
+                        <CardDescription className="text-white/70">
+                          Define your ideal customer and the functional, emotional, and social jobs they're trying to accomplish
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <Textarea
+                            value={customerPersonaText}
+                            onChange={(e) => setCustomerPersonaText(e.target.value)}
+                            placeholder="Who is your ideal customer? (demographics, role, context) What functional jobs are they trying to get done? What emotional outcomes do they want? How do they want to be perceived socially?"
+                            className="min-h-[100px] bg-white border-design4-neutral-200 text-design4-ink placeholder:text-design4-neutral-500 focus:border-design4-purple focus:ring-design4-purple"
+                            disabled={aiActive}
+                          />
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <Button variant="outline" size="sm" className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50">
+                                Show me an example
+                              </Button>
+                              <div className="flex items-center gap-2">
+                                <Switch
+                                  checked={customerPersonaDone}
+                                  onCheckedChange={setCustomerPersonaDone}
+                                  className="data-[state=checked]:bg-design4-purple"
+                                  disabled={aiActive}
+                                />
+                                <span className="text-sm text-white">Done</span>
+                              </div>
+                            </div>
+                            <div className={`text-xs ${getCharacterCountDisplay(customerPersonaText).colorClass}`}>
+                              {getCharacterCountDisplay(customerPersonaText).count}/500 characters
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card id="customer-pains" className="bg-design4-purple scroll-mt-6">
+                      <CardHeader>
+                        <CardTitle className="text-lg text-white flex items-center gap-2">
+                          <Zap className="h-5 w-5" />
+                          Customer Pains & Current State
+                        </CardTitle>
+                        <CardDescription className="text-white/70">
+                          Identify frustrations, obstacles, risks, and negative experiences customers face
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <Textarea
+                            value={painsCurrentStateText}
+                            onChange={(e) => setPainsCurrentStateText(e.target.value)}
+                            placeholder="What frustrates your customers? What obstacles prevent them from completing their jobs? What risks do they worry about? What negative experiences do they have with current solutions?"
+                            className="min-h-[100px] bg-white border-design4-neutral-200 text-design4-ink placeholder:text-design4-neutral-500 focus:border-design4-purple focus:ring-design4-purple"
+                            disabled={aiActive}
+                          />
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <Button variant="outline" size="sm" className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50">
+                                Show me an example
+                              </Button>
+                              <div className="flex items-center gap-2">
+                                <Switch
+                                  checked={painsCurrentStateDone}
+                                  onCheckedChange={setPainsCurrentStateDone}
+                                  className="data-[state=checked]:bg-design4-purple"
+                                  disabled={aiActive}
+                                />
+                                <span className="text-sm text-white">Done</span>
+                              </div>
+                            </div>
+                            <div className={`text-xs ${getCharacterCountDisplay(painsCurrentStateText).colorClass}`}>
+                              {getCharacterCountDisplay(painsCurrentStateText).count}/500 characters
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card id="customer-gains" className="bg-design4-purple scroll-mt-6">
+                      <CardHeader>
+                        <CardTitle className="text-lg text-white flex items-center gap-2">
+                          <Star className="h-5 w-5" />
+                          Customer Gains & Desired State
+                        </CardTitle>
+                        <CardDescription className="text-white/70">
+                          Define positive outcomes, benefits, and aspirational results customers want to achieve
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <Textarea
+                            value={gainsDesiredStateText}
+                            onChange={(e) => setGainsDesiredStateText(e.target.value)}
+                            placeholder="What positive outcomes do customers want? What would delight them? What success metrics matter to them? What would make their experience great?"
+                            className="min-h-[100px] bg-white border-design4-neutral-200 text-design4-ink placeholder:text-design4-neutral-500 focus:border-design4-purple focus:ring-design4-purple"
+                            disabled={aiActive}
+                          />
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <Button variant="outline" size="sm" className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50">
+                                Show me an example
+                              </Button>
+                              <div className="flex items-center gap-2">
+                                <Switch
+                                  checked={gainsDesiredStateDone}
+                                  onCheckedChange={setGainsDesiredStateDone}
+                                  className="data-[state=checked]:bg-design4-purple"
+                                  disabled={aiActive}
+                                />
+                                <span className="text-sm text-white">Done</span>
+                              </div>
+                            </div>
+                            <div className={`text-xs ${getCharacterCountDisplay(gainsDesiredStateText).colorClass}`}>
+                              {getCharacterCountDisplay(gainsDesiredStateText).count}/500 characters
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card id="features-value" className="bg-design4-purple scroll-mt-6">
+                      <CardHeader>
+                        <CardTitle className="text-lg text-white flex items-center gap-2">
+                          <ArrowRight className="h-5 w-5" />
+                          Features & Value Proposition
+                        </CardTitle>
+                        <CardDescription className="text-white/70">
+                          Describe your product features, unique selling points, and how you address customer needs
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <Textarea
+                            value={featuresValueText}
+                            onChange={(e) => setFeaturesValueText(e.target.value)}
+                            placeholder="What features does your product have? What makes you unique from competitors? How do you solve customer pains? What value do you create?"
+                            className="min-h-[100px] bg-white border-design4-neutral-200 text-design4-ink placeholder:text-design4-neutral-500 focus:border-design4-purple focus:ring-design4-purple"
+                            disabled={aiActive}
+                          />
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <Button variant="outline" size="sm" className="bg-white border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50">
+                                Show me an example
+                              </Button>
+                              <div className="flex items-center gap-2">
+                                <Switch
+                                  checked={featuresValueDone}
+                                  onCheckedChange={setFeaturesValueDone}
+                                  className="data-[state=checked]:bg-design4-purple"
+                                  disabled={aiActive}
+                                />
+                                <span className="text-sm text-white">Done</span>
+                              </div>
+                            </div>
+                            <div className={`text-xs ${getCharacterCountDisplay(featuresValueText).colorClass}`}>
+                              {getCharacterCountDisplay(featuresValueText).count}/500 characters
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </ResizablePanel>
+
+              {/* Right side: Progress tracking / AI Assistant */}
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={30}>
+                <div className="h-full bg-white border-l border-design4-neutral-200 overflow-y-auto">
+                  {aiActive ? (
+                    <div className="flex flex-col h-full">
+                      <div className="p-4 border-b border-design4-neutral-200 bg-design4-purple text-white">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Bot className="w-5 h-5" />
+                            <span className="font-medium">AI Value Proposition Assistant</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={exportToPDF}
+                              className="text-white hover:bg-white/20"
+                              title="Export to PDF"
+                            >
+                              <Download className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setAiActive(false)}
+                              className="text-white hover:bg-white/20"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <p className="text-white/90 text-sm mt-2">Refining your value proposition with AI guidance</p>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        {conversationHistory.map((message, index) => (
+                          <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[80%] rounded-lg p-3 ${
+                              message.role === 'user'
+                                ? 'bg-design4-purple text-white'
+                                : 'bg-design4-neutral-100 text-design4-ink'
+                            }`}>
+                              {message.role === 'assistant' ? formatAIResponse(message.content) : <div className="text-sm whitespace-pre-wrap">{message.content}</div>}
+                            </div>
+                          </div>
+                        ))}
+                        {isLoading && (
+                          <div className="flex justify-start">
+                            <div className="bg-design4-neutral-100 rounded-2xl px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-design4-purple"></div>
+                                <span className="text-design4-neutral-600">AI is thinking...</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="p-4 border-t border-design4-neutral-200">
+                        <div className="flex gap-2">
+                          <Textarea
+                            value={currentMessage}
+                            onChange={(e) => setCurrentMessage(e.target.value)}
+                            placeholder="Ask questions or request refinements..."
+                            className="flex-1 min-h-[40px] max-h-[120px] resize-none"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault()
+                                sendMessage()
+                              }
+                            }}
+                          />
+                          <Button
+                            onClick={() => sendMessage()}
+                            disabled={!currentMessage.trim() || isLoading}
+                            className="bg-design4-purple hover:bg-design4-purple/90"
+                          >
+                            <Send className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : readyForAI ? (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <CheckCircle className="w-16 h-16 text-design4-purple mx-auto mb-6" />
+                        <h1 className="text-2xl font-bold text-design4-ink mb-4">
+                          Ready for Design4 AI Enhancement!
+                        </h1>
+                        <p className="text-design4-neutral-600 mb-6 max-w-md">
+                          All components are complete. Start the Design4 Value Proposition AI assistant to create your comprehensive value proposition canvas.
+                        </p>
+                        <Button
+                          onClick={startAIAssistant}
+                          disabled={isLoading}
+                          className="bg-design4-purple hover:bg-design4-purple/90 text-white px-6 py-3 text-lg"
+                        >
+                          {isLoading ? (
+                            <div className="flex items-center gap-2">
+                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                              Starting AI Assistant...
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <Bot className="w-5 h-5" />
+                              Start Design4 AI Assistant
+                            </div>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-full flex items-center justify-center px-4">
+                      <div className="text-center">
+                        <h1 className="text-2xl font-bold text-design4-ink mb-4">
+                          Value Proposition Progress
+                        </h1>
+                        <p className="text-design4-neutral-600 mb-6">Complete all sections and mark them done to unlock Design4 AI assistance.</p>
+                        <div className="space-y-4">
+                          {[
+                            { label: 'Business Context', done: businessContextDone && businessContextText.trim(), icon: Building },
+                            { label: 'Customer Persona & Jobs', done: customerPersonaDone && customerPersonaText.trim(), icon: User },
+                            { label: 'Customer Pains', done: painsCurrentStateDone && painsCurrentStateText.trim(), icon: Zap },
+                            { label: 'Customer Gains', done: gainsDesiredStateDone && gainsDesiredStateText.trim(), icon: Star },
+                            { label: 'Features & Value', done: featuresValueDone && featuresValueText.trim(), icon: ArrowRight }
+                          ].map((item, index) => {
+                            const IconComponent = item.icon
+                            return (
+                              <div key={index} className="flex items-center gap-2">
+                                {item.done ? (
+                                  <CheckCircle className="w-4 h-4 text-design4-purple" />
+                                ) : (
+                                  <div className="w-4 h-4 border border-design4-neutral-300 rounded-full" />
+                                )}
+                                <IconComponent className="w-4 h-4 text-design4-neutral-400" />
+                                <span className={`text-sm ${item.done ? 'text-design4-purple font-medium' : 'text-design4-neutral-400'}`}>
+                                  {item.label}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </div>
+        </div>
+      </div>
+
+      <Footer />
+    </>
+  )
+}
