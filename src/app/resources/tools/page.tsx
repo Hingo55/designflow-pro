@@ -54,14 +54,6 @@ export default function ToolsPage() {
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <Link href="/resources/tools/value-proposition-tool">
-                          <Heart className="h-4 w-4" />
-                          <span>Value Proposition Tool</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
@@ -72,10 +64,10 @@ export default function ToolsPage() {
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <a href="#coming-soon">
-                          <PenTool className="h-4 w-4" />
-                          <span>Coming Soon</span>
-                        </a>
+                        <Link href="/resources/tools/value-proposition-tool">
+                          <Heart className="h-4 w-4" />
+                          <span>Value Proposition Tool</span>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>
@@ -104,10 +96,10 @@ export default function ToolsPage() {
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <a href="#coming-soon">
-                          <Truck className="h-4 w-4" />
-                          <span>Coming Soon</span>
-                        </a>
+                        <Link href="/resources/tools/customer-journey-map-tool">
+                          <BarChart className="h-4 w-4" />
+                          <span>Customer Journey Map Tool</span>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>
@@ -148,7 +140,7 @@ export default function ToolsPage() {
                         </p>
                         <Link
                           href="/resources/tools/outcomes-model-tool"
-                          className="inline-flex items-center bg-design4-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-design4-primary/90 hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+                          className="inline-flex items-center bg-design4-gold text-white px-6 py-3 rounded-xl font-medium hover:bg-design4-gold/90 hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
                         >
                           Access Tool →
                         </Link>
@@ -169,6 +161,26 @@ export default function ToolsPage() {
                         <Link
                           href="/resources/tools/value-proposition-tool"
                           className="inline-flex items-center bg-design4-purple text-white px-6 py-3 rounded-xl font-medium hover:bg-design4-purple/90 hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+                        >
+                          Access Tool →
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-2xl p-8 shadow-sm border border-design4-neutral-100 hover:shadow-md transition-shadow">
+                    <div className="flex items-start mb-6">
+                      <div className="w-16 h-16 bg-design4-green/10 rounded-xl flex items-center justify-center mr-6 flex-shrink-0">
+                        <BarChart className="w-8 h-8 text-design4-green" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-design4-ink mb-3">Customer Journey Map Tool</h3>
+                        <p className="text-design4-neutral-600 mb-4 leading-relaxed">
+                          Visualize and optimize your customer's end-to-end experience. Map touchpoints, emotions, and opportunities to create seamless customer journeys.
+                        </p>
+                        <Link
+                          href="/resources/tools/customer-journey-map-tool"
+                          className="inline-flex items-center bg-design4-orange text-white px-6 py-3 rounded-xl font-medium hover:bg-design4-orange/90 hover:transform hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
                         >
                           Access Tool →
                         </Link>
