@@ -238,7 +238,7 @@ export default function ProjectsPage() {
 
   const mockProjects = [
     {
-      id: 1,
+      id: "1",
       name: "Digital Transformation Initiative",
       description: "Comprehensive strategy to modernize operations and improve customer experience through digital channels.",
       status: "active",
@@ -248,7 +248,7 @@ export default function ProjectsPage() {
       progress: 75
     },
     {
-      id: 2,
+      id: "2",
       name: "Market Expansion Strategy",
       description: "Strategic framework for entering new geographic markets while maintaining operational excellence.",
       status: "planning",
@@ -258,7 +258,7 @@ export default function ProjectsPage() {
       progress: 45
     },
     {
-      id: 3,
+      id: "3",
       name: "Customer Experience Redesign",
       description: "End-to-end customer journey optimization to increase satisfaction and reduce churn.",
       status: "active",
@@ -268,7 +268,7 @@ export default function ProjectsPage() {
       progress: 90
     },
     {
-      id: 4,
+      id: "4",
       name: "Operational Excellence Program",
       description: "Systematic approach to improve operational efficiency and reduce costs across all departments.",
       status: "completed",
