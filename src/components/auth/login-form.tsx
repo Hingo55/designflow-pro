@@ -26,7 +26,16 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
     const { error } = await signIn(email, password)
 
     if (error) {
-      setError(error.message)
+      // Provide more helpful error messages
+      if (error.message.includes('Invalid login credentials') || error.message.includes('Bad Request')) {
+        setError('Invalid email or password. Please check your credentials or create a new account.')
+      } else if (error.message.includes('Email not confirmed')) {
+        setError('Please check your email and click the confirmation link before signing in.')
+      } else if (error.message.includes('Too many requests')) {
+        setError('Too many sign-in attempts. Please wait a moment and try again.')
+      } else {
+        setError(`Sign in failed: ${error.message}`)
+      }
     }
 
     setLoading(false)
