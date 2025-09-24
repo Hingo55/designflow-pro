@@ -9,10 +9,17 @@ export interface AuthenticatedUser {
 
 export async function getAuthenticatedUser(request: NextRequest): Promise<AuthenticatedUser | null> {
   try {
+    console.log('AUTH DEBUG: Environment:', process.env.NODE_ENV)
+    console.log('AUTH DEBUG: Supabase URL available:', !!process.env.SUPABASE_URL)
+    console.log('AUTH DEBUG: Service role key available:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+
     // Get the Authorization header
     const authHeader = request.headers.get('Authorization')
+    console.log('AUTH DEBUG: Authorization header present:', !!authHeader)
+    console.log('AUTH DEBUG: Authorization header format:', authHeader ? 'Bearer format: ' + authHeader.startsWith('Bearer ') : 'null')
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('AUTH DEBUG: No valid auth header found')
       // Development fallback - return test user when no auth header
       if (process.env.NODE_ENV === 'development') {
         console.log('Development mode: Using test user for authentication (no auth header)')
@@ -21,6 +28,7 @@ export async function getAuthenticatedUser(request: NextRequest): Promise<Authen
           email: 'test@example.com'
         }
       }
+      console.log('AUTH DEBUG: Production mode, returning null due to missing auth header')
       return null
     }
 

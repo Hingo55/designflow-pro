@@ -4,13 +4,21 @@ class ApiClient {
   private async getAuthHeaders(): Promise<Record<string, string>> {
     const { data: { session } } = await supabase.auth.getSession()
 
+    console.log('API CLIENT DEBUG: Session exists:', !!session)
+    console.log('API CLIENT DEBUG: Access token exists:', !!session?.access_token)
+    console.log('API CLIENT DEBUG: User exists:', !!session?.user)
+    console.log('API CLIENT DEBUG: User ID:', session?.user?.id)
+    console.log('API CLIENT DEBUG: User email:', session?.user?.email)
+
     if (session?.access_token) {
+      console.log('API CLIENT DEBUG: Using Bearer token for auth')
       return {
         'Authorization': `Bearer ${session.access_token}`,
         'Content-Type': 'application/json'
       }
     }
 
+    console.log('API CLIENT DEBUG: No access token, using anonymous headers')
     return {
       'Content-Type': 'application/json'
     }
