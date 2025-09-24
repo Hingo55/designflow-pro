@@ -88,27 +88,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
+      console.log('Attempting sign in for:', email)
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
+      console.log('Sign in response:', { data: data, error: error })
+
       // If there's an error, make sure session state is cleared
       if (error) {
+        console.error('Sign in error:', error)
         setSession(null)
         setUser(null)
         return { error }
       }
 
-      // Update session state on successful sign in
-      if (data.session) {
-        setSession(data.session)
-        setUser(data.session.user)
+      // Even if no error, validate that we actually have a valid session and user
+      if (!data.session || !data.user) {
+        console.error('Sign in succeeded but no session/user returned')
+        setSession(null)
+        setUser(null)
+        return { error: { message: 'Authentication failed: No valid session created.' } }
       }
+
+      // Double-check by attempting to get the user with the session token
+      const { data: userCheck, error: userError } = await supabase.auth.getUser(data.session.access_token)
+
+      if (userError || !userCheck.user) {
+        console.error('User validation failed:', userError)
+        setSession(null)
+        setUser(null)
+        return { error: { message: 'Authentication failed: Invalid user session.' } }
+      }
+
+      console.log('Sign in successful for user:', userCheck.user.email)
+
+      // Update session state on successful sign in
+      setSession(data.session)
+      setUser(data.user)
 
       return { error: null }
     } catch (err) {
       // Handle network or other errors
+      console.error('Sign in network error:', err)
       setSession(null)
       setUser(null)
       return { error: { message: 'Network error. Please try again.' } }
