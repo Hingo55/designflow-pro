@@ -99,7 +99,7 @@ export default function OutcomesModelToolPage() {
       if (currentModel) {
         // Update existing model
         await apiClient.updateModel(currentModel.id, {
-          name: `Outcomes Model - ${selectedProject.name}`,
+          name: `Outcomes Model - ${selectedProject?.name || 'Untitled Project'}`,
           status,
           input_data: inputData,
           output_data: outputData
@@ -107,9 +107,9 @@ export default function OutcomesModelToolPage() {
       } else {
         // Create new model
         const response = await apiClient.createModel({
-          project_id: selectedProject.id,
+          project_id: selectedProject?.id || '',
           type: 'outcomes-model',
-          name: `Outcomes Model - ${selectedProject.name}`,
+          name: `Outcomes Model - ${selectedProject?.name || 'Untitled Project'}`,
           status,
           input_data: inputData,
           output_data: outputData
@@ -126,7 +126,7 @@ export default function OutcomesModelToolPage() {
     if (!selectedProject) return
 
     try {
-      const response = await apiClient.getModels(selectedProject.id, 'outcomes-model')
+      const response = await apiClient.getModels(selectedProject?.id || '', 'outcomes-model')
       setAvailableModels(response.models)
     } catch (error) {
       console.error('Error loading models:', error)
@@ -310,7 +310,7 @@ export default function OutcomesModelToolPage() {
 
           if (currentModel) {
             apiClient.updateModel(currentModel.id, {
-              name: `Outcomes Model - ${selectedProject.name}`,
+              name: `Outcomes Model - ${selectedProject?.name || 'Untitled Project'}`,
               status: 'published',
               input_data: inputData,
               output_data: outputData
@@ -635,9 +635,9 @@ export default function OutcomesModelToolPage() {
                 Current Project
               </h3>
               <div className="bg-white border border-design4-neutral-200 rounded-lg p-3">
-                <div className="font-medium text-design4-ink text-sm">{selectedProject.name}</div>
+                <div className="font-medium text-design4-ink text-sm">{selectedProject?.name || 'No Project Selected'}</div>
                 <div className="text-xs text-design4-neutral-500 mt-1">
-                  {selectedProject.status} • {selectedProject.phase}
+                  {selectedProject?.status || 'unknown'} • {selectedProject?.phase || 'unknown'}
                 </div>
               </div>
             </div>
