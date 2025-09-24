@@ -32,42 +32,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event)
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
-
-      // Create user record in our database if they don't exist
-      if (event === 'SIGNED_IN' && session?.user) {
-        await createUserIfNotExists(session.user)
-      }
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  const createUserIfNotExists = async (user: User) => {
-    try {
-      const response = await fetch('/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: user.id,
-          email: user.email!,
-          name: user.user_metadata?.name || user.email!.split('@')[0]
-        })
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.error('Error creating user record:', errorData.error)
-      }
-    } catch (error) {
-      console.error('Error in createUserIfNotExists:', error)
-    }
-  }
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
