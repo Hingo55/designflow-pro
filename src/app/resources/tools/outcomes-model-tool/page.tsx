@@ -734,9 +734,15 @@ export default function OutcomesModelToolPage() {
                 {/* Project context now managed globally via navigation */}
                 {!selectedProject && (
                   <div className="mb-6 p-4 bg-design4-gold/10 border border-design4-gold/20 rounded-lg">
-                    <p className="text-design4-ink text-sm">
-                      Please select a project using the project switcher in the navigation to get started.
+                    <p className="text-design4-ink text-sm mb-3">
+                      To use the Outcomes Model tool, you need to select a project first.
                     </p>
+                    <Link
+                      href="/projects"
+                      className="inline-flex items-center px-4 py-2 bg-design4-gold text-design4-ink text-sm font-medium rounded-md hover:bg-design4-gold/80 transition-colors"
+                    >
+                      Go to Projects Page
+                    </Link>
                   </div>
                 )}
 
