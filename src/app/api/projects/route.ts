@@ -14,6 +14,8 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('GET /api/projects - User ID:', user.id, 'Email:', user.email)
+    console.log('Environment:', process.env.NODE_ENV)
+    console.log('Looking for projects with user_id:', user.id)
 
     const { data: projects, error } = await supabaseAdmin
       .from('projects')
@@ -52,6 +54,9 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
+
+    console.log('POST /api/projects - User ID:', user.id, 'Email:', user.email)
+    console.log('Creating project with data:', { name, description, phase, status })
 
     // Validate required fields
     if (!name || !phase) {
