@@ -278,7 +278,7 @@ export default function ProjectsPage() {
       progress: 100
     },
     {
-      id: 5,
+      id: "5",
       name: "Innovation Lab Setup",
       description: "Framework for establishing an innovation lab to drive future growth initiatives.",
       status: "draft",
