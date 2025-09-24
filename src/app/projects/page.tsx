@@ -1,8 +1,12 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+import { useProject } from '@/lib/project-context'
+import { useRouter } from 'next/navigation'
+import { apiClient } from '@/lib/api-client'
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +24,11 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   FolderOpen,
   Plus,
@@ -40,6 +49,193 @@ import {
 } from 'lucide-react'
 
 export default function ProjectsPage() {
+  const { projects, setProjects, selectedProject, setSelectedProject } = useProject()
+  const router = useRouter()
+
+  // New project dialog state
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false)
+  const [newProjectName, setNewProjectName] = useState('')
+  const [newProjectDescription, setNewProjectDescription] = useState('')
+  const [newProjectPhase, setNewProjectPhase] = useState('discover')
+  const [isCreatingProject, setIsCreatingProject] = useState(false)
+
+  // Edit project dialog state
+  const [showEditProjectDialog, setShowEditProjectDialog] = useState(false)
+  const [editingProject, setEditingProject] = useState<any>(null)
+  const [editProjectName, setEditProjectName] = useState('')
+  const [editProjectDescription, setEditProjectDescription] = useState('')
+  const [editProjectPhase, setEditProjectPhase] = useState('discover')
+  const [editProjectStatus, setEditProjectStatus] = useState('active')
+  const [isUpdatingProject, setIsUpdatingProject] = useState(false)
+
+  // Delete project dialog state
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [deletingProject, setDeletingProject] = useState<any>(null)
+  const [isDeletingProject, setIsDeletingProject] = useState(false)
+
+  // Load projects from API
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const response = await apiClient.getProjects()
+        const formattedProjects = response.projects.map((project: any) => ({
+          id: project.id,
+          name: project.name,
+          description: project.description || '',
+          status: project.status || 'draft',
+          phase: project.phase || 'discover',
+          progress: Math.floor(Math.random() * 100), // TODO: Calculate real progress
+          models: [], // TODO: Load from project models
+          lastModified: new Date(project.updated_at || project.created_at).toLocaleDateString()
+        }))
+        setProjects(formattedProjects)
+      } catch (error) {
+        console.error('Error loading projects:', error)
+        // Fallback to mock data for development
+        setProjects(mockProjects)
+      }
+    }
+
+    loadProjects()
+  }, [setProjects])
+
+  // Handle project selection
+  const handleSelectProject = (project: any) => {
+    setSelectedProject(project)
+    // Redirect to project detail page or tools selection
+    router.push(`/resources/tools`)
+  }
+
+  // Create new project
+  const handleCreateProject = async () => {
+    if (!newProjectName.trim()) return
+
+    setIsCreatingProject(true)
+    try {
+      const response = await apiClient.createProject({
+        name: newProjectName.trim(),
+        description: newProjectDescription.trim(),
+        phase: newProjectPhase,
+        status: 'active'
+      })
+
+      const newProject = {
+        id: response.project.id,
+        name: response.project.name,
+        description: response.project.description || '',
+        status: response.project.status || 'active',
+        phase: response.project.phase || 'discover',
+        progress: 0,
+        models: [],
+        lastModified: new Date().toLocaleDateString()
+      }
+
+      setProjects([...projects, newProject])
+
+      // Reset form
+      setNewProjectName('')
+      setNewProjectDescription('')
+      setNewProjectPhase('discover')
+      setShowNewProjectDialog(false)
+
+      // Auto-select new project and navigate to tools
+      setSelectedProject(newProject)
+      router.push(`/resources/tools`)
+    } catch (error) {
+      console.error('Error creating project:', error)
+    } finally {
+      setIsCreatingProject(false)
+    }
+  }
+
+  // Open edit dialog
+  const handleEditProject = (project: any) => {
+    setEditingProject(project)
+    setEditProjectName(project.name)
+    setEditProjectDescription(project.description || '')
+    setEditProjectPhase(project.phase)
+    setEditProjectStatus(project.status)
+    setShowEditProjectDialog(true)
+  }
+
+  // Update project
+  const handleUpdateProject = async () => {
+    if (!editingProject || !editProjectName.trim()) return
+
+    setIsUpdatingProject(true)
+    try {
+      const response = await apiClient.updateProject(editingProject.id, {
+        name: editProjectName.trim(),
+        description: editProjectDescription.trim(),
+        phase: editProjectPhase,
+        status: editProjectStatus
+      })
+
+      const updatedProject = {
+        ...editingProject,
+        name: response.project.name,
+        description: response.project.description || '',
+        phase: response.project.phase,
+        status: response.project.status,
+        lastModified: new Date().toLocaleDateString()
+      }
+
+      setProjects(projects.map(p => p.id === editingProject.id ? updatedProject : p))
+
+      // Update selected project if it's the one being edited
+      if (selectedProject?.id === editingProject.id) {
+        setSelectedProject(updatedProject)
+      }
+
+      // Reset form
+      setEditingProject(null)
+      setEditProjectName('')
+      setEditProjectDescription('')
+      setEditProjectPhase('discover')
+      setEditProjectStatus('active')
+      setShowEditProjectDialog(false)
+    } catch (error) {
+      console.error('Error updating project:', error)
+    } finally {
+      setIsUpdatingProject(false)
+    }
+  }
+
+  // Open delete confirmation
+  const handleDeleteProject = (project: any) => {
+    setDeletingProject(project)
+    setShowDeleteDialog(true)
+  }
+
+  // Delete project
+  const confirmDeleteProject = async () => {
+    if (!deletingProject) return
+
+    setIsDeletingProject(true)
+    try {
+      console.log('Attempting to delete project:', deletingProject.id)
+      const result = await apiClient.deleteProject(deletingProject.id)
+      console.log('Delete result:', result)
+
+      setProjects(projects.filter(p => p.id !== deletingProject.id))
+
+      // Clear selected project if it's the one being deleted
+      if (selectedProject?.id === deletingProject.id) {
+        setSelectedProject(null)
+      }
+
+      setDeletingProject(null)
+      setShowDeleteDialog(false)
+      console.log('Project deleted successfully from UI')
+    } catch (error) {
+      console.error('Error deleting project:', error)
+      // Don't update UI if delete failed
+      alert('Failed to delete project. Please try again.')
+    } finally {
+      setIsDeletingProject(false)
+    }
+  }
+
   const mockProjects = [
     {
       id: 1,
@@ -150,7 +346,10 @@ export default function ProjectsPage() {
                   <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <button className="w-full">
+                        <button
+                          className="w-full"
+                          onClick={() => setShowNewProjectDialog(true)}
+                        >
                           <Plus className="h-4 w-4" />
                           <span>New Project</span>
                         </button>
@@ -291,7 +490,10 @@ export default function ProjectsPage() {
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
-                      <Button className="bg-design4-primary hover:bg-design4-primary/90 text-white">
+                      <Button
+                        className="bg-design4-primary hover:bg-design4-primary/90 text-white"
+                        onClick={() => setShowNewProjectDialog(true)}
+                      >
                         <Plus className="h-4 w-4 mr-2" />
                         New Project
                       </Button>
@@ -321,7 +523,7 @@ export default function ProjectsPage() {
 
                   {/* Projects Grid */}
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {mockProjects.map((project) => (
+                    {projects.map((project) => (
                       <Card key={project.id} className="hover:shadow-lg transition-shadow duration-200 cursor-pointer group">
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between">
@@ -375,19 +577,48 @@ export default function ProjectsPage() {
                             </div>
                           </div>
 
-                          {/* Footer */}
-                          <div className="flex items-center justify-between pt-3 border-t border-design4-neutral-100">
-                            <div className="flex items-center text-xs text-design4-neutral-500">
-                              <Clock className="h-3 w-3 mr-1" />
-                              {project.lastModified}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <button className="p-1 hover:bg-design4-neutral-100 rounded transition-colors">
-                                <Edit3 className="h-4 w-4 text-design4-neutral-500" />
-                              </button>
-                              <button className="p-1 hover:bg-red-50 rounded transition-colors">
-                                <Trash2 className="h-4 w-4 text-red-500" />
-                              </button>
+                          {/* Select Project Button */}
+                          <div className="pt-3 border-t border-design4-neutral-100">
+                            <Button
+                              onClick={() => handleSelectProject(project)}
+                              className={`w-full mb-3 ${
+                                selectedProject?.id === project.id
+                                  ? 'bg-design4-primary text-white'
+                                  : 'bg-design4-neutral-100 hover:bg-design4-primary hover:text-white text-design4-ink'
+                              } transition-colors`}
+                              size="sm"
+                            >
+                              {selectedProject?.id === project.id ? 'Selected Project' : 'Select Project'}
+                            </Button>
+
+                            {/* Footer */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center text-xs text-design4-neutral-500">
+                                <Clock className="h-3 w-3 mr-1" />
+                                {project.lastModified}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  className="p-1 hover:bg-design4-neutral-100 rounded transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleEditProject(project)
+                                  }}
+                                  title="Edit project"
+                                >
+                                  <Edit3 className="h-4 w-4 text-design4-neutral-500" />
+                                </button>
+                                <button
+                                  className="p-1 hover:bg-red-50 rounded transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleDeleteProject(project)
+                                  }}
+                                  title="Delete project"
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-500" />
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </CardContent>
@@ -395,7 +626,10 @@ export default function ProjectsPage() {
                     ))}
 
                     {/* Create New Project Card */}
-                    <Card className="border-2 border-dashed border-design4-neutral-200 hover:border-design4-primary transition-colors cursor-pointer group">
+                    <Card
+                      className="border-2 border-dashed border-design4-neutral-200 hover:border-design4-primary transition-colors cursor-pointer group"
+                      onClick={() => setShowNewProjectDialog(true)}
+                    >
                       <CardContent className="flex flex-col items-center justify-center h-full py-12">
                         <div className="w-12 h-12 bg-design4-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-design4-primary/20 transition-colors">
                           <Plus className="h-6 w-6 text-design4-primary" />
@@ -437,6 +671,220 @@ export default function ProjectsPage() {
           </SidebarInset>
         </div>
       </SidebarProvider>
+
+      {/* New Project Dialog */}
+      <Dialog open={showNewProjectDialog} onOpenChange={setShowNewProjectDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Project</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="project-name">Project Name</Label>
+              <Input
+                id="project-name"
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+                placeholder="Enter project name"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="project-description">Description</Label>
+              <Textarea
+                id="project-description"
+                value={newProjectDescription}
+                onChange={(e) => setNewProjectDescription(e.target.value)}
+                placeholder="Brief description of the project"
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="project-phase">Starting Phase</Label>
+              <Select value={newProjectPhase} onValueChange={setNewProjectPhase}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select starting phase" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="discover">
+                    <div className="flex items-center gap-2">
+                      <Target className="h-4 w-4 text-design4-gold" />
+                      Discover
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="define">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-design4-purple" />
+                      Define
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="develop">
+                    <div className="flex items-center gap-2">
+                      <Code className="h-4 w-4 text-design4-green" />
+                      Develop
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="deliver">
+                    <div className="flex items-center gap-2">
+                      <Truck className="h-4 w-4 text-design4-orange" />
+                      Deliver
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowNewProjectDialog(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateProject}
+                disabled={!newProjectName.trim() || isCreatingProject}
+                className="flex-1 bg-design4-primary hover:bg-design4-primary/90"
+              >
+                {isCreatingProject ? 'Creating...' : 'Create Project'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Project Dialog */}
+      <Dialog open={showEditProjectDialog} onOpenChange={setShowEditProjectDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Project</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-project-name">Project Name</Label>
+              <Input
+                id="edit-project-name"
+                value={editProjectName}
+                onChange={(e) => setEditProjectName(e.target.value)}
+                placeholder="Enter project name"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-project-description">Description</Label>
+              <Textarea
+                id="edit-project-description"
+                value={editProjectDescription}
+                onChange={(e) => setEditProjectDescription(e.target.value)}
+                placeholder="Brief description of the project"
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-project-phase">Phase</Label>
+              <Select value={editProjectPhase} onValueChange={setEditProjectPhase}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select phase" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="discover">
+                    <div className="flex items-center gap-2">
+                      <Target className="h-4 w-4 text-design4-gold" />
+                      Discover
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="define">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-design4-purple" />
+                      Define
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="develop">
+                    <div className="flex items-center gap-2">
+                      <Code className="h-4 w-4 text-design4-green" />
+                      Develop
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="deliver">
+                    <div className="flex items-center gap-2">
+                      <Truck className="h-4 w-4 text-design4-orange" />
+                      Deliver
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-project-status">Status</Label>
+              <Select value={editProjectStatus} onValueChange={setEditProjectStatus}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="archived">Archived</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowEditProjectDialog(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleUpdateProject}
+                disabled={!editProjectName.trim() || isUpdatingProject}
+                className="flex-1 bg-design4-primary hover:bg-design4-primary/90"
+              >
+                {isUpdatingProject ? 'Updating...' : 'Update Project'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Project Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Project</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <p className="text-sm text-design4-neutral-600">
+              Are you sure you want to delete <strong>{deletingProject?.name}</strong>? This action cannot be undone and will permanently remove the project and all its associated models and data.
+            </p>
+
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDeleteProject}
+                disabled={isDeletingProject}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              >
+                {isDeletingProject ? 'Deleting...' : 'Delete Project'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </>

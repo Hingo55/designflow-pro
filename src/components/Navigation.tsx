@@ -4,11 +4,18 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { usePersona } from '@/hooks/usePersona'
+import { useAuth } from '@/lib/auth-context'
 
 export default function Navigation() {
   const pathname = usePathname()
   const { selectedPersona } = usePersona()
+  const { user, signOut } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const handleSignOut = async () => {
+    await signOut()
+    setIsMobileMenuOpen(false)
+  }
 
   const navItems = [
     { href: '/discover', label: 'Discover' },
@@ -16,6 +23,7 @@ export default function Navigation() {
     { href: '/develop', label: 'Develop' },
     { href: '/deliver', label: 'Deliver' },
     { href: '/resources', label: 'Resources' },
+    { href: '/projects', label: 'Projects' },
     { href: '/blog', label: 'Blog' },
     { href: '/admin', label: 'Admin' },
   ]
@@ -137,13 +145,25 @@ export default function Navigation() {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <Link
-            href={`/ai-strategy${selectedPersona ? `?persona=${selectedPersona}` : ''}`}
-            className={`${colors.button} px-6 py-3 rounded-full font-medium text-base hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2`}
-          >
-            Design4 Assistant
-          </Link>
+          <div className="flex items-center space-x-4">
+            {/* CTA Button */}
+            <Link
+              href={`/ai-strategy${selectedPersona ? `?persona=${selectedPersona}` : ''}`}
+              className={`${colors.button} px-6 py-3 rounded-full font-medium text-base hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2`}
+            >
+              Design4 Assistant
+            </Link>
+
+            {/* Logout Button - only show if user is authenticated */}
+            {user && (
+              <button
+                onClick={handleSignOut}
+                className={`${colors.nav} hover:opacity-90 px-4 py-2 rounded-md font-medium text-sm transition-opacity`}
+              >
+                Logout
+              </button>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           <button 
@@ -186,6 +206,16 @@ export default function Navigation() {
               >
                 Design4 Assistant
               </Link>
+
+              {/* Mobile Logout Button */}
+              {user && (
+                <button
+                  onClick={handleSignOut}
+                  className={`block px-3 py-2 mt-2 text-center ${colors.nav} hover:bg-white/5 rounded-md font-medium text-base w-full`}
+                >
+                  Logout
+                </button>
+              )}
             </div>
           </div>
         )}
