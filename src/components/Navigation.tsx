@@ -154,14 +154,21 @@ export default function Navigation() {
               Design4 Assistant
             </Link>
 
-            {/* Logout Button - only show if user is authenticated */}
-            {user && (
+            {/* Authentication Buttons */}
+            {user ? (
               <button
                 onClick={handleSignOut}
                 className={`${colors.nav} hover:opacity-90 px-4 py-2 rounded-md font-medium text-sm transition-opacity`}
               >
                 Logout
               </button>
+            ) : (
+              <Link
+                href="/auth"
+                className={`${colors.button} px-6 py-2 rounded-full font-medium text-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-design4-gold focus:ring-offset-2`}
+              >
+                Sign In
+              </Link>
             )}
           </div>
 

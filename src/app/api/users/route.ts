@@ -7,15 +7,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { id, email, name } = body
 
+    console.log('POST /api/users - Request data:', { id, email, name })
+
     // Validate required fields
-    if (!email || !name) {
+    if (!email) {
       return NextResponse.json(
-        { error: 'email and name are required' },
+        { error: 'email is required' },
         { status: 400 }
       )
     }
 
-    const userData: any = { email, name }
+    const userData: any = {
+      email,
+      name: name || email.split('@')[0] // Use email prefix as fallback name
+    }
     if (id) {
       userData.id = id
     }

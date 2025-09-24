@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
-import AuthDiagnostic from '@/components/auth-diagnostic'
 import { useProject } from '@/lib/project-context'
 import { useRouter } from 'next/navigation'
 import { apiClient } from '@/lib/api-client'
@@ -889,7 +888,6 @@ export default function ProjectsPage() {
         </DialogContent>
       </Dialog>
 
-      <AuthDiagnostic />
       <Footer />
     </>
   )
