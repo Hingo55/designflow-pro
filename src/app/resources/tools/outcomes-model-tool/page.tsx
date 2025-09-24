@@ -23,8 +23,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { BookOpen, Target, Users, Heart, TrendingUp, BarChart, CheckCircle, Bot, Send, Download, X } from 'lucide-react'
-import { useState, useRef } from 'react'
+import { BookOpen, Target, Users, Heart, TrendingUp, BarChart, CheckCircle, Bot, Send, Download, X, FolderOpen, Sparkles, Save } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { useProjectContext } from '@/lib/project-context'
+import { apiClient } from '@/lib/api-client'
 
 export default function OutcomesModelToolPage() {
   const [purposeText, setPurposeText] = useState('')
@@ -52,6 +54,13 @@ export default function OutcomesModelToolPage() {
   // PDF export ref
   const pdfContentRef = useRef<HTMLDivElement>(null)
 
+  // Project state
+  const selectedProject = useProjectContext()
+  const [currentModel, setCurrentModel] = useState<any>(null)
+  const [availableModels, setAvailableModels] = useState<any[]>([])
+  const [showLoadDialog, setShowLoadDialog] = useState(false)
+  const [showSmartPopulateDialog, setShowSmartPopulateDialog] = useState(false)
+
   const getCharacterCountDisplay = (text: string, limit: number = 500) => {
     const isNearLimit = text.length > limit * 0.8
     const isOverLimit = text.length > limit
@@ -63,8 +72,160 @@ export default function OutcomesModelToolPage() {
   const allFieldsHaveText = purposeText.trim() && groupsText.trim() && needsText.trim() && goalsText.trim() && outcomesText.trim()
   const readyForAI = allComponentsComplete && allFieldsHaveText
 
+  // Save current model state
+  const saveModel = async (status: string = 'draft') => {
+    if (!selectedProject) return
+
+    const inputData = {
+      purposeText,
+      groupsText,
+      needsText,
+      goalsText,
+      outcomesText,
+      purposeDone,
+      groupsDone,
+      needsDone,
+      goalsDone,
+      outcomesDone,
+      conversationHistory
+    }
+
+    const outputData = finalOutcomesModel ? {
+      outcomesModel: finalOutcomesModel,
+      conversationHistory: conversationHistory
+    } : null
+
+    try {
+      if (currentModel) {
+        // Update existing model
+        await apiClient.updateModel(currentModel.id, {
+          name: `Outcomes Model - ${selectedProject.name}`,
+          status,
+          input_data: inputData,
+          output_data: outputData
+        })
+      } else {
+        // Create new model
+        const response = await apiClient.createModel({
+          project_id: selectedProject.id,
+          type: 'outcomes-model',
+          name: `Outcomes Model - ${selectedProject.name}`,
+          status,
+          input_data: inputData,
+          output_data: outputData
+        })
+        setCurrentModel(response.model)
+      }
+    } catch (error) {
+      console.error('Error saving model:', error)
+    }
+  }
+
+  // Load available models for current project
+  const loadAvailableModels = async () => {
+    if (!selectedProject) return
+
+    try {
+      const response = await apiClient.getModels(selectedProject.id, 'outcomes-model')
+      setAvailableModels(response.models)
+    } catch (error) {
+      console.error('Error loading models:', error)
+    }
+  }
+
+  // Load model data
+  const loadModel = async (model: any) => {
+    setCurrentModel(model)
+
+    if (model.input_data) {
+      const data = model.input_data
+      setPurposeText(data.purposeText || '')
+      setGroupsText(data.groupsText || '')
+      setNeedsText(data.needsText || '')
+      setGoalsText(data.goalsText || '')
+      setOutcomesText(data.outcomesText || '')
+      setPurposeDone(data.purposeDone || false)
+      setGroupsDone(data.groupsDone || false)
+      setNeedsDone(data.needsDone || false)
+      setGoalsDone(data.goalsDone || false)
+      setOutcomesDone(data.outcomesDone || false)
+      setConversationHistory(data.conversationHistory || [])
+    }
+
+    if (model.output_data) {
+      setFinalOutcomesModel(model.output_data.outcomesModel)
+      if (model.output_data.conversationHistory) {
+        setConversationHistory(model.output_data.conversationHistory)
+      }
+    }
+
+    setShowLoadDialog(false)
+  }
+
+  // Clear/Reset model
+  const clearModel = () => {
+    setPurposeText('')
+    setGroupsText('')
+    setNeedsText('')
+    setGoalsText('')
+    setOutcomesText('')
+    setPurposeDone(false)
+    setGroupsDone(false)
+    setNeedsDone(false)
+    setGoalsDone(false)
+    setOutcomesDone(false)
+    setConversationHistory([])
+    setFinalOutcomesModel(null)
+    setCurrentModel(null)
+  }
+
+  // Smart Populate functionality
+  const handleSmartPopulate = async (mode: 'original' | 'enhanced' | 'merged') => {
+    if (!currentModel) return
+
+    try {
+      const response = await apiClient.smartPopulate(currentModel.id, mode)
+      const populatedData = response.populated_data
+
+      if (populatedData) {
+        // Populate form fields with the smart-populated data
+        setPurposeText(populatedData.purposeText || '')
+        setGroupsText(populatedData.groupsText || '')
+        setNeedsText(populatedData.needsText || '')
+        setGoalsText(populatedData.goalsText || '')
+        setOutcomesText(populatedData.outcomesText || '')
+
+        // Set completion states if available
+        if (populatedData.purposeDone !== undefined) setPurposeDone(populatedData.purposeDone)
+        if (populatedData.groupsDone !== undefined) setGroupsDone(populatedData.groupsDone)
+        if (populatedData.needsDone !== undefined) setNeedsDone(populatedData.needsDone)
+        if (populatedData.goalsDone !== undefined) setGoalsDone(populatedData.goalsDone)
+        if (populatedData.outcomesDone !== undefined) setOutcomesDone(populatedData.outcomesDone)
+
+        // Clear AI output and reset conversation state for fresh analysis
+        setFinalOutcomesModel(null)
+        setConversationHistory([])
+        setAiActive(false)
+
+        // Update current model to remove output_data
+        if (currentModel) {
+          const updatedModel = { ...currentModel }
+          delete updatedModel.output_data
+          setCurrentModel(updatedModel)
+        }
+
+        setShowSmartPopulateDialog(false)
+      }
+    } catch (error) {
+      console.error('Error in smart populate:', error)
+    }
+  }
+
   const startAIAssistant = async () => {
     if (!readyForAI) return
+
+    // Auto-save before starting AI
+    await saveModel()
 
     setAiActive(true)
     setIsLoading(true)
@@ -124,7 +285,37 @@ export default function OutcomesModelToolPage() {
 
         if (result.type === 'final') {
           setFinalOutcomesModel(result.outcomesModel)
-          setConversationHistory([...newHistory, { role: 'assistant', content: 'Perfect! I\'ve generated your complete outcomes model based on our conversation.', type: 'final' }])
+          const finalHistory = [...newHistory, { role: 'assistant', content: 'Perfect! I\'ve generated your complete outcomes model based on our conversation.', type: 'final' }]
+          setConversationHistory(finalHistory)
+
+          // Auto-save final model immediately with current data
+          const outputData = {
+            outcomesModel: result.outcomesModel,
+            conversationHistory: finalHistory
+          }
+
+          const inputData = {
+            purposeText,
+            groupsText,
+            needsText,
+            goalsText,
+            outcomesText,
+            purposeDone,
+            groupsDone,
+            needsDone,
+            goalsDone,
+            outcomesDone,
+            conversationHistory: finalHistory
+          }
+
+          if (currentModel) {
+            apiClient.updateModel(currentModel.id, {
+              name: `Outcomes Model - ${selectedProject.name}`,
+              status: 'published',
+              input_data: inputData,
+              output_data: outputData
+            }).catch(error => console.error('Error saving final model:', error))
+          }
         } else {
           setConversationHistory([...newHistory, { role: 'assistant', content: result.message, suggestions: result.suggestions }])
         }
@@ -436,6 +627,22 @@ export default function OutcomesModelToolPage() {
             <BookOpen className="h-5 w-5 text-design4-ink" />
             <span className="text-sm font-semibold text-design4-ink">Design4 Tools</span>
           </Link>
+
+          {/* Current Project Display */}
+          {selectedProject && (
+            <div className="mb-4">
+              <h3 className="text-xs font-medium text-design4-ink/70 uppercase tracking-wide mb-2">
+                Current Project
+              </h3>
+              <div className="bg-white border border-design4-neutral-200 rounded-lg p-3">
+                <div className="font-medium text-design4-ink text-sm">{selectedProject.name}</div>
+                <div className="text-xs text-design4-neutral-500 mt-1">
+                  {selectedProject.status} • {selectedProject.phase}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-4">
             <div>
               <h3 className="text-xs font-medium text-design4-ink/70 uppercase tracking-wide mb-2">
@@ -464,6 +671,58 @@ export default function OutcomesModelToolPage() {
                 </a>
               </div>
             </div>
+
+            {/* Load Previous Model Section */}
+            {selectedProject && (
+              <div>
+                <h3 className="text-xs font-medium text-design4-ink/70 uppercase tracking-wide mb-2">
+                  Model Management
+                </h3>
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-xs"
+                    onClick={clearModel}
+                  >
+                    <X className="h-3 w-3 mr-2" />
+                    Clear Model
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-xs"
+                    onClick={() => {
+                      loadAvailableModels()
+                      setShowLoadDialog(true)
+                    }}
+                  >
+                    <FolderOpen className="h-3 w-3 mr-2" />
+                    Load Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-xs"
+                    onClick={() => setShowSmartPopulateDialog(true)}
+                    disabled={!currentModel || (!currentModel.output_data && !currentModel.input_data)}
+                  >
+                    <Sparkles className="h-3 w-3 mr-2" />
+                    Smart Populate
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-xs"
+                    onClick={() => saveModel()}
+                    disabled={!allFieldsHaveText}
+                  >
+                    <Save className="h-3 w-3 mr-2" />
+                    Save Draft
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -472,6 +731,16 @@ export default function OutcomesModelToolPage() {
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel defaultSize={50}>
               <div className={`h-full bg-design4-bg p-6 overflow-y-auto ${aiActive ? 'opacity-50 pointer-events-none' : ''}`}>
+                {/* Project context now managed globally via navigation */}
+                {!selectedProject && (
+                  <div className="mb-6 p-4 bg-design4-gold/10 border border-design4-gold/20 rounded-lg">
+                    <p className="text-design4-ink text-sm">
+                      Please select a project using the project switcher in the navigation to get started.
+                    </p>
+                  </div>
+                )}
+
+
                 <div className="space-y-6">
                   <Card id="purpose-statement" className="bg-design4-gold scroll-mt-6">
                     <CardHeader>
@@ -1235,6 +1504,121 @@ export default function OutcomesModelToolPage() {
                 </div>
               </div>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Load Model Dialog */}
+      <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Load Previous Outcomes Model</DialogTitle>
+          </DialogHeader>
+
+          <div className="max-h-96 overflow-y-auto">
+            {availableModels.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-design4-neutral-600 mb-4">No previous outcomes models found for this project.</p>
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {availableModels.map((model) => (
+                  <Card
+                    key={model.id}
+                    className={`cursor-pointer transition-colors hover:bg-design4-neutral-50 ${
+                      currentModel?.id === model.id ? 'ring-2 ring-design4-primary' : ''
+                    }`}
+                    onClick={() => loadModel(model)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-medium text-design4-ink">{model.name}</h3>
+                          <div className="flex items-center gap-4 mt-2">
+                            <span className={`px-2 py-1 text-xs rounded-full ${
+                              model.status === 'published' ? 'bg-design4-green/20 text-design4-green' :
+                              'bg-design4-gold/20 text-design4-gold'
+                            }`}>
+                              {model.status}
+                            </span>
+                            <span className="text-xs text-design4-neutral-500">
+                              Updated {new Date(model.updated_at).toLocaleDateString()}
+                            </span>
+                            {model.output_data && (
+                              <span className="text-xs text-design4-green font-medium">
+                                Has AI Output
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Smart Populate Dialog */}
+      <Dialog open={showSmartPopulateDialog} onOpenChange={setShowSmartPopulateDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Smart Populate</DialogTitle>
+            <p className="text-sm text-design4-neutral-600 mt-2">
+              Choose how to enhance your outcomes model using AI:
+            </p>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <Button
+              onClick={() => {
+                handleSmartPopulate('original')
+                setShowSmartPopulateDialog(false)
+              }}
+              className="w-full justify-start h-auto p-4 bg-white border border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50"
+              variant="outline"
+            >
+              <div className="text-left">
+                <div className="font-medium">Original Mode</div>
+                <div className="text-xs text-design4-neutral-500">
+                  Keep your original inputs, enhance AI analysis
+                </div>
+              </div>
+            </Button>
+
+            <Button
+              onClick={() => {
+                handleSmartPopulate('enhanced')
+                setShowSmartPopulateDialog(false)
+              }}
+              className="w-full justify-start h-auto p-4 bg-white border border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50"
+              variant="outline"
+            >
+              <div className="text-left">
+                <div className="font-medium">Enhanced Mode</div>
+                <div className="text-xs text-design4-neutral-500">
+                  AI improves your inputs and generates new analysis
+                </div>
+              </div>
+            </Button>
+
+            <Button
+              onClick={() => {
+                handleSmartPopulate('merged')
+                setShowSmartPopulateDialog(false)
+              }}
+              className="w-full justify-start h-auto p-4 bg-white border border-design4-neutral-200 text-design4-ink hover:bg-design4-neutral-50"
+              variant="outline"
+            >
+              <div className="text-left">
+                <div className="font-medium">Merged Mode</div>
+                <div className="text-xs text-design4-neutral-500">
+                  Blend your inputs with AI suggestions
+                </div>
+              </div>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

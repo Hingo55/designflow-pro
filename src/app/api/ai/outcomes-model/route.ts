@@ -219,9 +219,19 @@ The caveat should feel personal and authentic to their specific situation and le
       })
 
       try {
-        const jsonResponse = JSON.parse(result.text)
+        // Clean up AI response - remove markdown code blocks if present
+        let cleanedText = result.text.trim()
+        if (cleanedText.startsWith('```json\n')) {
+          cleanedText = cleanedText.replace(/^```json\n/, '').replace(/\n```$/, '')
+        } else if (cleanedText.startsWith('```\n')) {
+          cleanedText = cleanedText.replace(/^```\n/, '').replace(/\n```$/, '')
+        }
+
+        const jsonResponse = JSON.parse(cleanedText)
         return Response.json(jsonResponse)
       } catch (parseError) {
+        console.error('JSON Parse Error in follow-up conversation:', parseError)
+        console.error('AI Response was:', result.text)
         return Response.json({
           type: "clarification",
           message: "I need a bit more clarity on your response. Could you provide more specific details about what you're looking to achieve?"
@@ -386,9 +396,19 @@ The caveat should feel personal and authentic to their specific situation and le
     })
 
     try {
-      const jsonResponse = JSON.parse(result.text)
+      // Clean up AI response - remove markdown code blocks if present
+      let cleanedText = result.text.trim()
+      if (cleanedText.startsWith('```json\n')) {
+        cleanedText = cleanedText.replace(/^```json\n/, '').replace(/\n```$/, '')
+      } else if (cleanedText.startsWith('```\n')) {
+        cleanedText = cleanedText.replace(/^```\n/, '').replace(/\n```$/, '')
+      }
+
+      const jsonResponse = JSON.parse(cleanedText)
       return Response.json(jsonResponse)
     } catch (parseError) {
+      console.error('JSON Parse Error in initial analysis:', parseError)
+      console.error('AI Response was:', result.text)
       return Response.json({
         type: "clarification",
         message: "Thank you for completing the initial outcomes model framework. I can see you've put thought into each component. Let me help you refine this into a more rigorous model. Starting with your purpose statement - could you help me understand what specific value or change this purpose creates for your stakeholders?"
