@@ -24,6 +24,9 @@ class ApiClient {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const headers = await this.getAuthHeaders()
 
+    console.log(`API Client: Making ${options.method || 'GET'} request to /api${endpoint}`)
+    console.log('API Client: Headers:', headers)
+
     const response = await fetch(`/api${endpoint}`, {
       ...options,
       headers: {
@@ -32,9 +35,18 @@ class ApiClient {
       }
     })
 
+    console.log(`API Client: Response status:`, response.status)
+
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }))
-      throw new Error(error.error || `HTTP ${response.status}`)
+      const errorText = await response.text()
+      console.log('API Client: Error response:', errorText)
+
+      try {
+        const error = JSON.parse(errorText)
+        throw new Error(error.error || `HTTP ${response.status}`)
+      } catch {
+        throw new Error(errorText || `HTTP ${response.status}`)
+      }
     }
 
     return response.json()
@@ -54,6 +66,9 @@ class ApiClient {
     if (!userId) {
       throw new Error('Authentication required')
     }
+
+    console.log('API Client: Creating project with data:', data)
+    console.log('API Client: User ID:', userId)
 
     return this.request<{ project: any }>('/projects', {
       method: 'POST',

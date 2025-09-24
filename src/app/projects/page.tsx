@@ -143,6 +143,8 @@ export default function ProjectsPage() {
       router.push(`/resources/tools`)
     } catch (error) {
       console.error('Error creating project:', error)
+      // Show user-friendly error message
+      alert(`Failed to create project: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsCreatingProject(false)
     }
