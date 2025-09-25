@@ -13,12 +13,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    console.log('GET /api/projects - User ID:', user.id)
 
     const { data: projects, error } = await supabaseAdmin
       .from('projects')
       .select('*')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false })
+
+    console.log('GET /api/projects - Query result:', { projects, error })
 
     if (error) {
       console.error('Database error:', error)
@@ -28,6 +31,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    console.log('GET /api/projects - Returning projects:', projects)
     return NextResponse.json({ projects })
   } catch (error) {
     console.error('API error:', error)
