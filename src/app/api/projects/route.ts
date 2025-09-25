@@ -44,13 +44,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, description, phase, status } = body
 
-    console.log('POST /api/projects - Request body:', { name, description, phase, status })
-
     const user = await getAuthenticatedUser(request)
-    console.log('POST /api/projects - Authenticated user:', user ? { id: user.id, email: user.email } : 'null')
-
     if (!user) {
-      console.error('POST /api/projects - Authentication failed')
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -86,32 +81,25 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const projectData = {
-      user_id: user.id,
-      name,
-      description: description || null,
-      phase,
-      status: status || 'active'
-    }
-
-    console.log('POST /api/projects - Inserting project data:', projectData)
-
     const { data: project, error } = await supabaseAdmin
       .from('projects')
-      .insert([projectData])
+      .insert([{
+        user_id: user.id,
+        name,
+        description: description || null,
+        phase,
+        status: status || 'active'
+      }])
       .select()
       .single()
 
     if (error) {
-      console.error('POST /api/projects - Database error:', error)
-      console.error('POST /api/projects - Error details:', JSON.stringify(error, null, 2))
+      console.error('Database error:', error)
       return NextResponse.json(
         { error: 'Failed to create project' },
         { status: 500 }
       )
     }
-
-    console.log('POST /api/projects - Project created successfully:', project)
 
     return NextResponse.json({ project }, { status: 201 })
   } catch (error) {
