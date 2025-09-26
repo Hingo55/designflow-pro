@@ -55,7 +55,7 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const { name, description, phase, status } = body
+    const { name, description, shortDescription, phase, status, planning_notes, company } = body
 
     const user = await getAuthenticatedUser(request)
     if (!user) {
@@ -91,8 +91,11 @@ export async function PUT(
     const updateData: any = {}
     if (name !== undefined) updateData.name = name
     if (description !== undefined) updateData.description = description
+    if (shortDescription !== undefined) updateData.short_description = shortDescription
     if (phase !== undefined) updateData.phase = phase
     if (status !== undefined) updateData.status = status
+    if (planning_notes !== undefined) updateData.planning_notes = planning_notes
+    if (company !== undefined) updateData.company = company
 
     const { id } = await params
     const { data: project, error } = await supabaseAdmin

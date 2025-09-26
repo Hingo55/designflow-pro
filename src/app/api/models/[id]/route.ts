@@ -67,7 +67,7 @@ export async function PUT(
 
     // Validate status if provided
     if (status) {
-      const validStatuses = ['draft', 'published']
+      const validStatuses = ['not_started', 'in_progress', 'draft', 'published']
       if (!validStatuses.includes(status)) {
         return NextResponse.json(
           { error: 'Invalid status. Must be one of: ' + validStatuses.join(', ') },

@@ -30,6 +30,14 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
   FolderOpen,
   Plus,
   Search,
@@ -45,7 +53,8 @@ import {
   PenTool,
   Code,
   Truck,
-  Clock
+  Clock,
+  Building
 } from 'lucide-react'
 
 export default function ProjectsPage() {
@@ -73,22 +82,67 @@ export default function ProjectsPage() {
   const [deletingProject, setDeletingProject] = useState<any>(null)
   const [isDeletingProject, setIsDeletingProject] = useState(false)
 
+  // Filter state
+  const [filterPhase, setFilterPhase] = useState<string>('all')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filterCompany, setFilterCompany] = useState<string>('all')
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false)
+
+  // Helper function to calculate progress from models
+  const calculateProgressFromModels = (models: any[]) => {
+    if (models.length === 0) return 0
+    const statusValues = {
+      not_started: 0,
+      in_progress: 50,
+      draft: 75,
+      published: 100
+    }
+    const totalProgress = models.reduce((sum: number, model: any) => sum + (statusValues[model.status] || 0), 0)
+    return Math.round(totalProgress / models.length)
+  }
+
   // Load projects from API
   useEffect(() => {
     const loadProjects = async () => {
       try {
         const response = await apiClient.getProjects()
-        const formattedProjects = response.projects.map((project: any) => ({
-          id: project.id,
-          name: project.name,
-          description: project.description || '',
-          status: project.status || 'draft',
-          phase: project.phase || 'discover',
-          progress: Math.floor(Math.random() * 100), // TODO: Calculate real progress
-          models: [], // TODO: Load from project models
-          lastModified: new Date(project.updated_at || project.created_at).toLocaleDateString()
-        }))
-        setProjects(formattedProjects)
+
+        // Load models for each project to calculate real progress
+        const projectsWithProgress = await Promise.all(
+          response.projects.map(async (project: any) => {
+            try {
+              const modelsResponse = await apiClient.getModels(project.id)
+              const progress = calculateProgressFromModels(modelsResponse.models || [])
+
+              return {
+                id: project.id,
+                name: project.name,
+                description: project.short_description || '',
+                company: project.company || 'Not specified',
+                status: project.status || 'draft',
+                phase: project.phase || 'discover',
+                progress: progress,
+                models: modelsResponse.models || [],
+                lastModified: new Date(project.updated_at || project.created_at).toLocaleDateString()
+              }
+            } catch (modelError) {
+              console.error(`Error loading models for project ${project.id}:`, modelError)
+              return {
+                id: project.id,
+                name: project.name,
+                description: project.short_description || '',
+                company: project.company || 'Not specified',
+                status: project.status || 'draft',
+                phase: project.phase || 'discover',
+                progress: 0,
+                models: [],
+                lastModified: new Date(project.updated_at || project.created_at).toLocaleDateString()
+              }
+            }
+          })
+        )
+
+        setProjects(projectsWithProgress)
       } catch (error) {
         console.error('Error loading projects:', error)
         // Fallback to mock data for development
@@ -104,6 +158,11 @@ export default function ProjectsPage() {
     setSelectedProject(project)
     // Redirect to project detail page or tools selection
     router.push(`/resources/tools`)
+  }
+
+  // Handle viewing project details
+  const handleViewProject = (project: any) => {
+    router.push(`/projects/${project.id}`)
   }
 
   // Create new project
@@ -290,6 +349,29 @@ export default function ProjectsPage() {
       progress: 15
     }
   ]
+
+  // Filter projects based on phase, status, and company
+  const filterProjects = (projectsToFilter: any[]) => {
+    return projectsToFilter.filter(project => {
+      const phaseMatch = filterPhase === 'all' || project.phase === filterPhase
+      const statusMatch = filterStatus === 'all' || project.status === filterStatus
+      const companyMatch = filterCompany === 'all' || project.company === filterCompany
+      return phaseMatch && statusMatch && companyMatch
+    })
+  }
+
+  // Reset filters
+  const resetFilters = () => {
+    setFilterPhase('all')
+    setFilterStatus('all')
+    setFilterCompany('all')
+  }
+
+  // Get unique companies from projects
+  const getUniqueCompanies = () => {
+    const companies = projects.map(project => project.company).filter(Boolean)
+    return [...new Set(companies)].sort()
+  }
 
   const getPhaseColor = (phase: string) => {
     switch (phase) {
@@ -479,17 +561,17 @@ export default function ProjectsPage() {
                 </div>
               </section>
 
-              {/* Header Section */}
-              <section className="bg-design4-bg py-16">
+              {/* Search Bar Section */}
+              <section className="bg-design4-bg py-4">
                 <div className="mx-auto max-w-design4-container px-6">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-                    <div>
-                      <h1 className="text-4xl lg:text-5xl font-bold text-design4-ink leading-tight mb-4">
-                        My Projects
-                      </h1>
-                      <p className="text-lg text-design4-neutral-500 max-w-2xl">
-                        Manage your Design4 implementation projects. Create, track, and optimize your strategic initiatives using our comprehensive framework and tools.
-                      </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="relative max-w-md">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-design4-neutral-400" />
+                      <input
+                        type="text"
+                        placeholder="Search projects..."
+                        className="w-full pl-10 pr-4 py-3 border border-design4-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-design4-primary focus:border-transparent"
+                      />
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
                       <Button
@@ -499,11 +581,119 @@ export default function ProjectsPage() {
                         <Plus className="h-4 w-4 mr-2" />
                         New Project
                       </Button>
-                      <Button variant="outline" className="border-design4-neutral-200">
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filter
-                      </Button>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="border-design4-neutral-200">
+                              <Filter className="h-4 w-4 mr-2" />
+                              Filter
+                              {(filterPhase !== 'all' || filterStatus !== 'all') && (
+                                <Badge className="ml-2 bg-design4-primary text-white text-xs px-1 py-0">
+                                  {[filterPhase !== 'all' ? 1 : 0, filterStatus !== 'all' ? 1 : 0].reduce((a, b) => a + b)}
+                                </Badge>
+                              )}
+                            </Button>
+                          </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56">
+                          <DropdownMenuLabel>Filter by Phase</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => setFilterPhase('all')}>
+                            All Phases {filterPhase === 'all' && '✓'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setFilterPhase('discover')}>
+                            Discover {filterPhase === 'discover' && '✓'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setFilterPhase('define')}>
+                            Define {filterPhase === 'define' && '✓'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setFilterPhase('develop')}>
+                            Develop {filterPhase === 'develop' && '✓'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setFilterPhase('deliver')}>
+                            Deliver {filterPhase === 'deliver' && '✓'}
+                          </DropdownMenuItem>
+
+                          <DropdownMenuSeparator />
+
+                          <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => setFilterStatus('all')}>
+                            All Statuses {filterStatus === 'all' && '✓'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setFilterStatus('active')}>
+                            Active {filterStatus === 'active' && '✓'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setFilterStatus('planning')}>
+                            Planning {filterStatus === 'planning' && '✓'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setFilterStatus('completed')}>
+                            Completed {filterStatus === 'completed' && '✓'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setFilterStatus('draft')}>
+                            Draft {filterStatus === 'draft' && '✓'}
+                          </DropdownMenuItem>
+
+                          {(filterPhase !== 'all' || filterStatus !== 'all') && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => {setFilterPhase('all'); setFilterStatus('all')}} className="text-design4-primary">
+                                Clear Phase & Status Filters
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="border-design4-neutral-200">
+                              <Building className="h-4 w-4 mr-2" />
+                              Company
+                              {filterCompany !== 'all' && (
+                                <Badge className="ml-2 bg-design4-primary text-white text-xs px-1 py-0">
+                                  1
+                                </Badge>
+                              )}
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-56">
+                            <DropdownMenuLabel>Filter by Company</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => setFilterCompany('all')}>
+                              All Companies {filterCompany === 'all' && '✓'}
+                            </DropdownMenuItem>
+                            {getUniqueCompanies().map((company) => (
+                              <DropdownMenuItem key={company} onClick={() => setFilterCompany(company)}>
+                                {company} {filterCompany === company && '✓'}
+                              </DropdownMenuItem>
+                            ))}
+                            {filterCompany !== 'all' && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => setFilterCompany('all')} className="text-design4-primary">
+                                  Clear Company Filter
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        {(filterPhase !== 'all' || filterStatus !== 'all' || filterCompany !== 'all') && (
+                          <Button variant="ghost" onClick={resetFilters} className="text-design4-primary hover:bg-design4-primary/10">
+                            Clear All
+                          </Button>
+                        )}
+                      </div>
                     </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Header Section */}
+              <section className="bg-design4-bg py-4">
+                <div className="mx-auto max-w-design4-container px-6">
+                  <div>
+                    <h1 className="text-3xl lg:text-4xl font-bold text-design4-ink leading-tight mb-3">
+                      My Projects
+                    </h1>
+                    <p className="text-base text-design4-neutral-500 max-w-2xl">
+                      Manage your Design4 implementation projects. Create, track, and optimize your strategic initiatives using our comprehensive framework and tools.
+                    </p>
                   </div>
                 </div>
               </section>
@@ -511,22 +701,11 @@ export default function ProjectsPage() {
               {/* Projects Grid */}
               <section className="bg-design4-bg py-12">
                 <div className="mx-auto max-w-design4-container px-6">
-                  {/* Search Bar */}
-                  <div className="mb-8">
-                    <div className="relative max-w-md">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-design4-neutral-400" />
-                      <input
-                        type="text"
-                        placeholder="Search projects..."
-                        className="w-full pl-10 pr-4 py-3 border border-design4-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-design4-primary focus:border-transparent"
-                      />
-                    </div>
-                  </div>
 
                   {/* Projects Grid */}
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {projects.map((project) => (
-                      <Card key={project.id} className="hover:shadow-lg transition-shadow duration-200 cursor-pointer group">
+                    {filterProjects(projects).map((project) => (
+                      <Card key={project.id} className="hover:shadow-lg transition-shadow duration-200 cursor-pointer group" onClick={() => handleViewProject(project)}>
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -534,7 +713,10 @@ export default function ProjectsPage() {
                                 {project.name}
                               </CardTitle>
                             </div>
-                            <button className="p-1 hover:bg-design4-neutral-100 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              className="p-1 hover:bg-design4-neutral-100 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <MoreVertical className="h-4 w-4 text-design4-neutral-500" />
                             </button>
                           </div>
@@ -546,6 +728,12 @@ export default function ProjectsPage() {
                               {getPhaseIcon(project.phase)}
                               <span className="ml-1 capitalize">{project.phase}</span>
                             </Badge>
+                          </div>
+
+                          {/* Company */}
+                          <div className="flex items-center gap-1 text-xs text-design4-neutral-500 mt-2">
+                            <Building className="h-3 w-3" />
+                            <span>{project.company}</span>
                           </div>
                         </CardHeader>
                         <CardContent className="pt-0">
@@ -567,22 +755,13 @@ export default function ProjectsPage() {
                             </div>
                           </div>
 
-                          {/* Models */}
-                          <div className="mb-4">
-                            <div className="text-xs text-design4-neutral-500 mb-2">Models Used:</div>
-                            <div className="flex flex-wrap gap-1">
-                              {project.models.map((model, index) => (
-                                <span key={index} className="text-xs bg-design4-neutral-100 text-design4-neutral-600 px-2 py-1 rounded">
-                                  {model}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-
                           {/* Select Project Button */}
                           <div className="pt-3 border-t border-design4-neutral-100">
                             <Button
-                              onClick={() => handleSelectProject(project)}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleSelectProject(project)
+                              }}
                               className={`w-full mb-3 ${
                                 selectedProject?.id === project.id
                                   ? 'bg-design4-primary text-white'

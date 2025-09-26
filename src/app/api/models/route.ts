@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     // Validate status if provided
     if (status) {
-      const validStatuses = ['draft', 'published']
+      const validStatuses = ['not_started', 'in_progress', 'draft', 'published']
       if (!validStatuses.includes(status)) {
         return NextResponse.json(
           { error: 'Invalid status. Must be one of: ' + validStatuses.join(', ') },
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
         project_id,
         type,
         name,
-        status: status || 'draft',
+        status: status || 'not_started',
         input_data: input_data || null,
         output_data: output_data || null
       }])

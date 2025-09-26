@@ -66,7 +66,7 @@ class ApiClient {
     })
   }
 
-  async updateProject(id: string, data: Partial<{ name: string; description?: string; phase: string; status: string }>) {
+  async updateProject(id: string, data: Partial<{ name: string; description?: string; phase: string; status: string; planning_notes?: string; company?: string }>) {
     const userId = await this.getCurrentUserId()
     if (!userId) {
       throw new Error('Authentication required')
@@ -143,7 +143,12 @@ class ApiClient {
   }
 
   async deleteModel(id: string) {
-    return this.request<{ message: string }>(`/models/${id}`, {
+    const userId = await this.getCurrentUserId()
+    if (!userId) {
+      throw new Error('Authentication required')
+    }
+
+    return this.request<{ message: string }>(`/models/${id}?userId=${userId}`, {
       method: 'DELETE'
     })
   }

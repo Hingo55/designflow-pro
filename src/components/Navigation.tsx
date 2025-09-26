@@ -17,16 +17,24 @@ export default function Navigation() {
     setIsMobileMenuOpen(false)
   }
 
-  const navItems = [
+  const baseNavItems = [
     { href: '/discover', label: 'Discover' },
     { href: '/define', label: 'Define' },
     { href: '/develop', label: 'Develop' },
     { href: '/deliver', label: 'Deliver' },
     { href: '/resources', label: 'Resources' },
-    { href: '/projects', label: 'Projects' },
     { href: '/blog', label: 'Blog' },
     { href: '/admin', label: 'Admin' },
   ]
+
+  // Add Projects link only when user is logged in
+  const navItems = user
+    ? [
+        ...baseNavItems.slice(0, 5), // Discover through Resources
+        { href: '/projects', label: 'Projects' },
+        ...baseNavItems.slice(5) // Blog and Admin
+      ]
+    : baseNavItems
 
   // Get background color based on current page
   const getNavBackground = () => {
