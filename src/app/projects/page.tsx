@@ -91,13 +91,13 @@ export default function ProjectsPage() {
   // Helper function to calculate progress from models
   const calculateProgressFromModels = (models: any[]) => {
     if (models.length === 0) return 0
-    const statusValues = {
+    const statusValues: Record<string, number> = {
       not_started: 0,
       in_progress: 50,
       draft: 75,
       published: 100
     }
-    const totalProgress = models.reduce((sum: number, model: any) => sum + (statusValues[model.status] || 0), 0)
+    const totalProgress = models.reduce((sum: number, model: { status: string }) => sum + (statusValues[model.status] || 0), 0)
     return Math.round(totalProgress / models.length)
   }
 
@@ -369,7 +369,7 @@ export default function ProjectsPage() {
 
   // Get unique companies from projects
   const getUniqueCompanies = () => {
-    const companies = projects.map(project => project.company).filter(Boolean)
+    const companies = projects.map(project => project.company).filter(Boolean) as string[]
     return [...new Set(companies)].sort()
   }
 

@@ -142,13 +142,13 @@ export default function ProjectDetailClient({ id }: { id: string }) {
         // Calculate progress from model statuses
         const calculateProgressFromModels = (models: any[]) => {
           if (models.length === 0) return 0
-          const statusValues = {
+          const statusValues: Record<string, number> = {
             not_started: 0,
             in_progress: 50,
             draft: 75,
             published: 100
           }
-          const totalProgress = models.reduce((sum, model) => sum + (statusValues[model.status] || 0), 0)
+          const totalProgress = models.reduce((sum: number, model: { status: string }) => sum + (statusValues[model.status] || 0), 0)
           return Math.round(totalProgress / models.length)
         }
 
@@ -405,7 +405,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
     try {
       setIsSavingShortDescription(true)
       await apiClient.updateProject(id, {
-        shortDescription: editedShortDescription
+        description: editedShortDescription
       })
 
       // Update local state
@@ -534,13 +534,13 @@ export default function ProjectDetailClient({ id }: { id: string }) {
   // Helper function to calculate progress from models
   const calculateProgressFromModels = (modelsList: any[]) => {
     if (modelsList.length === 0) return 0
-    const statusValues = {
+    const statusValues: Record<string, number> = {
       not_started: 0,
       in_progress: 50,
       draft: 75,
       published: 100
     }
-    const totalProgress = modelsList.reduce((sum, model) => sum + (statusValues[model.status] || 0), 0)
+    const totalProgress = modelsList.reduce((sum: number, model: { status: string }) => sum + (statusValues[model.status] || 0), 0)
     return Math.round(totalProgress / modelsList.length)
   }
 
@@ -559,7 +559,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
 
       // Recalculate and update progress immediately
       const newProgress = calculateProgressFromModels(updatedModels)
-      setProject(prev => ({ ...prev, progress: newProgress }))
+      setProject((prev: any) => ({ ...prev, progress: newProgress }))
 
       // Update the backend
       await apiClient.updateModel(modelId, { status: newStatus })
@@ -569,7 +569,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
 
       // Revert the optimistic update on error
       setModels(models)
-      setProject(prev => ({ ...prev, progress: project.progress }))
+      setProject((prev: any) => ({ ...prev, progress: project.progress }))
 
       alert('Failed to update model status. Please try again.')
     }
@@ -577,7 +577,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
 
   // Map model types to tool pages
   const getModelToolPath = (modelType: string) => {
-    const toolMapping = {
+    const toolMapping: Record<string, string> = {
       'outcomes_model': '/resources/tools/outcomes-model-tool',
       'customer_journey': '/resources/tools/customer-journey-map-tool',
       'value_proposition': '/resources/tools/value-proposition-tool',

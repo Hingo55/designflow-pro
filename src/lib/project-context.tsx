@@ -11,6 +11,7 @@ interface Project {
   progress: number
   models: string[]
   lastModified: string
+  company?: string
   created_at?: string
   updated_at?: string
 }
