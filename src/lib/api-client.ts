@@ -66,7 +66,7 @@ class ApiClient {
     })
   }
 
-  async updateProject(id: string, data: Partial<{ name: string; description?: string; phase: string; status: string; planning_notes?: string; company?: string }>) {
+  async updateProject(id: string, data: Partial<{ name: string; description?: string; shortDescription?: string; phase: string; status: string; planning_notes?: string; company?: string }>) {
     const userId = await this.getCurrentUserId()
     if (!userId) {
       throw new Error('Authentication required')

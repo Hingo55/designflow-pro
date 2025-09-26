@@ -405,7 +405,7 @@ export default function ProjectDetailClient({ id }: { id: string }) {
     try {
       setIsSavingShortDescription(true)
       await apiClient.updateProject(id, {
-        description: editedShortDescription
+        shortDescription: editedShortDescription
       })
 
       // Update local state
